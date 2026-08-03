@@ -1,0 +1,204 @@
+.form-content {
+    width: 100%;
+    padding-top: 1rem;
+    box-sizing: border-box;
+}
+
+h2[mat-dialog-title] {
+    font-family: var(--font-primary);
+    color: var(--color-blue-1);
+    border-bottom: 2px solid var(--color-blue-4);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.section-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: var(--color-blue-2);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: var(--font-primary);
+    display: flex;
+    align-items: center;
+
+    &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #eee;
+        margin-left: 1rem;
+    }
+}
+
+.row {
+    margin-bottom: 0.5rem;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.preview-row {
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.image-preview-container {
+    width: 100%;
+    max-height: 250px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .image-preview-large {
+        max-width: 100%;
+        height: auto;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: scale(1.02);
+        }
+    }
+}
+
+.image-preview-container-small {
+    width: 100%;
+    max-height: 150px;
+    overflow: hidden;
+    border-radius: 6px;
+    border: 1px dashed #ccc;
+    background-color: #fafafa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .image-preview-small {
+        max-width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+}
+
+.workshops-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+
+    .section-title {
+        margin: 0;
+
+        &::after {
+            display: none;
+        }
+
+        // Remove line for this specific header if button exists
+    }
+}
+
+.workshop-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.workshop-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid var(--color-blue-4); // Accent border
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: box-shadow 0.2s;
+
+    &:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .workshop-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+
+        .workshop-title {
+            font-weight: 600;
+            color: var(--color-blue-1);
+            font-family: var(--font-primary);
+            font-size: 1.1rem;
+        }
+    }
+
+    .workshop-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .time-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 2fr 1fr; // Date Time Date Time
+        gap: 1rem;
+        background-color: #f9fbfd; // Subtle background for grouping time
+        padding: 1rem;
+        border-radius: 6px;
+        border: 1px dashed #e0e0e0;
+
+        @media (max-width: 800px) {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+}
+
+.section-container {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid var(--color-blue-1); // Primary accent for main info
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+    .section-title {
+        // Reset top margin when inside container and reduce bottom margin
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+
+        // Ensure the title font matches the workshop title style
+        font-weight: 600;
+        color: var(--color-blue-1);
+        font-family: var(--font-primary);
+        font-size: 1.1rem;
+
+        // Remove the line since IT IS now containerized
+        display: block; // Ensure it behaves like a block for margin
+        border-bottom: none;
+
+        &::after {
+            display: none;
+        }
+    }
+}
+
+mat-dialog-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}

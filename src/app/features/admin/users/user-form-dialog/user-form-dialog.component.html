@@ -1,0 +1,158 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}</h2>
+<mat-dialog-content>
+    <form [formGroup]="userForm" class="user-form">
+        <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="firstName" placeholder="Nombre">
+                <mat-error *ngIf="userForm.get('firstName')?.hasError('required')">Requerido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Apellido</mat-label>
+                <input matInput formControlName="lastName" placeholder="Apellido">
+                <mat-error *ngIf="userForm.get('lastName')?.hasError('required')">Requerido</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" placeholder="correo@ejemplo.com">
+                <mat-error *ngIf="userForm.get('email')?.hasError('required')">Requerido</mat-error>
+                <mat-error *ngIf="userForm.get('email')?.hasError('email')">Email inválido</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Contraseña</mat-label>
+                <input matInput formControlName="password" type="password" placeholder="Dejar en blanco si no cambia">
+            </mat-form-field>
+        </div>
+
+        <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Rol</mat-label>
+                <mat-select formControlName="role">
+                    <mat-option value="familia">Familia</mat-option>
+                    <mat-option value="empresa">Empresa</mat-option>
+                    <mat-option value="profesional">Profesional</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Fecha de Nacimiento</mat-label>
+                <input matInput formControlName="birthDate" type="date">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Generación</mat-label>
+                <mat-select formControlName="generation">
+                    <mat-option value="Primera (Fundador)">Primera (Fundador)</mat-option>
+                    <mat-option value="Segunda">Segunda</mat-option>
+                    <mat-option value="Tercera">Tercera</mat-option>
+                    <mat-option value="Cuarta">Cuarta</mat-option>
+                    <mat-option value="Quinta o más">Quinta o más</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="phone" placeholder="+57 300 123 4567">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Ubicación</mat-label>
+                <input matInput formControlName="location" placeholder="Ciudad, Pais">
+            </mat-form-field>
+        </div>
+
+        <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Empresa</mat-label>
+                <input matInput formControlName="companyName" placeholder="Nombre Empresa">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Cargo</mat-label>
+                <input matInput formControlName="jobTitle" placeholder="Ej. Gerente">
+            </mat-form-field>
+        </div>
+
+        <div class="row">
+            <mat-form-field appearance="outline" class="third-width">
+                <mat-label>País</mat-label>
+                <mat-select formControlName="country">
+                    <mat-option value="Colombia">Colombia</mat-option>
+                    <mat-option value="Otro">Otro</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Tipo Id</mat-label>
+                <mat-select formControlName="identificationType">
+                    <ng-container *ngIf="userForm.get('country')?.value === 'Colombia'">
+                        <mat-option value="CC">CC - Cédula</mat-option>
+                        <mat-option value="CE">CE - Extranjería</mat-option>
+                        <mat-option value="NIT">NIT - Empresa</mat-option>
+                        <mat-option value="Pasaporte">Pasaporte</mat-option>
+                    </ng-container>
+                    <ng-container *ngIf="userForm.get('country')?.value !== 'Colombia'">
+                        <mat-option value="Pasaporte">Pasaporte</mat-option>
+                        <mat-option value="ID Extranjero">ID Extranjero</mat-option>
+                        <mat-option value="Otro">Otro</mat-option>
+                    </ng-container>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Número Id</mat-label>
+                <input matInput formControlName="identificationNumber" placeholder="123456789">
+            </mat-form-field>
+        </div>
+
+        <div class="row">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Estado del Cliente</mat-label>
+                <mat-select formControlName="customerStatus">
+                    <mat-option value="Ya soy cliente">Ya soy cliente</mat-option>
+                    <mat-option value="Quiero ser cliente">Quiero ser cliente</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="row">
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Sector (Industria)</mat-label>
+                <mat-select formControlName="industry">
+                    <mat-option value="Servicios">Servicios</mat-option>
+                    <mat-option value="Comercio">Comercio</mat-option>
+                    <mat-option value="Manufactura e Industria">Manufactura e Industria</mat-option>
+                    <mat-option value="Agropecuario">Agropecuario</mat-option>
+                    <mat-option value="Construcción y Energía">Construcción y Energía</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>URL Imagen Perfil</mat-label>
+                <input matInput formControlName="profileImageUrl" placeholder="https://...">
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Biografía</mat-label>
+            <textarea matInput formControlName="bio" placeholder="Breve descripción..." rows="3"></textarea>
+        </mat-form-field>
+
+        <div class="checkbox-section">
+            <mat-checkbox formControlName="isPublicProfile">Perfil Público</mat-checkbox>
+            <mat-checkbox formControlName="allowMessagesFromStrangers">Recibir mensajes de extraños</mat-checkbox>
+            <mat-checkbox formControlName="showActivity">Mostrar Actividad</mat-checkbox>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="userForm.invalid">Guardar</button>
+</mat-dialog-actions>

@@ -1,0 +1,45 @@
+.form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+
+    mat-form-field {
+        flex: 1;
+    }
+}
+
+.full-width {
+    width: 100%;
+}
+
+.preview-container {
+    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 200px;
+
+    .image-preview {
+        max-width: 100%;
+        max-height: 180px;
+        object-fit: contain;
+    }
+}
+
+.toggle-container {
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+mat-dialog-content {
+    padding-top: 16px !important;
+}
+
+mat-dialog-actions {
+    padding-bottom: 16px !important;
+    gap: 8px;
+}

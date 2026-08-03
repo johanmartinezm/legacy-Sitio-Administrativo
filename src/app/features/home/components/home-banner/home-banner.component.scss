@@ -1,0 +1,118 @@
+.banner-container {
+    position: relative;
+    width: 100%; // Or a specific max-width
+    max-width: 1200px;
+    height: 400px; // Adjust height as needed
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+
+    .carousel-track {
+        display: flex;
+        height: 100%;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-slide {
+        min-width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        position: relative;
+
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+
+            // Fallback backgrounds if images are missing or for gradient distinctiveness
+            &.slide-0 {
+                background: linear-gradient(135deg, #FF6B6B, #E5E5E5); // Warm/Family colors
+            }
+
+            &.slide-1 {
+                background: linear-gradient(135deg, #4ECDC4, #556270); // Cool colors
+            }
+
+            .text-overlay {
+                background: rgba(255, 255, 255, 0.8);
+                padding: 20px 40px;
+                border-radius: 8px;
+                text-align: center;
+                max-width: 80%;
+
+                h2 {
+                    margin: 0 0 10px;
+                    color: #333;
+                    font-size: 2rem;
+                }
+
+                p {
+                    margin: 0;
+                    color: #555;
+                    font-size: 1.2rem;
+                }
+            }
+        }
+    }
+
+    .nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.3);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 10;
+        border-radius: 50%;
+        transition: background 0.3s;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        &.prev {
+            left: 10px;
+        }
+
+        &.next {
+            right: 10px;
+        }
+    }
+
+    .dots-container {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+
+            &.active {
+                background-color: white;
+                transform: scale(1.1);
+            }
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.8);
+            }
+        }
+    }
+}

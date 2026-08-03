@@ -1,0 +1,126 @@
+.dialog-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #1a237e;
+    /* Legacy Blue */
+    margin: 0;
+    padding: 24px 24px 16px;
+
+    mat-icon {
+        color: #1a237e;
+    }
+}
+
+.dialog-content {
+    min-width: 500px;
+    max-width: 800px;
+    padding: 0 24px !important; // override material default for internal padding
+
+    /* Custom scrollbar for better UX inside dialog */
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+}
+
+.content-form {
+    display: flex;
+    flex-direction: column;
+    padding-top: 8px;
+
+    .row {
+        display: flex;
+        gap: 16px;
+
+        mat-form-field {
+            flex: 1;
+        }
+    }
+
+    .full-width {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    /* Polish the prefix icons relative to the text */
+    mat-icon[matPrefix] {
+        margin-right: 8px;
+        color: #757575;
+    }
+
+    textarea {
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .dynamic-field-section {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .checkbox-container {
+        margin-top: 16px;
+        margin-bottom: 8px;
+        padding: 12px;
+        border-radius: 8px;
+        background-color: #f5f7fa;
+        border: 1px solid #e0e0e0;
+
+        .checkbox-hint {
+            color: #666;
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+    }
+}
+
+.dialog-divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 16px 0 0 0;
+}
+
+.dialog-actions {
+    padding: 16px 24px;
+    margin-bottom: 0;
+
+    button {
+        padding: 0 16px;
+        height: 40px;
+
+        mat-icon {
+            margin-right: 4px;
+        }
+    }
+
+    .btn-save {
+        margin-left: 12px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,186 @@
+<div class="groups-container">
+  <div class="header-section">
+    <h1>Gestión de Grupos de Usuarios</h1>
+    <p class="subtitle">Crea grupos personalizados y asigna usuarios para enviar notificaciones agrupadas.</p>
+  </div>
+
+  <div class="content-grid">
+    <!-- Columna Izquierda: Listado y Creación -->
+    <div class="left-column">
+      <!-- Tarjeta de Lista de Grupos -->
+      <mat-card class="list-card">
+        <mat-card-header>
+          <mat-card-title>Grupos Registrados</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="group-list">
+            <div 
+              *ngFor="let g of groups()" 
+              [ngClass]="{'active': selectedGroup()?.id === g.id}"
+              (click)="selectGroup(g)" 
+              class="group-item">
+              <div class="group-info">
+                <span class="group-name">{{ g.name }}</span>
+                <span class="group-description">{{ g.description || 'Sin descripción' }}</span>
+              </div>
+              <mat-icon class="arrow-icon">chevron_right</mat-icon>
+            </div>
+            <div *ngIf="groups().length === 0" class="no-groups">
+              <mat-icon>group_off</mat-icon>
+              <p>No hay grupos personalizados creados.</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tarjeta de Creación de Grupo -->
+      <mat-card class="create-card">
+        <mat-card-header>
+          <mat-card-title>Crear Nuevo Grupo</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form class="create-form" (submit)="onCreateGroup(); $event.preventDefault()">
+            <div class="custom-form-field">
+              <label class="custom-label">Nombre del Grupo *</label>
+              <input
+                id="group-name-input"
+                type="text"
+                [value]="groupName"
+                (input)="onGroupNameInput($event)"
+                placeholder="Ej: Inversionistas VIP"
+                class="custom-input"
+                autocomplete="off">
+              <div class="custom-error" *ngIf="groupNameTouched && !groupName.trim()">
+                El nombre es requerido
+              </div>
+            </div>
+
+            <div class="custom-form-field">
+              <label class="custom-label">Descripción</label>
+              <textarea
+                id="group-description-input"
+                [value]="groupDescription"
+                (input)="onGroupDescriptionInput($event)"
+                rows="3"
+                placeholder="Describe a los destinatarios..."
+                class="custom-textarea"></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="!groupName.trim()">
+                <mat-icon>add</mat-icon> Crear Grupo
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Columna Derecha: Miembros y Selección -->
+    <div class="right-column">
+      <mat-card class="members-card" *ngIf="selectedGroup() as group; else noSelection">
+        <mat-card-header class="members-header">
+          <div class="title-area">
+            <mat-card-title>{{ group.name }}</mat-card-title>
+            <span class="subtitle">{{ group.description || 'Sin descripción' }}</span>
+          </div>
+
+          <!-- Estado normal: botón eliminar -->
+          <button
+            *ngIf="!pendingDeleteGroup()"
+            mat-stroked-button
+            color="warn"
+            (click)="onRequestDeleteGroup(group)">
+            <mat-icon>delete</mat-icon> Eliminar Grupo
+          </button>
+
+          <!-- Confirmación inline: reemplaza window.confirm() que Chrome bloquea -->
+          <div *ngIf="pendingDeleteGroup()" class="delete-confirm-bar">
+            <span class="delete-confirm-text">
+              <mat-icon>warning</mat-icon>
+              ¿Eliminar "{{ pendingDeleteGroup()?.name }}"?
+            </span>
+            <button mat-flat-button color="warn" (click)="onConfirmDelete()">
+              <mat-icon>delete_forever</mat-icon> Sí, eliminar
+            </button>
+            <button mat-stroked-button (click)="onCancelDelete()">
+              Cancelar
+            </button>
+          </div>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="selection-box">
+            <div class="selection-header">
+              <h3>Asignar Usuarios ({{ selectedUserIds.size }} seleccionados)</h3>
+              <div class="search-box">
+                <mat-icon>search</mat-icon>
+                <input type="text" placeholder="Buscar usuario por nombre o email..." [(ngModel)]="searchTerm">
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="members-table">
+                <thead>
+                  <tr>
+                    <th width="40">
+                      <mat-checkbox 
+                        [checked]="areAllFilteredSelected()"
+                        [indeterminate]="selectedUserIds.size > 0 && !areAllFilteredSelected()"
+                        (change)="toggleAllFiltered($event.checked)">
+                      </mat-checkbox>
+                    </th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Rol de Registro</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let user of filteredUsers" (click)="toggleUserInGroup(user.id)" class="clickable-row">
+                    <td (click)="$event.stopPropagation()">
+                      <mat-checkbox 
+                        [checked]="isUserInGroup(user.id)"
+                        (change)="toggleUserInGroup(user.id)">
+                      </mat-checkbox>
+                    </td>
+                    <td>
+                      <span class="user-name">{{ user.firstName || 'Sin nombre' }} {{ user.lastName || '' }}</span>
+                    </td>
+                    <td class="user-email">{{ user.email }}</td>
+                    <td>
+                      <span class="role-tag" [ngClass]="user.role">{{ user.role }}</span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="filteredUsers.length === 0">
+                    <td colspan="4" class="empty-list">
+                      No se encontraron usuarios para asignar.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="save-actions">
+            <button mat-raised-button color="primary" (click)="onSaveMembers()" [disabled]="isSavingMembers()">
+              <mat-icon>{{ isSavingMembers() ? 'hourglass_empty' : 'save' }}</mat-icon>
+              {{ isSavingMembers() ? 'Guardando...' : 'Actualizar Miembros' }}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <ng-template #noSelection>
+        <div class="no-selection-container">
+          <mat-icon>group</mat-icon>
+          <h2>Selecciona o crea un grupo</h2>
+          <p>Elige un grupo de la lista de la izquierda para administrar sus usuarios e integrantes.</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,218 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar Evento' : 'Crear Nuevo Evento' }}</h2>
+
+<mat-dialog-content class="form-content">
+    <form [formGroup]="eventForm">
+        <!-- Event Details -->
+        <div class="section-container">
+            <div class="section-title">Información General</div>
+
+            <div class="row" style="display: flex; gap: 16px;">
+                <mat-form-field appearance="outline" style="flex: 2;">
+                    <mat-label>Título del Evento</mat-label>
+                    <input matInput formControlName="title" placeholder="Ej. Summit 2024">
+                    <mat-icon matSuffix>event_note</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="flex-grow">
+                    <mat-label>Categoría</mat-label>
+                    <mat-select formControlName="categoryId" (selectionChange)="onCategoryChange($event.value)">
+                        <mat-option *ngFor="let cat of categories" [value]="cat.id">
+                            {{ cat.name | titlecase }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="row" style="display: flex; gap: 16px;">
+                <mat-form-field appearance="outline" style="flex: 2;">
+                    <mat-label>Expositor Principal</mat-label>
+                    <input matInput formControlName="speaker" placeholder="Nombre del expositor">
+                    <mat-icon matSuffix>person</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" style="flex: 1;">
+                    <mat-label>Precio</mat-label>
+                    <input matInput type="number" formControlName="price" placeholder="0.00">
+                    <mat-icon matSuffix>attach_money</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div class="row">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Ubicación / Lugar</mat-label>
+                    <input matInput formControlName="location" placeholder="Ciudad, Hotel, etc.">
+                    <mat-icon matSuffix>location_on</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div class="row" style="display: flex; gap: 16px;">
+                <mat-form-field appearance="outline" style="flex: 1;">
+                    <mat-label>Fecha Inicio Global</mat-label>
+                    <input matInput [matDatepicker]="globalPickerStart" formControlName="startDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="globalPickerStart"></mat-datepicker-toggle>
+                    <mat-datepicker #globalPickerStart></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" style="flex: 1;">
+                    <mat-label>Fecha Fin Global</mat-label>
+                    <input matInput [matDatepicker]="globalPickerEnd" formControlName="endDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="globalPickerEnd"></mat-datepicker-toggle>
+                    <mat-datepicker #globalPickerEnd></mat-datepicker>
+                </mat-form-field>
+            </div>
+
+            <div class="row" style="display: flex; gap: 16px;">
+                <mat-form-field appearance="outline" style="flex: 1;">
+                    <mat-label>Límite Asistentes</mat-label>
+                    <input matInput type="number" formControlName="attendeesLimit" placeholder="Ej. 100">
+                    <mat-icon matSuffix>people</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" style="flex: 1;">
+                    <mat-label>Texto del Botón</mat-label>
+                    <input matInput formControlName="buttonText" placeholder="Ej. Registrarme Agora">
+                    <mat-icon matSuffix>smart_button</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" style="flex: 1;">
+                    <mat-label>Estado Acción</mat-label>
+                    <select matNativeControl formControlName="actionStatus">
+                        <option value="register">Permitir Registro</option>
+                        <option value="finished">Finalizado</option>
+                        <option value="sold-out">Agotado</option>
+                        <option value="coming-soon">Próximamente</option>
+                    </select>
+                </mat-form-field>
+            </div>
+
+            <div class="row">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Descripción</mat-label>
+                    <textarea matInput formControlName="description" rows="3"
+                        placeholder="Detalles del evento..."></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="row">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Que incluye (un ítem por línea)</mat-label>
+                    <textarea matInput formControlName="includes" rows="3"
+                        placeholder="Ej:&#10;15+ conferencias&#10;Material digital&#10;Certificado"></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="row preview-row" *ngIf="eventForm.get('imageUrl')?.value">
+                <div class="image-preview-container">
+                    <img [src]="eventForm.get('imageUrl')?.value" alt="Preview Evento" class="image-preview-large">
+                </div>
+            </div>
+
+            <div class="row">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>URL de la Imagen</mat-label>
+                    <input matInput formControlName="imageUrl" placeholder="HTTPS...">
+                    <mat-icon matSuffix>image</mat-icon>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Workshops Section -->
+        <div class="workshops-header">
+            <div class="section-title">Agenda de Talleres / Workshops</div>
+            <button mat-flat-button color="accent" type="button" (click)="addWorkshop()">
+                <mat-icon>add</mat-icon> Agregar Taller
+            </button>
+        </div>
+
+        <div formArrayName="workshops" class="workshop-list">
+            <div *ngFor="let workshop of workshops.controls; let i = index" [formGroupName]="i" class="workshop-item">
+                <div class="workshop-header">
+                    <span class="workshop-title">Taller #{{ i + 1 }}</span>
+                    <button mat-icon-button color="warn" (click)="removeWorkshop(i)" matTooltip="Eliminar taller">
+                        <mat-icon>delete_outline</mat-icon>
+                    </button>
+                </div>
+
+                <div class="workshop-content">
+                    <!-- Row 1: Basic Info -->
+                    <div class="field-grid">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Nombre del Taller</mat-label>
+                            <input matInput formControlName="name">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Descripción del Taller</mat-label>
+                            <textarea matInput formControlName="description" rows="1"></textarea>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="field-grid">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Salón / Sala</mat-label>
+                            <input matInput formControlName="room">
+                            <mat-icon matSuffix>meeting_room</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Expositor</mat-label>
+                            <input matInput formControlName="speaker">
+                            <mat-icon matSuffix>person</mat-icon>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="field-grid">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>URL Imagen Taller</mat-label>
+                            <input matInput formControlName="imageUrl" placeholder="HTTPS...">
+                            <mat-icon matSuffix>image</mat-icon>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="field-grid preview-row" *ngIf="workshop.get('imageUrl')?.value">
+                        <div class="image-preview-container-small">
+                            <img [src]="workshop.get('imageUrl')?.value" alt="Preview Taller"
+                                class="image-preview-small">
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Time Grid -->
+                    <div class="time-grid">
+                        <!-- Start -->
+                        <mat-form-field appearance="outline">
+                            <mat-label>Fecha Inicio</mat-label>
+                            <input matInput [matDatepicker]="pickerStart" formControlName="startDateTime">
+                            <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                            <mat-datepicker #pickerStart></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Hora Inicio</mat-label>
+                            <input matInput type="time" formControlName="startTime">
+                        </mat-form-field>
+
+                        <!-- End -->
+                        <mat-form-field appearance="outline">
+                            <mat-label>Fecha Fin</mat-label>
+                            <input matInput [matDatepicker]="pickerEnd" formControlName="endDateTime">
+                            <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                            <mat-datepicker #pickerEnd></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <mat-label>Hora Fin</mat-label>
+                            <input matInput type="time" formControlName="endTime">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="close()">Cancelar</button>
+    <button mat-flat-button color="primary" (click)="save()" [disabled]="eventForm.invalid">
+        <mat-icon>save</mat-icon> Guardar Cambios
+    </button>
+</mat-dialog-actions>

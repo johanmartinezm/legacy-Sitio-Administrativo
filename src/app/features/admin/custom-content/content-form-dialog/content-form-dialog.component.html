@@ -1,0 +1,95 @@
+<h2 mat-dialog-title class="dialog-title">
+    <mat-icon>{{ isEdit ? 'edit' : 'add_circle' }}</mat-icon>
+    {{ isEdit ? 'Editar' : 'Nuevo' }} Contenido de Valor
+</h2>
+
+<mat-dialog-content class="dialog-content">
+    <form [formGroup]="contentForm" class="content-form">
+
+        <div class="row">
+            <mat-form-field appearance="outline">
+                <mat-label>Tipo de Contenido</mat-label>
+                <mat-icon matPrefix>category</mat-icon>
+                <mat-select formControlName="type">
+                    <mat-option value="text">Texto / Artículo</mat-option>
+                    <mat-option value="video">Video</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Categoría</mat-label>
+                <mat-icon matPrefix>label</mat-icon>
+                <mat-select formControlName="category_id">
+                    <mat-option *ngFor="let cat of categories" [value]="cat.id">
+                        {{cat.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Título</mat-label>
+            <mat-icon matPrefix>title</mat-icon>
+            <input matInput formControlName="title" placeholder="Ej: Estrategias de Negocio para 2024">
+            <mat-error *ngIf="contentForm.get('title')?.hasError('required')">El título es requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción Corta (Extracto)</mat-label>
+            <mat-icon matPrefix>short_text</mat-icon>
+            <textarea matInput formControlName="excerpt" rows="2"
+                placeholder="Un breve resumen del contenido..."></textarea>
+            <mat-error *ngIf="contentForm.get('excerpt')?.hasError('required')">El extracto es requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Thumbnail URL (Imagen de portada)</mat-label>
+            <mat-icon matPrefix>image</mat-icon>
+            <input matInput formControlName="thumbnail_url" placeholder="https://ejemplo.com/imagen.jpg">
+            <mat-hint>URL de la imagen destacada que se verá en la App</mat-hint>
+        </mat-form-field>
+
+        <!-- Contextual fields: Text -->
+        <div *ngIf="contentForm.get('type')?.value === 'text'" class="dynamic-field-section">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Contenido del Artículo</mat-label>
+                <mat-icon matPrefix>article</mat-icon>
+                <textarea matInput formControlName="body_text" rows="8"
+                    placeholder="Escribe el contenido completo del artículo aquí..."></textarea>
+                <mat-error *ngIf="contentForm.get('body_text')?.hasError('required')">El cuerpo del artículo es
+                    obligatorio</mat-error>
+            </mat-form-field>
+        </div>
+
+        <!-- Contextual fields: Video -->
+        <div *ngIf="contentForm.get('type')?.value === 'video'" class="dynamic-field-section">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>URL del Video (Youtube/Vimeo)</mat-label>
+                <mat-icon matPrefix>smart_display</mat-icon>
+                <input matInput formControlName="video_url" placeholder="https://youtube.com/watch?v=...">
+                <mat-hint>Asegúrate de incluir la URL completa del video</mat-hint>
+                <mat-error *ngIf="contentForm.get('video_url')?.hasError('required')">La URL del video es
+                    obligatoria</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="checkbox-container">
+            <mat-checkbox formControlName="is_published" color="primary">
+                <strong>Publicar inmediatamente</strong>
+                <span class="checkbox-hint"> (El contenido será visible en la App)</span>
+            </mat-checkbox>
+        </div>
+
+    </form>
+</mat-dialog-content>
+
+<div class="dialog-divider"></div>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-stroked-button color="warn" (click)="onCancel()" class="btn-cancel">
+        <mat-icon>close</mat-icon> Cancelar
+    </button>
+    <button mat-raised-button color="primary" [disabled]="contentForm.invalid" (click)="onSave()" class="btn-save">
+        <mat-icon>save</mat-icon> Guardar Contenido
+    </button>
+</mat-dialog-actions>

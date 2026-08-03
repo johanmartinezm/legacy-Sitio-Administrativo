@@ -1,0 +1,23 @@
+<div class="banner-container" (mouseenter)="stopAutoSlide()" (mouseleave)="startAutoSlide()">
+    <div class="carousel-track" [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+        <div class="carousel-slide" *ngFor="let slide of slides; let i = index" (click)="onBannerClick()">
+            <div class="slide-content" [ngClass]="'slide-' + i">
+                <!-- If image exists, show it, else show a colored background done in CSS -->
+                <div class="text-overlay">
+                    <h2>{{ slide.title }}</h2>
+                    <p>{{ slide.subtitle }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button class="nav-btn prev" (click)="prevSlide(); $event.stopPropagation()">&#10094;</button>
+    <button class="nav-btn next" (click)="nextSlide(); $event.stopPropagation()">&#10095;</button>
+
+    <!-- Dots -->
+    <div class="dots-container">
+        <span *ngFor="let slide of slides; let i = index" class="dot" [class.active]="i === currentSlide"
+            (click)="goToSlide(i); $event.stopPropagation()"></span>
+    </div>
+</div>

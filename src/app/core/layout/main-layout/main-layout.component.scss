@@ -1,0 +1,99 @@
+.sidenav-container {
+    height: 100vh;
+}
+
+.app-sidenav {
+    width: 250px;
+    border-right: none;
+
+    // Header Structure (Global styles handle colors/fonts)
+    .sidenav-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 0;
+
+        .sidenav-logo-img {
+            width: 180px;
+            height: auto;
+            margin-bottom: 0;
+        }
+    }
+
+    .mat-mdc-nav-list {
+        padding-top: 0;
+    }
+
+    .sidenav-expansion-panel {
+        .nested-menu {
+            a[mat-list-item] {
+                padding-left: 16px;
+            }
+        }
+    }
+
+    .logout-item {
+        margin-top: auto;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+.app-toolbar {
+    background-color: var(--color-white);
+    color: var(--color-blue-1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    font-family: var(--font-primary);
+}
+
+.content-padding {
+    padding: 2rem;
+    position: relative;
+
+    .about-section {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+
+        .about-card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid #eee;
+
+            .about-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+
+                h2 {
+                    color: var(--color-blue-1);
+                    margin: 0;
+                    font-family: var(--font-primary);
+                }
+            }
+
+            .version {
+                color: var(--color-blue-4);
+                font-weight: bold;
+                font-size: 0.9rem;
+            }
+
+            p,
+            li {
+                font-family: var(--font-body);
+                color: var(--color-grey-dark);
+                line-height: 1.6;
+            }
+
+            h3 {
+                color: var(--color-blue-2);
+                font-family: var(--font-primary);
+                margin-top: 1.5rem;
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+<div class="callback-container">
+  <mat-card class="callback-card">
+    <mat-card-header>
+      <mat-card-title>Validación de Pago</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div *ngIf="isLoading" class="status-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Verificando transacción con CredibanCo...</p>
+      </div>
+
+      <div *ngIf="!isLoading && isSuccess" class="status-container success">
+        <div class="icon-circle">
+          <i class="material-icons">check</i>
+        </div>
+        <h2>¡Pago Exitoso!</h2>
+        <p>La transacción ha sido aprobada correctamente.</p>
+      </div>
+
+      <div *ngIf="!isLoading && !isSuccess" class="status-container error">
+        <div class="icon-circle">
+          <i class="material-icons">error_outline</i>
+        </div>
+        <h2>Transacción Fallida o Pendiente</h2>
+        <p>{{ errorMessage }}</p>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end" *ngIf="!isLoading">
+      <button mat-raised-button color="primary" (click)="goBack()">Volver al Asistente</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

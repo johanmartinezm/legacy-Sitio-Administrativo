@@ -1,0 +1,54 @@
+<div class="scanner-container">
+    <mat-card class="scanner-card">
+        <mat-card-header>
+            <mat-card-title>Validación de Asistencia QR</mat-card-title>
+            <mat-card-subtitle>Escanea el código del usuario para confirmar su entrada</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+            <!-- Scanner View -->
+            <div class="scanner-wrapper" *ngIf="showScanner && scannerEnabled">
+                <zxing-scanner [formats]="allowedFormats" (scanSuccess)="onCodeResult($event)">
+                </zxing-scanner>
+                <div class="scanner-overlay">
+                    <div class="scanner-laser"></div>
+                </div>
+            </div>
+
+            <!-- Result View -->
+            <div class="result-container" *ngIf="result && !loading">
+                <div class="success-icon">
+                    <mat-icon>check_circle</mat-icon>
+                </div>
+
+                <h2>{{ result.userName }}</h2>
+                <p class="email">{{ result.userEmail }}</p>
+
+                <div class="event-info">
+                    <h3>{{ result.eventTitle }}</h3>
+                    <p class="time">Hora de entrada: {{ result.checkInTime | date:'shortTime' }}</p>
+                </div>
+
+                <div class="workshops-list" *ngIf="result.workshops?.length">
+                    <h4>Talleres Inscritos:</h4>
+                    <ul>
+                        <li *ngFor="let w of result.workshops">
+                            <mat-icon>event_available</mat-icon>
+                            <span>{{ w.name }}</span>
+                            <small>{{ w.room }}</small>
+                        </li>
+                    </ul>
+                </div>
+
+                <button mat-raised-button color="primary" (click)="resetScanner()">
+                    Escanear siguiente
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-container" *ngIf="loading">
+                <p>Validando código...</p>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

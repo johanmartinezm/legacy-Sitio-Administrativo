@@ -1,0 +1,43 @@
+[
+    {
+        "id": "e1",
+        "title": "Legacy Summit 2024",
+        "description": "El evento más importante para familias empresarias.",
+        "start_time": "2024-11-15T09:00:00",
+        "end_time": "2024-11-17T18:00:00",
+        "type": "presencial",
+        "price": 500.00,
+        "location_name": "Centro de Convenciones",
+        "image_url": "assets/images/event1.jpg",
+        "workshops": [
+            {
+                "id": "w1",
+                "name": "Estrategias de Sucesión",
+                "room": "Salón A",
+                "speaker": "Juan Pérez",
+                "startDateTime": "2024-11-15T10:00:00",
+                "endDateTime": "2024-11-15T12:00:00"
+            },
+            {
+                "id": "w2",
+                "name": "Innovación en la Empresa Familiar",
+                "room": "Salón B",
+                "speaker": "Maria Rodriguez",
+                "startDateTime": "2024-11-15T14:00:00",
+                "endDateTime": "2024-11-15T16:00:00"
+            }
+        ]
+    },
+    {
+        "id": "e2",
+        "title": "Masterclass: Gobierno Corporativo",
+        "description": "Aprende las claves del gobierno corporativo.",
+        "start_time": "2024-06-10T15:00:00",
+        "end_time": "2024-06-10T18:00:00",
+        "type": "virtual",
+        "price": 0.00,
+        "meeting_link": "https://zoom.us/j/123456789",
+        "image_url": "assets/images/event2.jpg",
+        "workshops": []
+    }
+]

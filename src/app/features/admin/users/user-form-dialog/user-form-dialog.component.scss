@@ -1,0 +1,23 @@
+.user-form {
+    display: flex;
+    flex-direction: column;
+    padding-top: 8px;
+
+    .row {
+        display: flex;
+        gap: 16px;
+    }
+
+    .full-width {
+        width: 100%;
+    }
+
+    .half-width,
+    .third-width {
+        flex: 1;
+    }
+
+    mat-form-field {
+        margin-bottom: 8px;
+    }
+}

@@ -1,0 +1,48 @@
+<div class="admin-list-container">
+    <div class="header">
+        <h1>Administradores del Sistema</h1>
+        <button mat-raised-button color="primary" (click)="openAdminDialog()">
+            <mat-icon>add</mat-icon> Nuevo Administrador
+        </button>
+    </div>
+
+    <mat-table [dataSource]="admins()" class="mat-elevation-z2">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+            <mat-cell *matCellDef="let admin"> {{admin.firstName}} {{admin.lastName}} </mat-cell>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+            <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+            <mat-cell *matCellDef="let admin"> {{admin.email}} </mat-cell>
+        </ng-container>
+
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+            <mat-header-cell *matHeaderCellDef> Rol </mat-header-cell>
+            <mat-cell *matCellDef="let admin">
+                <span class="role-badge" [ngClass]="admin.role">
+                    {{admin.role}}
+                </span>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef> Acciones </mat-header-cell>
+            <mat-cell *matCellDef="let admin">
+                <button mat-icon-button color="accent" (click)="openAdminDialog(admin)" matTooltip="Editar">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteAdmin(admin)" matTooltip="Eliminar">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+</div>

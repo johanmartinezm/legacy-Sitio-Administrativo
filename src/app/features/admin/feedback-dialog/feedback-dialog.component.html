@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>Feedback: {{ data.event.title }}</h2>
+
+<mat-dialog-content class="feedback-content">
+    <div *ngIf="isLoading" class="loading-container">
+        <p>Cargando feedback...</p>
+    </div>
+
+    <div *ngIf="!isLoading && ratings.length === 0" class="no-feedback">
+        <mat-icon>sentiment_neutral</mat-icon>
+        <p>Aún no hay calificaciones para este evento.</p>
+    </div>
+
+    <div *ngIf="!isLoading && ratings.length > 0">
+        <!-- Summary Header -->
+        <div class="summary-card">
+            <div class="rating-value">{{ averageRating | number:'1.1-1' }}</div>
+            <div class="rating-stars">
+                <mat-icon *ngFor="let s of getStars(averageRating)">star</mat-icon>
+                <mat-icon *ngFor="let s of getEmptyStars(averageRating)">star_border</mat-icon>
+            </div>
+            <div class="rating-count">Basado en {{ ratings.length }} valoraciones</div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <mat-list class="ratings-list">
+            <div *ngFor="let rating of ratings">
+                <div mat-list-item class="rating-item">
+                    <div class="rating-item-header">
+                        <span class="workshop-tag">{{ rating.workshopName }}</span>
+                        <div class="item-stars">
+                            <mat-icon *ngFor="let s of getStars(rating.rating)" class="star-small">star</mat-icon>
+                            <span class="date-text">{{ rating.createdAt | date:'short' }}</span>
+                        </div>
+                    </div>
+                    <p class="comment-text" *ngIf="rating.comment">"{{ rating.comment }}"</p>
+                    <p class="no-comment" *ngIf="!rating.comment">Sin comentario adicional.</p>
+                </div>
+                <mat-divider></mat-divider>
+            </div>
+        </mat-list>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-flat-button color="primary" (click)="close()">Cerrar</button>
+</mat-dialog-actions>

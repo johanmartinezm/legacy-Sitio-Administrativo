@@ -1,0 +1,71 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar Banner' : 'Nuevo Banner' }}</h2>
+
+<form [formGroup]="bannerForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Título</mat-label>
+                <input matInput formControlName="title" placeholder="Ej: Eventos Familiares">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Subtítulo</mat-label>
+                <input matInput formControlName="subtitle" placeholder="Ej: Tu legado en acción">
+            </mat-form-field>
+        </div>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Ubicación</mat-label>
+                <mat-select formControlName="category">
+                    <mat-option value="home">Inicio (Home)</mat-option>
+                    <mat-option value="community">Comunidad</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Orden</mat-label>
+                <input matInput type="number" formControlName="sort_order">
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>URL de la Imagen</mat-label>
+            <input matInput formControlName="image_url" placeholder="https://...">
+            <mat-icon matSuffix>link</mat-icon>
+        </mat-form-field>
+
+        <div class="preview-container" *ngIf="bannerForm.get('image_url')?.value">
+            <img [src]="bannerForm.get('image_url')?.value" alt="Preview" class="image-preview">
+        </div>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Tipo de Acción</mat-label>
+                <mat-select formControlName="action_type">
+                    <mat-option value="none">Ninguna</mat-option>
+                    <mat-option value="route">Ruta interna (Flutter)</mat-option>
+                    <mat-option value="link">Enlace externo</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" *ngIf="bannerForm.get('action_type')?.value !== 'none'">
+                <mat-label>Destino de Acción</mat-label>
+                <input matInput formControlName="action_target" placeholder="Ej: /events o https://...">
+            </mat-form-field>
+        </div>
+
+        <div class="toggle-container">
+            <mat-slide-toggle formControlName="is_active">
+                Banner Activo
+            </mat-slide-toggle>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button type="button" (click)="onCancel()">CANCELAR</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="bannerForm.invalid">
+            {{ isEditMode ? 'GUARDAR CAMBIOS' : 'CREAR BANNER' }}
+        </button>
+    </mat-dialog-actions>
+</form>

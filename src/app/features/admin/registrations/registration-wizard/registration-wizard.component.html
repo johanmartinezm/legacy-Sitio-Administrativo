@@ -1,0 +1,98 @@
+<mat-horizontal-stepper #stepper linear>
+
+    <!-- Step 1: Select User -->
+    <mat-step [completed]="!!selectedUser" label="Seleccionar Usuario">
+        <div class="step-content">
+            <h2>¿A quién vamos a registrar?</h2>
+            <app-user-selector (userSelected)="onUserSelected($event)"></app-user-selector>
+
+            <div *ngIf="selectedUser" class="selection-summary">
+                Usuario seleccionado: <strong>{{selectedUser.firstName}} {{selectedUser.lastName}}</strong>
+            </div>
+
+            <div class="actions">
+                <button mat-button matStepperNext [disabled]="!selectedUser">Siguiente</button>
+            </div>
+        </div>
+    </mat-step>
+
+    <!-- Step 2: Select Event & Workshops -->
+    <mat-step [completed]="!!selectedEvent" label="Evento y Talleres">
+        <div class="step-content">
+            <h2>Selecciona el Evento</h2>
+            <app-event-selector (eventSelected)="onEventSelected($event)"></app-event-selector>
+
+            <div *ngIf="selectedEvent">
+                <app-workshop-list [workshops]="selectedEvent.workshops || []"
+                    (selectionChange)="onWorkshopsChanged($event)">
+                </app-workshop-list>
+            </div>
+
+            <div class="actions">
+                <button mat-button matStepperPrevious>Atrás</button>
+                <button mat-button matStepperNext [disabled]="!selectedEvent">Siguiente</button>
+            </div>
+        </div>
+    </mat-step>
+
+    <!-- Step 3: Payment -->
+    <mat-step label="Pago">
+        <div class="step-content">
+            <h2>Resumen de Pago</h2>
+
+            <mat-card class="payment-summary" *ngIf="selectedEvent && selectedUser">
+                <mat-card-header>
+                    <mat-card-title>{{selectedEvent.title}}</mat-card-title>
+                    <mat-card-subtitle>{{selectedUser.firstName}} {{selectedUser.lastName}}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="line-item">
+                        <span>Entrada General</span>
+                        <span>{{selectedEvent.price | currency}}</span>
+                    </div>
+                    <div class="line-item" *ngFor="let shop of selectedWorkshops">
+                        <span>Taller: {{shop.name}}</span>
+                        <span>Inluido</span>
+                    </div>
+                    <div class="total-row">
+                        <strong>Total a Pagar</strong>
+                        <strong>{{totalAmount | currency}}</strong>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <div class="payment-methods">
+                <p>Método de Pago (Simulado)</p>
+                <div class="methods-row">
+                    <div class="method active">Tarjeta de Crédito</div>
+                    <div class="method">Transferencia</div>
+                    <div class="method">Efectivo</div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button mat-button matStepperPrevious>Atrás</button>
+                <button mat-raised-button color="primary" (click)="processPayment()" [disabled]="isProcessing">
+                    {{ isProcessing ? 'Procesando...' : 'Pagar y Registrar' }}
+                </button>
+            </div>
+        </div>
+    </mat-step>
+
+    <!-- Step 4: Confirmation & QR -->
+    <mat-step label="Confirmación">
+        <div class="step-content centered">
+            <h2>¡Registro Exitoso!</h2>
+            <p>El usuario ha sido registrado correctamente.</p>
+
+            <div *ngIf="registration">
+                <app-qr-code [qrData]="registration.qrData"></app-qr-code>
+            </div>
+
+            <div class="actions">
+                <button mat-stroked-button (click)="reset()">Nuevo Registro</button>
+            </div>
+        </div>
+    </mat-step>
+
+</mat-horizontal-stepper>

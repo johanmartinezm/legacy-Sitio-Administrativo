@@ -1,0 +1,53 @@
+<div class="header-actions">
+  <button mat-icon-button routerLink="/admin/forums" aria-label="Back">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <h2>Hilo de Comentarios del Foro</h2>
+</div>
+
+<div class="content-container mat-elevation-z2">
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Cargando posts...</p>
+  </div>
+
+  <div *ngIf="!isLoading && posts.length === 0" class="empty-state">
+    <mat-icon>forum</mat-icon>
+    <p>Este foro no tiene comentarios aún.</p>
+  </div>
+
+  <div *ngIf="!isLoading && posts.length > 0" class="tree-container">
+    <ng-template #recursiveList let-list>
+      <div *ngFor="let post of list" class="tree-node">
+        
+        <mat-card class="post-card">
+          <mat-card-header>
+            <div mat-card-avatar class="author-avatar">
+              <mat-icon>account_circle</mat-icon>
+            </div>
+            <mat-card-title>{{ post.author_alias || 'Usuario Anónimo' }}</mat-card-title>
+            <mat-card-subtitle>{{ post.created_at | date:'medium' }}</mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <p class="post-content">{{ post.content }}</p>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-icon-button color="warn" (click)="deletePost(post.id)" title="Eliminar este comentario">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Recursive call for children -->
+        <div *ngIf="post.children && post.children.length > 0" class="children-container">
+          <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: post.children }"></ng-container>
+        </div>
+
+      </div>
+    </ng-template>
+
+    <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: posts }"></ng-container>
+  </div>
+</div>

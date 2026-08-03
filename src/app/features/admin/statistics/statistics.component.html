@@ -1,0 +1,124 @@
+<div class="stats-container">
+    <div class="header-section">
+        <h1>Dashboard de Estadísticas</h1>
+        <p class="subtitle">Análisis de impacto y consumo de contenido de valor.</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+        <mat-card class="summary-card">
+            <mat-card-content>
+                <div class="card-icon blue">
+                    <mat-icon>visibility</mat-icon>
+                </div>
+                <div class="card-data">
+                    <span class="label">Vistas Totales (Mes)</span>
+                    <span class="value">{{ getTotalViews() }}</span>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card class="summary-card">
+            <mat-card-content>
+                <div class="card-icon gold">
+                    <mat-icon>star</mat-icon>
+                </div>
+                <div class="card-data">
+                    <span class="label">Artículo más leído</span>
+                    <span class="value truncate" [title]="getBestSeller()">{{ getBestSeller() }}</span>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card class="summary-card">
+            <mat-card-content>
+                <div class="card-icon green">
+                    <mat-icon>trending_up</mat-icon>
+                </div>
+                <div class="card-data">
+                    <span class="label">Tasa de Crecimiento</span>
+                    <span class="value">+12%</span>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <!-- Trend Chart -->
+    <mat-card class="chart-card">
+        <mat-card-header>
+            <mat-card-title>Tendencia de Lectura</mat-card-title>
+            <div class="header-actions">
+                <mat-form-field appearance="outline" class="period-select">
+                    <mat-select [value]="selectedPeriod" (selectionChange)="onPeriodChange($event)">
+                        <mat-option value="weekly">Semanal</mat-option>
+                        <mat-option value="monthly">Mensual</mat-option>
+                        <mat-option value="yearly">Anual</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="chart-wrapper">
+                <canvas #trendChart></canvas>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <div class="rankings-grid">
+        <!-- Top Articles Table -->
+        <mat-card class="ranking-card">
+            <mat-card-header>
+                <mat-card-title>Top 10 Artículos</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <table mat-table [dataSource]="stats?.top_articles || []" class="stats-table">
+                    <ng-container matColumnDef="index">
+                        <th mat-header-cell *matHeaderCellDef> # </th>
+                        <td mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="title">
+                        <th mat-header-cell *matHeaderCellDef> Artículo </th>
+                        <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="views">
+                        <th mat-header-cell *matHeaderCellDef> Vistas </th>
+                        <td mat-cell *matCellDef="let element" class="views-cell"> {{element.views}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedArticleColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedArticleColumns;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Top Users Table -->
+        <mat-card class="ranking-card">
+            <mat-card-header>
+                <mat-card-title>Top Lectores</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <table mat-table [dataSource]="stats?.top_users || []" class="stats-table">
+                    <ng-container matColumnDef="index">
+                        <th mat-header-cell *matHeaderCellDef> # </th>
+                        <td mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Usuario </th>
+                        <td mat-cell *matCellDef="let element"> {{element.first_name}} {{element.last_name}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="reads">
+                        <th mat-header-cell *matHeaderCellDef> Lecturas </th>
+                        <td mat-cell *matCellDef="let element" class="reads-cell"> {{element.reads}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedUserColumns;"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

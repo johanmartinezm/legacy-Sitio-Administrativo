@@ -1,0 +1,63 @@
+.calendar-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-family: var(--font-body);
+
+    ::ng-deep {
+        .fc {
+            max-width: 100%;
+            height: auto;
+            font-family: var(--font-body);
+        }
+
+        .fc-toolbar-title {
+            font-family: var(--font-primary);
+            color: var(--color-blue-1);
+            font-size: 1.5rem;
+        }
+
+        .fc-button-primary {
+            background-color: var(--color-blue-1);
+            border-color: var(--color-blue-1);
+            text-transform: capitalize;
+
+            &:hover {
+                background-color: var(--color-blue-2);
+                border-color: var(--color-blue-2);
+            }
+
+            &:disabled {
+                background-color: #ccc;
+                border-color: #ccc;
+            }
+        }
+
+        // Event Styling
+        .fc-event {
+            cursor: pointer;
+            border: none;
+            padding: 2px 4px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            background-color: var(--color-blue-1);
+
+            &:hover {
+                background-color: var(--color-blue-2);
+            }
+        }
+
+        .fc-daygrid-day-number {
+            color: var(--color-grey-dark);
+            text-decoration: none;
+        }
+
+        .fc-col-header-cell-cushion {
+            color: var(--color-blue-2);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+    }
+}

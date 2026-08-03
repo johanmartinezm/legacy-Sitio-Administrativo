@@ -1,0 +1,42 @@
+.admin-list-container {
+    padding: 24px;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 500;
+            color: #1a237e;
+        }
+    }
+
+    mat-table {
+        width: 100%;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .role-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        text-transform: uppercase;
+        font-weight: 600;
+
+        &.admin {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        &.superadmin {
+            background-color: #fce4ec;
+            color: #d81b60;
+        }
+    }
+}
