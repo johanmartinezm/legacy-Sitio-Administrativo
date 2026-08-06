@@ -2,6 +2,42 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-06]: Pantalla de inscritos de un evento
+
+- **Alcance:**
+  - `Modelo`: `src/app/core/models/registrant.model.ts` (nuevo) — `EventRegistrant`.
+  - `Servicio`: `event.service.ts` — `getEventRegistrants()`, que consume
+    `GET /api/events/{id}/registrations` (desplegado en producción hoy).
+  - `Pantalla`: `src/app/features/admin/event-registrants/` (nueva), con ruta propia
+    `admin/events/:id/registrations` en `app.routes.ts`.
+  - `Acceso`: tercer botón en cada fila de "Administrar Eventos" (icono `group`, azul).
+  - **Es pantalla y no diálogo**, a diferencia del feedback y la encuesta: la lista puede ser larga,
+    se recorre buscando a alguien concreto y su URL se puede dejar abierta en la puerta del evento.
+  - `Contadores`: inscritos, confirmados, **pendientes de pago**, asistieron y recaudado. El
+    recaudado suma **solo las inscripciones confirmadas** — lo pendiente de pago no ha entrado en
+    caja y sumarlo daría una cifra falsa.
+  - `Buscador` por nombre, correo o teléfono, **filtrando en el cliente** porque el endpoint
+    devuelve la lista entera y no acepta parámetros. Si algún día pagina, este es el punto a
+    rehacer.
+  - **El título del evento se pide aparte** (`getEventById`): el listado de inscritos no lo trae, y
+    una pantalla que solo dijera "Inscritos" obliga a volver atrás para saber de cuál se habla.
+  - El 403 lleva su propio mensaje, como en el diálogo de encuesta.
+  - `ng build --configuration production` pasa.
+- **Criterios de QA:**
+  1. **El botón está:** cada fila de "Administrar Eventos" muestra ahora tres iconos de consulta —
+     estrella (feedback), gráfico verde (encuesta) y grupo azul (inscritos).
+  2. **La lista carga:** nombres y correos **legibles**, no en texto cifrado. Es lo que más fácil se
+     rompe, porque el descifrado ocurre en el backend.
+  3. **Los contadores cuadran:** confirmados + pendientes de pago = total de inscritos.
+  4. **Recaudado:** una inscripción pendiente de pago **no** debe sumar al recaudado.
+  5. **Buscador:** escribir parte de un nombre filtra la tabla y muestra "N de M"; un texto que no
+     casa muestra "Ningún inscrito coincide", no una tabla vacía.
+  6. **Evento sin inscritos:** mensaje "Todavía nadie se ha inscrito", sin contadores rotos.
+  7. **Asistencia:** quien ya pasó por la puerta muestra el visto verde.
+  8. **Recarga con F5** estando en la pantalla: debe seguir cargando (enrutado HTML5 de nginx).
+  9. **Volver:** la flecha regresa a "Administrar Eventos".
+  10. **Sin rol de administrador:** "Esta informacion es solo para administradores".
+
 ### [2026-08-06]: Resumen de la encuesta del evento
 
 - **Alcance:**

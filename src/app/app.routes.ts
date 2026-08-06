@@ -14,6 +14,7 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'admin/events', loadComponent: () => import('./features/admin/manage-events/manage-events.component').then(m => m.ManageEventsComponent) },
+      { path: 'admin/events/:id/registrations', loadComponent: () => import('./features/admin/event-registrants/event-registrants.component').then(m => m.EventRegistrantsComponent) },
       { path: 'admin/users', loadComponent: () => import('./features/admin/users/users-list/users-list.component').then(m => m.UsersListComponent) },
       { path: 'admin/administrators', loadComponent: () => import('./features/admin/administrators/admin-list/admin-list.component').then(m => m.AdminListComponent) },
       { path: 'admin/enroll-users', loadComponent: () => import('./features/admin/registrations/registration-wizard/registration-wizard.component').then(m => m.RegistrationWizardComponent) },

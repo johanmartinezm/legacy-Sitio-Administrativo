@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,7 +36,8 @@ export class ManageEventsComponent implements OnInit {
 
   constructor(
     private eventService: EventService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -104,6 +106,15 @@ export class ManageEventsComponent implements OnInit {
       maxWidth: '90vw',
       data: { event }
     });
+  }
+
+  /**
+   * Los inscritos van a pantalla propia, no a un dialogo como el feedback y la
+   * encuesta: la lista puede ser larga, se recorre buscando a alguien concreto
+   * y su URL sirve para dejarla abierta en la puerta del evento.
+   */
+  viewRegistrants(event: Event) {
+    this.router.navigate(['/admin/events', event.id, 'registrations']);
   }
 
   deleteEvent(id: string) {

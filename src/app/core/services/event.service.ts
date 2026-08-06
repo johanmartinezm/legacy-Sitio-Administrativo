@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 import { Event, Category } from '../models/event.model';
 import { WorkshopRating } from '../models/rating.model';
 import { EventSurveySummary } from '../models/survey.model';
+import { EventRegistrant } from '../models/registrant.model';
 import { ConfigService } from './config.service';
 
 @Injectable({
@@ -62,6 +63,22 @@ export class EventService {
             map(ratings => ratings.map(r => ({
                 ...r,
                 createdAt: new Date(r.createdAt)
+            })))
+        );
+    }
+
+    /**
+     * Inscritos de un evento. Ruta AdminOnly: con un token que no sea de
+     * administrador responde 403.
+     *
+     * El listado no pagina —ningún endpoint del backend lo hace todavía—, así
+     * que un evento multitudinario devuelve todas las filas de una vez.
+     */
+    getEventRegistrants(eventId: string): Observable<EventRegistrant[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/${eventId}/registrations`).pipe(
+            map(list => (list ?? []).map(r => ({
+                ...r,
+                registrationDate: new Date(r.registrationDate)
             })))
         );
     }
