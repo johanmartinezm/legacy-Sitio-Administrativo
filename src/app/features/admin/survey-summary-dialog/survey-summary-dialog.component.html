@@ -1,0 +1,73 @@
+<h2 mat-dialog-title>Encuesta del evento: {{ data.event.title }}</h2>
+
+<mat-dialog-content class="survey-content">
+    <div *ngIf="isLoading" class="loading-container">
+        <p>Cargando encuesta...</p>
+    </div>
+
+    <div *ngIf="!isLoading && errorMessage" class="survey-error">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ errorMessage }}</p>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && summary?.responses === 0" class="no-survey">
+        <mat-icon>sentiment_neutral</mat-icon>
+        <p>Todavía nadie respondió la encuesta de este evento.</p>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && summary && summary.responses > 0">
+        <!-- Cabecera: la nota general y cuánta gente respondió -->
+        <div class="summary-card">
+            <div class="rating-value">{{ summary.overallAverage | number:'1.1-1' }}</div>
+            <div class="rating-stars">
+                <mat-icon *ngFor="let s of getStars(summary.overallAverage || 0)">star</mat-icon>
+                <mat-icon *ngFor="let s of getEmptyStars(summary.overallAverage || 0)">star_border</mat-icon>
+            </div>
+            <div class="rating-count">
+                {{ summary.responses }} {{ summary.responses === 1 ? 'respuesta' : 'respuestas' }}
+            </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Las cuatro medias. Una pregunta sin respuestas se dice, no se pinta
+             como cero: un 0 se leería como la peor nota posible. -->
+        <div class="averages">
+            <div class="average-row" *ngFor="let avg of averages">
+                <span class="average-label">{{ avg.label }}</span>
+                <ng-container *ngIf="avg.value !== null; else sinDatos">
+                    <mat-progress-bar mode="determinate" [value]="avg.value * 20"></mat-progress-bar>
+                    <span class="average-value">{{ avg.value | number:'1.1-1' }}</span>
+                </ng-container>
+                <ng-template #sinDatos>
+                    <span class="average-empty">Sin respuestas</span>
+                </ng-template>
+            </div>
+        </div>
+
+        <div class="recommend" *ngIf="recommendPercent !== null">
+            <mat-icon>thumb_up</mat-icon>
+            <span>{{ recommendPercent }}% lo recomendaría</span>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <h3 class="comments-title">Comentarios</h3>
+        <p class="no-comment" *ngIf="summary.comments.length === 0">
+            Nadie dejó comentarios escritos.
+        </p>
+        <mat-list class="comments-list" *ngIf="summary.comments.length > 0">
+            <div *ngFor="let c of summary.comments">
+                <div mat-list-item class="comment-item">
+                    <p class="comment-text">"{{ c.comment }}"</p>
+                    <span class="date-text">{{ c.createdAt | date:'short' }}</span>
+                </div>
+                <mat-divider></mat-divider>
+            </div>
+        </mat-list>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-flat-button color="primary" (click)="close()">Cerrar</button>
+</mat-dialog-actions>

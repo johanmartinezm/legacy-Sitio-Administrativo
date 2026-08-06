@@ -10,6 +10,7 @@ import { EventService } from '../../../core/services/event.service';
 import { Event } from '../../../core/models/event.model';
 import { EventFormDialogComponent } from '../event-form-dialog/event-form-dialog.component';
 import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.component';
+import { SurveySummaryDialogComponent } from '../survey-summary-dialog/survey-summary-dialog.component';
 import { CalendarViewComponent } from '../calendar-view/calendar-view.component';
 
 @Component({
@@ -86,6 +87,19 @@ export class ManageEventsComponent implements OnInit {
 
   viewFeedback(event: Event) {
     this.dialog.open(FeedbackDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: { event }
+    });
+  }
+
+  /**
+   * Encuesta del evento completo, distinta del feedback por taller que abre
+   * viewFeedback. El endpoint existe desde el 05 y hasta ahora no lo mostraba
+   * nadie.
+   */
+  viewSurvey(event: Event) {
+    this.dialog.open(SurveySummaryDialogComponent, {
       width: '600px',
       maxWidth: '90vw',
       data: { event }

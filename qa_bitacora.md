@@ -2,6 +2,41 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-06]: Resumen de la encuesta del evento
+
+- **Alcance:**
+  - `Modelo`: `src/app/core/models/survey.model.ts` (nuevo) — `EventSurveySummary` y
+    `EventSurveyComment`. Los promedios se tipan como `number | null`, **no** como `number`: una
+    pregunta opcional puede no tener ni una respuesta, y ahí un 0 se leería como "pésimo" en vez de
+    "sin datos".
+  - `Servicio`: `src/app/core/services/event.service.ts` — `getEventSurveySummary()`, que consume
+    `GET /api/events/{id}/survey/summary`. Esa ruta existe en el backend **desde el 2026-08-05 y no
+    la mostraba nadie**; con esto se cierra la fase 3 del módulo de eventos.
+  - `Componente`: `src/app/features/admin/survey-summary-dialog/` (nuevo) — diálogo con la nota
+    general, las cuatro medias, el porcentaje que recomendaría el evento y los comentarios. Sigue el
+    lenguaje visual de `feedback-dialog`, del que **no es sustituto**: aquél lista las
+    calificaciones de cada taller, éste resume el evento completo.
+  - `Tabla de eventos`: `manage-events` gana un segundo botón (icono `poll`, verde) junto al de
+    feedback.
+  - **El 403 tiene su propio mensaje.** La ruta es `AdminOnly`, así que ese error significa que se
+    está entrando con un token que no es de administrador; un "error al cargar" genérico mandaría a
+    buscar el problema al sitio equivocado.
+  - `ng build --configuration production` pasa. Los dos avisos (presupuesto de bundle y `qrcode`
+    como CommonJS) son anteriores a este cambio.
+- **Criterios de QA:**
+  1. **El botón está:** en "Administrar Eventos", cada fila muestra ahora dos iconos de consulta —
+     la estrella amarilla (feedback por taller) y el gráfico verde (encuesta del evento).
+  2. **Evento con respuestas:** abrir la encuesta muestra la nota general, las cuatro medias con su
+     barra y los comentarios con su fecha.
+  3. **Pregunta sin respuestas:** la media correspondiente dice "Sin respuestas". **No debe
+     mostrarse 0,0 ni una barra vacía**, que se leería como la peor nota.
+  4. **Evento sin encuestas:** mensaje "Todavía nadie respondió la encuesta de este evento", no una
+     tabla vacía ni un error.
+  5. **Sin comentarios pero con notas:** las medias se ven y debajo dice "Nadie dejó comentarios
+     escritos".
+  6. **Porcentaje de recomendación:** coherente con las respuestas (si las 2 de 2 recomiendan, 100%).
+  7. **Con token que no sea de administrador:** "Esta información es solo para administradores".
+
 ### [2026-07-26]: Módulo de Foros Anónimos (Sitio Administrativo)
 - **Alcance:**
   - `Modelos y Servicios`: `src/app/core/models/forum.model.ts`, `src/app/core/services/forum-admin.service.ts`

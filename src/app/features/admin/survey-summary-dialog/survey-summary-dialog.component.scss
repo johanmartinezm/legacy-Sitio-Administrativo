@@ -1,0 +1,143 @@
+// Mismo lenguaje visual que feedback-dialog: los dos se abren desde la misma
+// tabla de eventos y saltar de un estilo a otro se notaría.
+
+.survey-content {
+    min-width: 500px;
+    max-height: 70vh;
+}
+
+.loading-container,
+.no-survey,
+.survey-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem;
+    color: #888;
+
+    mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 1rem;
+    }
+}
+
+.survey-error mat-icon {
+    color: #c62828;
+}
+
+.summary-card {
+    background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+    .rating-value {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .rating-stars {
+        color: #ffca28;
+        margin: 0.5rem 0;
+
+        mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    .rating-count {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+}
+
+.averages {
+    padding: 1.5rem 0;
+
+    .average-row {
+        display: grid;
+        // Etiqueta, barra y número: la barra se queda con el espacio sobrante y
+        // las tres columnas quedan alineadas entre filas.
+        grid-template-columns: 130px 1fr 48px;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0.9rem;
+    }
+
+    .average-label {
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .average-value {
+        font-weight: 600;
+        color: #1565c0;
+        text-align: right;
+    }
+
+    .average-empty {
+        grid-column: 2 / span 2;
+        font-size: 0.85rem;
+        color: #bbb;
+        font-style: italic;
+    }
+}
+
+.recommend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+
+    mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.comments-title {
+    font-size: 1rem;
+    color: #333;
+    margin: 1.5rem 0 0.5rem;
+}
+
+.comments-list {
+    margin-top: 0.5rem;
+}
+
+.comment-item {
+    padding: 1.25rem 0;
+
+    .comment-text {
+        font-style: italic;
+        color: #333;
+        margin: 0 0 0.4rem;
+        line-height: 1.4;
+    }
+
+    .date-text {
+        font-size: 0.75rem;
+        color: #999;
+    }
+}
+
+.no-comment {
+    color: #bbb;
+    font-size: 0.85rem;
+}

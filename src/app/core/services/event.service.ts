@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Event, Category } from '../models/event.model';
 import { WorkshopRating } from '../models/rating.model';
+import { EventSurveySummary } from '../models/survey.model';
 import { ConfigService } from './config.service';
 
 @Injectable({
@@ -62,6 +63,25 @@ export class EventService {
                 ...r,
                 createdAt: new Date(r.createdAt)
             })))
+        );
+    }
+
+    /**
+     * Resumen de la encuesta general del evento. La ruta está bajo AdminOnly en
+     * el backend, así que sale 403 con un token que no sea de administrador.
+     *
+     * Los promedios llegan como null cuando nadie respondió esa pregunta y se
+     * dejan tal cual: convertirlos a 0 los mostraría como la peor nota posible.
+     */
+    getEventSurveySummary(eventId: string): Observable<EventSurveySummary> {
+        return this.http.get<any>(`${this.apiUrl}/${eventId}/survey/summary`).pipe(
+            map(s => ({
+                ...s,
+                comments: (s.comments ?? []).map((c: any) => ({
+                    ...c,
+                    createdAt: new Date(c.createdAt)
+                }))
+            }))
         );
     }
 
