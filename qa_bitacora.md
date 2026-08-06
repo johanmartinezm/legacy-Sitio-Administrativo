@@ -2,6 +2,23 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-06]: Decisión sobre el `npm audit` — se mantiene Angular 18
+
+- **Decisión:** las 10 vulnerabilidades altas que reporta `npm audit` **no se corrigen subiendo de
+  versión**. Se mantiene Angular 18 y el punto se da por cerrado.
+- **Análisis, aviso por aviso:** ninguna es explotable en este panel. Tres son de
+  `HttpTransferCache`, que solo existe con SSR —y aquí no hay SSR ni hidratación—; una necesita
+  URLs protocol-relative, que no se usan; y dos son DoS que exigen que el patrón de `formatDate` o
+  `digitsInfo` lo controle un atacante, y esas funciones no se llaman en ningún sitio.
+- **Por qué no se actualiza:** no hay versión corregida en 18.x ni 19.x. `npm audit fix --force`
+  instala **Angular 21** y arrastra `@zxing/ngx-scanner` —el escáner de QR, que solo publica para
+  Angular 21/22— y Angular Material, cuyo tema cambió a M3. Es una migración con riesgo real sobre
+  un panel que funciona, para cerrar avisos que aquí no lo son.
+- **Queda documentado en `DESPLIEGUE.md`**, en la sección del `npm audit`, que es donde aparecerá el
+  rojo. Ahí están también los tres disparadores que obligarían a revisar la decisión: adoptar SSR,
+  que aparezca un aviso que sí aplique, o que haya ventana para migrar con QA completo.
+- **Sin cambios de código.** No se tocó ninguna dependencia.
+
 ### [2026-08-06]: Pantalla de inscritos de un evento
 
 - **Alcance:**

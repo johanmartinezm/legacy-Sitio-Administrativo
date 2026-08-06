@@ -131,6 +131,36 @@ npm audit --omit=dev
 Y registra la entrega en `qa_bitacora.md` con el formato del proyecto: fecha, **Alcance** con los
 archivos tocados y **Criterios de QA** numerados y verificables por una persona.
 
+### El `npm audit` sale en rojo, y es una decisión consciente
+
+Devuelve **10 vulnerabilidades altas**, todas colgando de `@angular/core`. **No se van a corregir
+subiendo de versión**, por decisión tomada el 2026-08-06 tras analizarlas una por una. Si te las
+encuentras, no hace falta volver a investigarlas:
+
+| Aviso | Por qué no aplica aquí |
+|---|---|
+| 3 de `HttpTransferCache` (clave débil, caché de peticiones con credenciales, ambigüedad de clave) | `HttpTransferCache` **solo existe con SSR**. Este panel es una SPA: no hay `@angular/ssr` ni `provideClientHydration` |
+| Fuga de token XSRF por URLs protocol-relative | No se usa ninguna URL `//host/...`; todo sale de `config.apiUrl`, que es absoluta y con `https://` |
+| 2 de DoS por OOM en `formatDate` y `digitsInfo` | Requieren que el **patrón** lo controle un atacante. No se llama a `formatDate` ni a `formatNumber` en ningún sitio, y los formatos de las plantillas son literales del código |
+
+**Por qué no se actualiza.** No existe versión corregida en 18.x ni en 19.x: el arreglo llega en
+Angular 20/21. `npm audit fix --force` instala **Angular 21**, tres majors por encima, y arrastra:
+
+- **`@zxing/ngx-scanner`** —el escáner de QR del control de acceso— que solo publica versiones para
+  Angular 21 y 22.
+- **Angular Material**, cuyo sistema de temas cambió a M3 entre medias, con lo que el aspecto del
+  panel cambiaría y habría que revisar pantalla por pantalla.
+
+O sea: una migración con riesgo real sobre un panel que funciona, para cerrar avisos que aquí no
+son explotables.
+
+**Cuándo hay que revisar esta decisión:**
+
+1. Si el panel adopta **SSR** o hidratación — ahí los tres avisos de `HttpTransferCache` pasan a ser
+   reales de inmediato.
+2. Si aparece un aviso nuevo que **sí** aplique (por ejemplo, un XSS en el propio framework).
+3. Cuando haya ventana para la migración con QA completo del panel.
+
 ## Límites conocidos
 
 - **Los permisos son binarios.** `core.admin_users.role` admite un único valor: o el usuario es
