@@ -100,6 +100,14 @@
                         <mat-icon matListItemIcon>report</mat-icon>
                         <span matListItemTitle>Posts Reportados</span>
                     </a>
+                    <!-- Distinto de "Posts Reportados": aquélla lista
+                         publicaciones de foro denunciadas, ésta denuncias sobre
+                         personas, que llegan casi siempre desde un chat privado. -->
+                    <a mat-list-item routerLink="/admin/user-reports" routerLinkActive="active-link"
+                        (click)="isAboutVisible = false">
+                        <mat-icon matListItemIcon>person_off</mat-icon>
+                        <span matListItemTitle>Usuarios Reportados</span>
+                    </a>
                 </mat-nav-list>
             </mat-expansion-panel>
 

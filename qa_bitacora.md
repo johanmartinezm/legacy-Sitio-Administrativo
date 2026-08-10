@@ -2,6 +2,41 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-10]: Bandeja de usuarios reportados
+
+- **Por qué:** la app ya permite reportar y bloquear personas (directriz 1.2 de Apple), y esos
+  reportes llegaban a `GET /api/admin/user-reports` **sin que nadie los viera**. Sin esta pantalla se
+  recogen denuncias que no atiende nadie.
+- **No es lo mismo que "Posts Reportados".** Aquélla lista publicaciones de foro denunciadas; ésta,
+  denuncias sobre **personas**, que llegan casi siempre desde un chat privado. Se han dejado como dos
+  entradas distintas del menú a propósito.
+- **Alcance:**
+  - `core/models/user-report.model.ts` y `core/services/user-report.service.ts` (nuevos).
+  - `features/admin/user-reports/` (nuevo), con ruta `admin/user-reports` en `app.routes.ts` y
+    entrada **Usuarios Reportados** en el menú lateral (icono `person_off`).
+  - **El backend se amplió para devolver los nombres** (`reporter_name`, `reported_name`) ya
+    descifrados: los datos personales están cifrados y el panel no tiene la clave, así que una
+    bandeja que mostrara UUIDs no serviría para decidir nada.
+  - `Filtros` por estado: abre en **Pendientes**, que es lo que hay que atender.
+  - `ng build --configuration production` pasa. `Tests`: `user-reports.component.spec.ts` (6 casos).
+- **Marcar un reporte no bloquea ni elimina nada**, y la pantalla lo dice al pie: solo deja
+  constancia de que se atendió. Las medidas sobre una cuenta se toman desde "Administrar Usuarios".
+- **El contenido del mensaje denunciado no se muestra**, solo una marca de que el reporte señala uno:
+  los mensajes de chat están cifrados y esta pantalla no los descifra.
+- El 403 lleva su propio mensaje, como en las pantallas de encuesta e inscritos.
+- **Criterios de QA:**
+  1. **La entrada está:** en el menú lateral, bajo Foros, aparece "Usuarios Reportados".
+  2. **Abre en Pendientes** y muestra los reportes hechos desde la app.
+  3. **Los nombres son legibles**, no UUID ni texto cifrado. Es lo que más fácil se rompe, porque el
+     descifrado ocurre en el backend.
+  4. **Los filtros funcionan:** Pendientes, Revisados, Descartados y Todos.
+  5. **Marcar como revisado** pide confirmación y el reporte sale de Pendientes.
+  6. **Descartar** hace lo mismo y lo deja en Descartados.
+  7. **Un reporte ya resuelto** no ofrece botones de acción.
+  8. **Sin reportes:** mensaje claro, distinto según el filtro; sin tabla vacía.
+  9. **Recarga con F5** estando en la pantalla: debe seguir cargando (enrutado HTML5 de nginx).
+  10. **Sin rol de administrador:** "Esta información es solo para administradores".
+
 ### [2026-08-06]: Decisión sobre el `npm audit` — se mantiene Angular 18
 
 - **Decisión:** las 10 vulnerabilidades altas que reporta `npm audit` **no se corrigen subiendo de

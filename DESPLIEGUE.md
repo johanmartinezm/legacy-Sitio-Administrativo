@@ -88,7 +88,10 @@ docker network ls | grep proxy-net    # si falta: docker network create proxy-ne
    llegó al contenedor y **todo el panel está apuntando a `localhost:8080`**.
 3. **Rutas HTML5:** navegar a una subruta, recargar con F5 y confirmar que carga en vez de dar 404
    (lo resuelve el `try_files $uri $uri/ /index.html` de `nginx.conf`).
-4. **Salud del contenedor:** `docker compose exec frontend wget -qO- localhost/health` → `OK`.
+4. **Salud del contenedor:** `docker compose exec frontend wget -qO- http://127.0.0.1/health` → `OK`.
+   Con `localhost` en vez de `127.0.0.1` da *Connection refused*: resuelve a IPv6 y nginx solo
+   escucha en IPv4 (`listen 80;`). No es un fallo del contenedor —comprobado el 2026-08-10—, pero
+   parece uno.
 5. **Login real:** entrar con un usuario administrador y comprobar que la petición sale hacia el
    dominio público, no hacia `localhost`.
 

@@ -27,6 +27,10 @@ export const routes: Routes = [
       { path: 'admin/forums', loadComponent: () => import('./features/admin/forums/forums.component').then(m => m.ForumsComponent) },
       { path: 'admin/forums/flagged', loadComponent: () => import('./features/admin/forum-flagged-posts/forum-flagged-posts.component').then(m => m.ForumFlaggedPostsComponent) },
       { path: 'admin/forums/:id/posts', loadComponent: () => import('./features/admin/forums/forum-tree/forum-tree.component').then(m => m.ForumTreeComponent) },
+      // Reportes de personas, distintos de los de publicaciones de foro
+      // (admin/forums/flagged): éstos denuncian a alguien, normalmente por un
+      // chat privado.
+      { path: 'admin/user-reports', loadComponent: () => import('./features/admin/user-reports/user-reports.component').then(m => m.UserReportsComponent) },
       { path: 'admin/payment-callback', loadComponent: () => import('./features/payment-callback/payment-callback.component').then(m => m.PaymentCallbackComponent) }
     ]
   }

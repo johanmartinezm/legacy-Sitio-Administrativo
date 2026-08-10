@@ -1,0 +1,103 @@
+<div class="reports-container">
+  <header class="reports-header">
+    <div>
+      <h2>Reportes de usuarios</h2>
+      <p class="subtitulo">
+        Denuncias enviadas desde la app sobre el comportamiento de otras personas.
+      </p>
+    </div>
+  </header>
+
+  <nav class="filtros" role="tablist">
+    <button
+      type="button"
+      [class.activo]="filtro === 'pending'"
+      (click)="cambiarFiltro('pending')">
+      Pendientes
+    </button>
+    <button
+      type="button"
+      [class.activo]="filtro === 'reviewed'"
+      (click)="cambiarFiltro('reviewed')">
+      Revisados
+    </button>
+    <button
+      type="button"
+      [class.activo]="filtro === 'dismissed'"
+      (click)="cambiarFiltro('dismissed')">
+      Descartados
+    </button>
+    <button
+      type="button"
+      [class.activo]="filtro === 'all'"
+      (click)="cambiarFiltro('all')">
+      Todos
+    </button>
+  </nav>
+
+  <p *ngIf="loading" class="estado">Cargando reportes…</p>
+
+  <div *ngIf="error && !loading" class="estado error">
+    {{ error }}
+    <button type="button" class="reintentar" (click)="cargar()">Reintentar</button>
+  </div>
+
+  <p *ngIf="!loading && !error && !hayReportes" class="estado vacio">
+    {{ textoVacio }}
+  </p>
+
+  <div *ngIf="!loading && !error && hayReportes" class="tabla-scroll">
+    <table class="tabla-reportes">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Reportado</th>
+          <th>Reporta</th>
+          <th>Motivo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of reports">
+          <td>{{ r.created_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td class="nombre-reportado">{{ r.reported_name }}</td>
+          <td>{{ r.reporter_name }}</td>
+          <td class="motivo">
+            {{ r.reason }}
+            <!-- Se avisa de que el reporte señala un mensaje concreto, aunque su
+                 contenido no se muestra: los mensajes de chat están cifrados y
+                 esta pantalla no los descifra. -->
+            <span *ngIf="r.message_id" class="marca-mensaje" title="El reporte señala un mensaje concreto del chat">
+              mensaje señalado
+            </span>
+          </td>
+          <td>
+            <span class="estado-chip" [class]="'estado-' + r.status">
+              {{ etiquetas[r.status] }}
+            </span>
+          </td>
+          <td class="acciones">
+            <ng-container *ngIf="r.status === 'pending'; else yaResuelto">
+              <button type="button" class="btn-revisar" (click)="resolver(r, 'reviewed')">
+                Revisado
+              </button>
+              <button type="button" class="btn-descartar" (click)="resolver(r, 'dismissed')">
+                Descartar
+              </button>
+            </ng-container>
+            <ng-template #yaResuelto>
+              <span class="sin-acciones">—</span>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="nota-pie" *ngIf="!loading && !error">
+    Marcar un reporte no bloquea ni elimina ninguna cuenta: solo deja constancia de
+    que se ha atendido. Las medidas sobre una cuenta se toman desde
+    <strong>Administrar Usuarios</strong>.
+  </p>
+</div>
