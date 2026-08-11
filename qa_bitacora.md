@@ -2,6 +2,33 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-11]: El módulo de pagos llamaba a localhost en producción
+
+- **El problema:** `core/services/payment.service.ts` era **el único servicio del panel que importaba
+  `environments/environment`**, cuyo `apiUrl` es `http://localhost:8080` y se fija al compilar. En el
+  panel desplegado, crear un intento de pago o verificarlo llamaba al equipo de quien abriera el
+  navegador, no al servidor: el módulo entero no funcionaba fuera de una máquina de desarrollo.
+- **El arreglo:** pasa a `ConfigService`, como el resto de servicios, que lee `assets/config/
+  config.json` con el `APP_INITIALIZER` en tiempo de ejecución. Así la URL se puede cambiar sin
+  recompilar, que es el motivo por el que existe ese mecanismo.
+- **Alcance:** `src/app/core/services/payment.service.ts`. Las dos llamadas comparten ahora un
+  `apiUrl` privado, igual que en `banner_admin.service.ts`.
+- **Efecto colateral que conviene saber:** con este cambio **ya nadie importa
+  `src/environments/environment.ts`**. El archivo queda huérfano y se puede borrar, pero eso es otra
+  entrega.
+- **Verificado:** `ng build --configuration production` compila sin errores. Los dos avisos que
+  salen —presupuesto de bundle superado y `qrcode` en CommonJS— son anteriores a este cambio.
+- **Criterios de QA:**
+  1. **En el panel desplegado**, abrir el módulo de pagos y comprobar en la pestaña Red del navegador
+     que las llamadas van a `https://legacy.intelyclick.com/api/payments/...` y **no** a
+     `localhost:8080`.
+  2. **Crear un intento de pago** devuelve la URL del formulario, no un error de conexión.
+  3. **Verificar un pago** por su `tx_id` responde con su estado.
+  4. **En local** (`npm start` con el `config.json` de desarrollo), las mismas llamadas siguen yendo
+     a `http://localhost:8080`.
+
+---
+
 ### [2026-08-10]: Bandeja de usuarios reportados
 
 - **Por qué:** la app ya permite reportar y bloquear personas (directriz 1.2 de Apple), y esos
