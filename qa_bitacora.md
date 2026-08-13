@@ -25,6 +25,12 @@ Entrada de trabajo para validación de Panel Administrativo.
   gastar una subida entera en un error previsible. El servidor la repite, que es donde cuenta.
 - **Verificado:** `ng build --configuration production` compila (los dos avisos, presupuesto de
   bundle y `qrcode` CommonJS, son anteriores); los 6 tests pasan.
+- **Desplegado en producción el mismo día.** `dist` anterior guardado en el servidor como
+  `dist.bak.20260813_0104`. Comprobado tras recrear el contenedor: raíz 200, `/health` interno `OK`,
+  `config.json` servido con `apiUrl` de producción —no el fallback a `localhost`—, una subruta
+  recargada da 200, y el chunk que contiene `images/upload` se sirve desde el dominio público. La API
+  siguió respondiendo durante todo el despliegue. `npm audit --omit=dev` sigue con las 10 altas de
+  siempre, analizadas y descartadas el 2026-08-06.
 - **Criterios de QA:**
   1. **Crear un banner** subiendo un archivo: aparece la vista previa y, tras guardar, la imagen se
      ve en el listado del panel y en la app.

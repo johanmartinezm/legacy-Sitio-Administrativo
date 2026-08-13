@@ -168,8 +168,10 @@ son explotables.
 
 - **Los permisos son binarios.** `core.admin_users.role` admite un único valor: o el usuario es
   administrador y puede todo, o no entra. No hay granularidad por módulo.
-- **No hay subida de archivos.** Los campos de imagen son texto donde se pega una URL, porque
-  `ImageHandler.UploadImage` existe en el backend pero nunca se registró en el router.
+- **La subida de archivos ya existe** desde el 2026-08-12, en banner, evento, taller, portada de
+  contenido y foto de perfil. Se guarda la **URL absoluta** que devuelve
+  `core/services/image-upload.service.ts`, no el nombre suelto, porque es lo que la app pinta tal
+  cual. La caja de texto sigue ahí para las URL externas ya guardadas.
 - **El token vive en `localStorage`** (`adminAuthToken`, inyectado por
   `core/interceptors/auth.interceptor.ts`). Sin protección CSRF ni sanitización de HTML en el
   backend, cualquier XSS en el panel expone la sesión de administrador.
