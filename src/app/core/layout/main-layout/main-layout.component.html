@@ -108,6 +108,14 @@
                         <mat-icon matListItemIcon>person_off</mat-icon>
                         <span matListItemTitle>Usuarios Reportados</span>
                     </a>
+                    <!-- Mensajes que la gente escribe desde "Contactenos" en la
+                         app. Incluye los que se guardaron sin poder enviarse por
+                         correo, que son los que nadie veria de otra forma. -->
+                    <a mat-list-item routerLink="/admin/contacto" routerLinkActive="active-link"
+                        (click)="isAboutVisible = false">
+                        <mat-icon matListItemIcon>mail</mat-icon>
+                        <span matListItemTitle>Mensajes de Contacto</span>
+                    </a>
                 </mat-nav-list>
             </mat-expansion-panel>
 

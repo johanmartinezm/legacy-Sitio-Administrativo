@@ -1,0 +1,203 @@
+.contacto-container {
+    padding: 2rem;
+}
+
+.contacto-header {
+    margin-bottom: 1.5rem;
+
+    h2 {
+        margin: 0;
+        font-size: 1.6rem;
+    }
+
+    .subtitulo {
+        margin: 4px 0 0;
+        color: #666;
+        font-size: 0.95rem;
+        max-width: 46rem;
+    }
+}
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+
+    button {
+        border: 1px solid #d5dde5;
+        background: #fff;
+        color: #445;
+        border-radius: 20px;
+        padding: 6px 16px;
+        font-size: 0.9rem;
+        cursor: pointer;
+
+        &:hover {
+            border-color: #9fb3c8;
+        }
+
+        &.activo {
+            background: #162540;
+            border-color: #162540;
+            color: #fff;
+        }
+    }
+}
+
+.estado {
+    color: #667;
+    padding: 1rem 0;
+
+    &.error {
+        color: #a32918;
+    }
+
+    &.vacio {
+        color: #889;
+    }
+
+    .reintentar {
+        margin-left: 12px;
+        border: 1px solid #a32918;
+        background: #fff;
+        color: #a32918;
+        border-radius: 4px;
+        padding: 4px 12px;
+        cursor: pointer;
+    }
+}
+
+.lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mensaje {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+
+    &.abierto {
+        border-color: #9fb3c8;
+    }
+}
+
+.cabecera {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding: 14px 16px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+
+    &:hover {
+        background: #f7f9fc;
+    }
+
+    .asunto {
+        font-weight: 600;
+        color: #162540;
+    }
+
+    .meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.85rem;
+        color: #667;
+    }
+}
+
+.sin-correo {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background: #fdeceb;
+    color: #a32918;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.etiqueta {
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.estado-nuevo {
+        background: #e7f0fb;
+        color: #35577e;
+    }
+
+    &.estado-leido {
+        background: #f1f2f4;
+        color: #5a6472;
+    }
+
+    &.estado-respondido {
+        background: #e8f4ec;
+        color: #2c6a4c;
+    }
+}
+
+.cuerpo {
+    padding: 0 16px 16px;
+    border-top: 1px solid #eef2f6;
+
+    .texto {
+        white-space: pre-wrap;
+        line-height: 1.5;
+        color: #2b3442;
+        margin: 16px 0;
+    }
+
+    .datos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 16px;
+        font-size: 0.9rem;
+        color: #667;
+        margin-bottom: 16px;
+    }
+
+    .acciones {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        button {
+            border: 1px solid #d5dde5;
+            background: #fff;
+            color: #445;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            cursor: pointer;
+
+            &:hover {
+                border-color: #9fb3c8;
+            }
+
+            &.principal {
+                background: #162540;
+                border-color: #162540;
+                color: #fff;
+            }
+        }
+    }
+}

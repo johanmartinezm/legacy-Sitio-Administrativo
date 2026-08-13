@@ -31,6 +31,7 @@ export const routes: Routes = [
       // (admin/forums/flagged): éstos denuncian a alguien, normalmente por un
       // chat privado.
       { path: 'admin/user-reports', loadComponent: () => import('./features/admin/user-reports/user-reports.component').then(m => m.UserReportsComponent) },
+      { path: 'admin/contacto', loadComponent: () => import('./features/admin/contacto/contacto.component').then(m => m.ContactoComponent) },
       { path: 'admin/payment-callback', loadComponent: () => import('./features/payment-callback/payment-callback.component').then(m => m.PaymentCallbackComponent) }
     ]
   }

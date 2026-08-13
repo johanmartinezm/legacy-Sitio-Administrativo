@@ -2,6 +2,37 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-13]: Bandeja de "Mensajes de Contacto"
+
+- **Por qué:** la pantalla Contáctenos de la app se estrenó hoy enviando solo un correo. Sin bandeja,
+  nadie podía revisar qué se ha preguntado, ni saber si algo quedó sin responder, y **un fallo del
+  SMTP hacía desaparecer el mensaje**. Ahora se guardan y esta pantalla es donde se atienden.
+- **Alcance:**
+  - `core/models/contacto.model.ts` y `core/services/contacto.service.ts` — nuevos. La URL sale de
+    `ConfigService`, como el resto: se resuelve en ejecución, no en el build.
+  - `features/admin/contacto/` — componente, plantilla y estilos, calcados de la bandeja de usuarios
+    reportados para que las dos se usen igual.
+  - `app.routes.ts` (`admin/contacto`) y la entrada **Mensajes de Contacto** en el menú lateral.
+- **Los mensajes cuyo correo no salió se marcan en rojo** con "correo no enviado". Son los únicos que
+  nadie vería de otra forma, y por eso es lo primero que destaca la lista.
+- **Abrir un mensaje nuevo lo pasa a Leído**, que es lo que acaba de ocurrir; no hay que marcarlo a
+  mano. "Responder por correo" abre el cliente con `Re: asunto` y lo deja en Respondido.
+- **El estado se pinta antes de que conteste el servidor** para que la lista no parpadee, y **si la
+  petición falla se revierte**: dejarlo cambiado haría creer que se atendió algo que no se guardó.
+- **Verificado:** `ng build --configuration production` compila (los dos avisos, presupuesto de
+  bundle y `qrcode` CommonJS, son anteriores) y **6 tests** pasan. **Desplegado en producción** el
+  mismo día: raíz 200, `/admin/contacto` recargada 200, `/health` interno `OK`, `config.json` con la
+  `apiUrl` de producción —no el fallback a localhost— y el bundle contiene la ruta nueva. `dist`
+  anterior guardado como `dist.bak.20260813_contacto`.
+- **Criterios de QA:**
+  1. **Menú → Mensajes de Contacto**: carga la bandeja con el filtro "Nuevos".
+  2. Enviar un mensaje desde la app y recargar: aparece arriba.
+  3. **Abrirlo**: se ve el texto completo y pasa a Leído solo.
+  4. **Responder por correo**: se abre el cliente con el destinatario y el asunto, y queda Respondido.
+  5. Recorrer los cuatro filtros y comprobar que cada uno trae lo suyo.
+  6. **Con una sesión que no sea de administrador**, entrar a la ruta: debe decir que es solo para
+     administradores, no un error genérico.
+
 ### [2026-08-12]: El panel ya sube imágenes, en vez de pedir una URL
 
 - **El problema:** ningún formulario permitía subir un archivo. Los campos de imagen eran texto donde

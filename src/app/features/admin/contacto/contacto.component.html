@@ -1,0 +1,78 @@
+<div class="contacto-container">
+  <header class="contacto-header">
+    <div>
+      <h2>Mensajes de contacto</h2>
+      <p class="subtitulo">
+        Lo que la gente escribe desde "Contáctenos" en la app. Se guardan aquí aunque el correo
+        no llegue a salir.
+      </p>
+    </div>
+  </header>
+
+  <nav class="filtros" role="tablist">
+    <button type="button" [class.activo]="filtro === 'nuevo'" (click)="cambiarFiltro('nuevo')">
+      Nuevos
+    </button>
+    <button type="button" [class.activo]="filtro === 'leido'" (click)="cambiarFiltro('leido')">
+      Leídos
+    </button>
+    <button type="button" [class.activo]="filtro === 'respondido'" (click)="cambiarFiltro('respondido')">
+      Respondidos
+    </button>
+    <button type="button" [class.activo]="filtro === 'all'" (click)="cambiarFiltro('all')">
+      Todos
+    </button>
+  </nav>
+
+  <p *ngIf="loading" class="estado">Cargando mensajes…</p>
+
+  <div *ngIf="error && !loading" class="estado error">
+    {{ error }}
+    <button type="button" class="reintentar" (click)="cargar()">Reintentar</button>
+  </div>
+
+  <p *ngIf="!loading && !error && mensajes.length === 0" class="estado vacio">
+    No hay mensajes en esta bandeja.
+  </p>
+
+  <ul *ngIf="!loading && !error && mensajes.length > 0" class="lista">
+    <li *ngFor="let m of mensajes" class="mensaje" [class.abierto]="abierto === m.id">
+      <button type="button" class="cabecera" (click)="alternar(m)">
+        <span class="asunto">
+          {{ m.asunto }}
+          <!-- Un mensaje guardado cuyo correo no salió es el único que nadie
+               vería de otra forma: por eso se marca en la lista. -->
+          <span *ngIf="!m.email_enviado" class="sin-correo" title="El mensaje se guardó, pero el aviso por correo no salió">
+            correo no enviado
+          </span>
+        </span>
+        <span class="meta">
+          <span class="remitente">{{ m.remitente_nombre }}</span>
+          <span class="fecha">{{ m.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+          <span class="etiqueta" [class]="'estado-' + m.estado">{{ etiquetas[m.estado] }}</span>
+        </span>
+      </button>
+
+      <div *ngIf="abierto === m.id" class="cuerpo">
+        <p class="texto">{{ m.mensaje }}</p>
+
+        <div class="datos">
+          <span>{{ m.remitente_nombre }}</span>
+          <a [href]="'mailto:' + m.remitente_email">{{ m.remitente_email }}</a>
+        </div>
+
+        <div class="acciones">
+          <button type="button" class="principal" (click)="responder(m)">
+            Responder por correo
+          </button>
+          <button type="button" *ngIf="m.estado !== 'respondido'" (click)="marcar(m, 'respondido')">
+            Marcar como respondido
+          </button>
+          <button type="button" *ngIf="m.estado === 'respondido'" (click)="marcar(m, 'leido')">
+            Reabrir
+          </button>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
