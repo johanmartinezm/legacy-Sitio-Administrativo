@@ -42,12 +42,7 @@
             <mat-error *ngIf="contentForm.get('excerpt')?.hasError('required')">El extracto es requerido</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Thumbnail URL (Imagen de portada)</mat-label>
-            <mat-icon matPrefix>image</mat-icon>
-            <input matInput formControlName="thumbnail_url" placeholder="https://ejemplo.com/imagen.jpg">
-            <mat-hint>URL de la imagen destacada que se verá en la App</mat-hint>
-        </mat-form-field>
+        <app-image-upload formControlName="thumbnail_url" label="Imagen de portada"></app-image-upload>
 
         <!-- Contextual fields: Text -->
         <div *ngIf="contentForm.get('type')?.value === 'text'" class="dynamic-field-section">

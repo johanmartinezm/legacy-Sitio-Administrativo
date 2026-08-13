@@ -1,0 +1,45 @@
+<div class="campo-imagen">
+    <mat-form-field appearance="outline" class="url">
+        <mat-label>{{ label }}</mat-label>
+        <input matInput
+               [ngModel]="valor"
+               (ngModelChange)="urlEditada($event)"
+               [disabled]="deshabilitado || subiendo"
+               placeholder="Sube un archivo o pega una URL">
+        <mat-icon matSuffix>link</mat-icon>
+    </mat-form-field>
+
+    <div class="acciones">
+        <button mat-stroked-button
+                type="button"
+                [disabled]="deshabilitado || subiendo"
+                (click)="archivo.click()">
+            <mat-icon>upload</mat-icon>
+            Subir imagen
+        </button>
+
+        <button mat-button
+                type="button"
+                *ngIf="valor && !subiendo"
+                [disabled]="deshabilitado"
+                (click)="quitar()">
+            Quitar
+        </button>
+
+        <input #archivo
+               type="file"
+               hidden
+               [accept]="tiposAceptados"
+               (change)="seleccionar($event)">
+    </div>
+
+    <mat-progress-bar *ngIf="subiendo" mode="indeterminate"></mat-progress-bar>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div class="vista-previa" *ngIf="valor && !subiendo">
+        <img [src]="valor" [alt]="label">
+    </div>
+
+    <p class="nota">Se admiten imágenes de hasta 10 MB. Se reducen a 600 px de ancho.</p>
+</div>

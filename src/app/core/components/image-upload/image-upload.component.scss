@@ -1,0 +1,40 @@
+.campo-imagen {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.url {
+    width: 100%;
+}
+
+.acciones {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.error {
+    margin: 0;
+    color: #b3261e;
+    font-size: 12px;
+}
+
+.vista-previa {
+    img {
+        // Se limita el alto y no el ancho: una imagen apaisada y una vertical
+        // deben ocupar lo mismo en el formulario.
+        max-height: 160px;
+        max-width: 100%;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, .12);
+        object-fit: contain;
+    }
+}
+
+.nota {
+    margin: 0;
+    font-size: 12px;
+    color: rgba(0, 0, 0, .6);
+}

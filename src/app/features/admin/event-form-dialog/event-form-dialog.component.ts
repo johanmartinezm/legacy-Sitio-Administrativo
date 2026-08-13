@@ -10,11 +10,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { Event, Workshop, Category } from '../../../core/models/event.model';
 import { EventService } from '../../../core/services/event.service';
+import { ImageUploadComponent } from '../../../core/components/image-upload/image-upload.component';
 
 @Component({
   selector: 'app-event-form-dialog',
   standalone: true,
   imports: [
+        ImageUploadComponent,
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,

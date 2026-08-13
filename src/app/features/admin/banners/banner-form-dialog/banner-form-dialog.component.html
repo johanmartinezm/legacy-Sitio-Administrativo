@@ -29,15 +29,7 @@
             </mat-form-field>
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>URL de la Imagen</mat-label>
-            <input matInput formControlName="image_url" placeholder="https://...">
-            <mat-icon matSuffix>link</mat-icon>
-        </mat-form-field>
-
-        <div class="preview-container" *ngIf="bannerForm.get('image_url')?.value">
-            <img [src]="bannerForm.get('image_url')?.value" alt="Preview" class="image-preview">
-        </div>
+        <app-image-upload formControlName="image_url" label="Imagen del banner"></app-image-upload>
 
         <div class="form-row">
             <mat-form-field appearance="outline">

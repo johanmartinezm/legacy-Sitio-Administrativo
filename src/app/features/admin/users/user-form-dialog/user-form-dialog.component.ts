@@ -8,11 +8,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { User } from '../../../../core/models/user.model';
+import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
 
 @Component({
     selector: 'app-user-form-dialog',
     standalone: true,
     imports: [
+        ImageUploadComponent,
         CommonModule,
         ReactiveFormsModule,
         MatDialogModule,

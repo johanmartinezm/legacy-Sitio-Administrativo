@@ -9,11 +9,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { ContentAdminService, ContentCategory, CustomContent } from '../../../../core/services/content_admin.service';
+import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
 
 @Component({
     selector: 'app-content-form-dialog',
     standalone: true,
     imports: [
+        ImageUploadComponent,
         CommonModule,
         ReactiveFormsModule,
         MatDialogModule,

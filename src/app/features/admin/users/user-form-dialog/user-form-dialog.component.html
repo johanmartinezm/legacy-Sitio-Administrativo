@@ -134,10 +134,8 @@
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="half-width">
-                <mat-label>URL Imagen Perfil</mat-label>
-                <input matInput formControlName="profileImageUrl" placeholder="https://...">
-            </mat-form-field>
+            <app-image-upload class="half-width" formControlName="profileImageUrl"
+                label="Foto de perfil"></app-image-upload>
         </div>
 
         <mat-form-field appearance="outline" class="full-width">

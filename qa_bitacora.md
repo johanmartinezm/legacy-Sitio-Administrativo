@@ -2,6 +2,44 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-12]: El panel ya sube imágenes, en vez de pedir una URL
+
+- **El problema:** ningún formulario permitía subir un archivo. Los campos de imagen eran texto donde
+  había que pegar una URL, así que para poner la foto de un evento había que alojarla antes en otro
+  sitio. El endpoint del backend (`POST /api/images/upload`) existe y está desplegado desde el 11 de
+  agosto, pero solo lo usaba la app móvil.
+- **Alcance:**
+  - `core/services/image-upload.service.ts` — nuevo. Sube al endpoint y **devuelve la URL absoluta**,
+    no el nombre suelto: es lo que ya guardan estos campos y lo que la app pinta tal cual con
+    `Image.network`. Devolver el nombre obligaría a cambiar también la app.
+  - `core/components/image-upload/` — nuevo. Campo reutilizable con vista previa, progreso y errores.
+    Implementa `ControlValueAccessor`, así que se usa con `formControlName` igual que el input al que
+    sustituye.
+  - Conectado en **cinco campos**: banner, evento, taller de evento, portada de contenido y foto de
+    perfil de usuario.
+  - `core/services/image-upload.service.spec.ts` — 6 casos.
+- **Se conserva la caja de texto** a propósito: los valores ya guardados son URL escritas a mano, y
+  muchas apuntan a imágenes de la web corporativa que no tiene sentido volver a subir. Quitarla
+  obligaría a rehacerlas todas.
+- **Validación previa en el navegador** con los mismos límites del servidor —imagen y 10 MB— para no
+  gastar una subida entera en un error previsible. El servidor la repite, que es donde cuenta.
+- **Verificado:** `ng build --configuration production` compila (los dos avisos, presupuesto de
+  bundle y `qrcode` CommonJS, son anteriores); los 6 tests pasan.
+- **Criterios de QA:**
+  1. **Crear un banner** subiendo un archivo: aparece la vista previa y, tras guardar, la imagen se
+     ve en el listado del panel y en la app.
+  2. **Editar un banner que ya tenía una URL pegada**: debe seguir viéndose y poder guardarse sin
+     tocar la imagen.
+  3. **Subir un archivo que no sea imagen** (un PDF): avisa sin llamar al servidor.
+  4. **Subir una imagen de más de 10 MB**: avisa antes de subirla.
+  5. **Una imagen muy ancha** (más de 600 px) se guarda reducida: el servidor la redimensiona.
+  6. **Con la sesión caducada**, subir muestra el aviso de volver a iniciar sesión, no un error
+     genérico.
+  7. Repetir el punto 1 en **evento, taller, contenido y foto de perfil**.
+  8. **Quitar** una imagen deja el campo vacío y permite guardar.
+
+---
+
 ### [2026-08-11]: El módulo de pagos llamaba a localhost en producción
 
 - **El problema:** `core/services/payment.service.ts` era **el único servicio del panel que importaba

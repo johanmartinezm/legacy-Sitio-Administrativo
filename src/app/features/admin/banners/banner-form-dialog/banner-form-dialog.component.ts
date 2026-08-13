@@ -10,6 +10,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { Banner } from '../../../../core/models/banner.model';
 import { BannerAdminService } from '../../../../core/services/banner_admin.service';
+import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
 
 @Component({
     selector: 'app-banner-form-dialog',
@@ -23,7 +24,8 @@ import { BannerAdminService } from '../../../../core/services/banner_admin.servi
         MatSelectModule,
         MatButtonModule,
         MatSlideToggleModule,
-        MatIconModule
+        MatIconModule,
+        ImageUploadComponent
     ],
     templateUrl: './banner-form-dialog.component.html',
     styleUrls: ['./banner-form-dialog.component.scss']

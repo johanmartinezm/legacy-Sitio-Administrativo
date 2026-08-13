@@ -101,18 +101,8 @@
                 </mat-form-field>
             </div>
 
-            <div class="row preview-row" *ngIf="eventForm.get('imageUrl')?.value">
-                <div class="image-preview-container">
-                    <img [src]="eventForm.get('imageUrl')?.value" alt="Preview Evento" class="image-preview-large">
-                </div>
-            </div>
-
             <div class="row">
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>URL de la Imagen</mat-label>
-                    <input matInput formControlName="imageUrl" placeholder="HTTPS...">
-                    <mat-icon matSuffix>image</mat-icon>
-                </mat-form-field>
+                <app-image-upload formControlName="imageUrl" label="Imagen del evento"></app-image-upload>
             </div>
         </div>
 
@@ -162,18 +152,7 @@
                     </div>
 
                     <div class="field-grid">
-                        <mat-form-field appearance="outline" class="full-width">
-                            <mat-label>URL Imagen Taller</mat-label>
-                            <input matInput formControlName="imageUrl" placeholder="HTTPS...">
-                            <mat-icon matSuffix>image</mat-icon>
-                        </mat-form-field>
-                    </div>
-
-                    <div class="field-grid preview-row" *ngIf="workshop.get('imageUrl')?.value">
-                        <div class="image-preview-container-small">
-                            <img [src]="workshop.get('imageUrl')?.value" alt="Preview Taller"
-                                class="image-preview-small">
-                        </div>
+                        <app-image-upload formControlName="imageUrl" label="Imagen del taller"></app-image-upload>
                     </div>
 
                     <!-- Row 3: Time Grid -->
