@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Event, Workshop, Category } from '../../../core/models/event.model';
 import { EventService } from '../../../core/services/event.service';
 import { ImageUploadComponent } from '../../../core/components/image-upload/image-upload.component';
@@ -25,7 +26,8 @@ import { ImageUploadComponent } from '../../../core/components/image-upload/imag
     MatButtonModule,
     MatIconModule,
     MatDatepickerModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCheckboxModule
   ],
   templateUrl: './event-form-dialog.component.html',
   styleUrls: ['./event-form-dialog.component.scss']
@@ -51,6 +53,10 @@ export class EventFormDialogComponent implements OnInit {
       price: [0, [Validators.required, Validators.min(0)]],
       imageUrl: [''],
       location: [''],
+      // Un evento virtual necesita enlace; uno presencial no. El validador se
+      // pone y se quita al marcar la casilla, en ngOnInit.
+      isVirtual: [false],
+      accessUrl: [''],
       startDate: [new Date(), Validators.required],
       endDate: [null],
       attendeesLimit: [null],
@@ -63,6 +69,7 @@ export class EventFormDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCategories();
+    this.sincronizarEnlaceConModalidad();
     if (this.data && this.data.event) {
       this.isEditMode = true;
       this.patchForm(this.data.event);
@@ -70,6 +77,29 @@ export class EventFormDialogComponent implements OnInit {
       // Add one empty workshop by default for convenience
       this.addWorkshop();
     }
+  }
+
+  /**
+   * El enlace de acceso es obligatorio solo en los eventos virtuales. Sin esto
+   * se podría guardar una masterclass virtual sin enlace, y quien se inscribiera
+   * se quedaría sin QR (por virtual) y sin enlace (por vacío): sin nada.
+   */
+  private sincronizarEnlaceConModalidad(): void {
+    const enlace = this.eventForm.get('accessUrl');
+    const virtual = this.eventForm.get('isVirtual');
+    if (!enlace || !virtual) return;
+
+    const aplicar = (esVirtual: boolean) => {
+      if (esVirtual) {
+        enlace.addValidators(Validators.required);
+      } else {
+        enlace.removeValidators(Validators.required);
+      }
+      enlace.updateValueAndValidity({ emitEvent: false });
+    };
+
+    aplicar(virtual.value);
+    virtual.valueChanges.subscribe(aplicar);
   }
 
   loadCategories() {
@@ -116,6 +146,8 @@ export class EventFormDialogComponent implements OnInit {
       price: event.price,
       imageUrl: event.imageUrl,
       location: event.location,
+      isVirtual: event.isVirtual ?? false,
+      accessUrl: event.accessUrl ?? '',
       startDate: event.startDate,
       endDate: event.endDate,
       attendeesLimit: event.attendeesLimit,
@@ -198,6 +230,10 @@ export class EventFormDialogComponent implements OnInit {
         price: formValue.price,
         imageUrl: formValue.imageUrl,
         location: formValue.location,
+        isVirtual: !!formValue.isVirtual,
+        // Un presencial no guarda enlace aunque haya quedado escrito al marcar
+        // y desmarcar la casilla.
+        accessUrl: formValue.isVirtual ? formValue.accessUrl : null,
         startDate: formValue.startDate,
         endDate: formValue.endDate,
         attendeesLimit: formValue.attendeesLimit,

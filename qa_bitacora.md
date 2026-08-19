@@ -2,6 +2,65 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-18]: Modalidad y enlace de acceso en el formulario de evento
+
+- **Por qué:** los eventos ya distinguen presencial de virtual
+  (`Backend/scripts/20260818_modalidad_y_enlace_evento.sql`), y **el panel es el único sitio donde se
+  marca**. Sin este campo, todo evento nuevo nacería presencial y seguiría emitiendo QR para una
+  masterclass virtual.
+- **Alcance:**
+  - `core/models/event.model.ts` — `isVirtual` y `accessUrl`.
+  - `features/admin/event-form-dialog/` — casilla de modalidad, campo de enlace y su validación.
+- **El campo del enlace solo aparece al marcar la casilla.** Un presencial no tiene enlace que pedir,
+  y mostrarlo siempre invita a rellenarlo.
+- **El enlace es obligatorio en los virtuales.** El validador se pone y se quita al marcar la casilla.
+  Sin esto se podía guardar una masterclass virtual sin enlace, y quien se inscribiera se quedaba sin
+  QR (por virtual) y sin enlace (por vacío): **sin nada**.
+- **Un presencial no guarda enlace** aunque haya quedado escrito al marcar y desmarcar la casilla; se
+  envía nulo.
+- **La etiqueta dice "Masterclass virtual en vivo"**, el mismo nombre que usa la app desde hoy, en vez
+  de "Virtual" a secas.
+- **Verificado:** `npx tsc --noEmit` sin errores y `ng build --configuration production` completa —
+  `tsc` no valida plantillas de Angular, así que el build es la comprobación que cuenta aquí. Las dos
+  advertencias que salen (presupuesto de bundle y `qrcode` en CommonJS) son anteriores.
+- **Criterios de QA:**
+  1. **Crear un evento sin marcar la casilla:** no pide enlace y se guarda como presencial.
+  2. **Marcar la casilla:** aparece el campo de enlace.
+  3. **Intentar guardar un virtual sin enlace:** no deja, y explica por qué.
+  4. **Guardar un virtual con enlace** y reabrirlo: la casilla sigue marcada y el enlace conservado.
+  5. **Pasar un evento de virtual a presencial** y guardar: el enlace deja de almacenarse.
+  6. **Abrir un evento anterior a la migración:** sale como presencial y sin enlace.
+  7. **En la app**, una inscripción a ese evento virtual muestra el enlace y no el QR.
+
+### [2026-08-18]: El rol "Miembro de junta o consejo" aparece en el panel
+
+- **Por qué:** la app registra un cuarto perfil, `junta`, que hoy se añade al enum `core.user_role`
+  del backend (`Backend/scripts/20260818_add_junta_user_role.sql`). El panel solo conocía tres, así
+  que al editar una de esas cuentas el desplegable "Rol" salía vacío y al guardar le cambiaba el
+  perfil sin que nadie lo pidiera.
+- **Alcance:**
+  - `core/models/user.model.ts` — `UserRole` suma `'junta'`.
+  - `features/admin/users/user-form-dialog/user-form-dialog.component.html` — nueva opción del
+    desplegable.
+- **La etiqueta es "Miembro de junta o consejo"**, no "Junta", para que coincida con el texto que ve
+  quien se registra en la app ("Quiero ser miembro de junta o consejo").
+- **`profesional` se queda donde estaba.** No lo usa ni la app ni el backend, pero sigue en el enum y
+  puede haber cuentas creadas con él desde este mismo desplegable.
+- **El rol por defecto del formulario sigue siendo `familia`** (`user-form-dialog.component.ts:46`):
+  es el mismo que aplica el backend cuando no llega ninguno.
+- ⚠️ **Depende de la migración del backend.** Hasta que se aplique, guardar un usuario con rol
+  `junta` desde el panel responderá 400.
+- **Verificado:** `npx tsc --noEmit` sin errores. No hay spec de este diálogo; `user.service.spec.ts`
+  usa `profesional` y no se toca.
+- **Criterios de QA:**
+  1. **Editar un usuario** en Usuarios: el desplegable "Rol" ofrece cuatro opciones, con "Miembro de
+     junta o consejo" al final.
+  2. **Abrir un usuario registrado desde la app como junta:** el desplegable aparece con esa opción
+     ya seleccionada, no en blanco.
+  3. **Guardar sin tocar el rol** no lo cambia.
+  4. **Cambiar un usuario a "Miembro de junta o consejo"** y volver a abrirlo: el rol se conservó.
+  5. **Los otros tres roles** siguen guardándose igual que antes.
+
 ### [2026-08-13]: Bandeja de "Mensajes de Contacto"
 
 - **Por qué:** la pantalla Contáctenos de la app se estrenó hoy enviando solo un correo. Sin bandeja,

@@ -27,6 +27,11 @@ export interface Event {
     startDate?: Date;
     endDate?: Date;
     location?: string;
+    /** true = masterclass virtual en vivo; false = presencial. Decide si la
+     *  inscripción recibe QR de acceso o el enlace de la sesión. */
+    isVirtual?: boolean;
+    /** Enlace de la sesión, solo en los virtuales. */
+    accessUrl?: string | null;
     speaker?: string;
     price: number;
     isFree: boolean;

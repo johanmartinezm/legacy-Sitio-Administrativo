@@ -37,11 +37,32 @@
                 </mat-form-field>
             </div>
 
+            <!-- La modalidad decide qué recibe quien se inscribe: los
+                 presenciales entregan QR de acceso; los virtuales, el enlace de
+                 la sesión. Antes del 2026-08-18 se emitía QR para todo. -->
+            <div class="row">
+                <mat-checkbox formControlName="isVirtual" color="primary">
+                    Masterclass virtual en vivo (sin asistencia presencial)
+                </mat-checkbox>
+            </div>
+
             <div class="row">
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Ubicación / Lugar</mat-label>
                     <input matInput formControlName="location" placeholder="Ciudad, Hotel, etc.">
                     <mat-icon matSuffix>location_on</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div class="row" *ngIf="eventForm.get('isVirtual')?.value">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Enlace de acceso a la sesión</mat-label>
+                    <input matInput formControlName="accessUrl" placeholder="https://...">
+                    <mat-icon matSuffix>videocam</mat-icon>
+                    <mat-hint>Solo lo reciben las inscripciones confirmadas.</mat-hint>
+                    <mat-error *ngIf="eventForm.get('accessUrl')?.hasError('required')">
+                        Un evento virtual necesita el enlace de acceso.
+                    </mat-error>
                 </mat-form-field>
             </div>
 
