@@ -93,6 +93,23 @@
         color: #666;
         margin-bottom: 20px;
     }
+
+    // Ámbar y no rojo: el asistente es válido, lo repetido es el escaneo.
+    .success-icon.repetido mat-icon {
+        color: #f9a825;
+    }
+
+    .aviso-repetido {
+        background: #fff8e1;
+        border: 1px solid #f9a825;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 0 0 16px;
+        color: #7a5900;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
 }
 
 .event-info {

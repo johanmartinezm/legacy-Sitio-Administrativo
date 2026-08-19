@@ -2,6 +2,41 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-19]: El escáner avisa cuando el QR ya se había usado
+
+- **Por qué:** el backend deja de registrar una segunda asistencia para el mismo código
+  (`Backend/scripts/20260819_attendance_logs_una_por_inscripcion.sql`, F12.8 del plan de pruebas) y
+  ahora manda `alreadyCheckedIn` en la respuesta del check-in. **El panel es el único sitio donde se
+  escanea**, así que sin este cambio la corrección existiría sin que nadie en la puerta la viera: las
+  dos pantallas seguían siendo idénticas y el mensaje seguía diciendo «¡Check-in exitoso!» sobre una
+  entrada que no se había registrado.
+- **Alcance:**
+  - `features/admin/attendance-scanner/attendance-scanner.component.html` — aviso, icono y el texto de
+    la hora.
+  - `features/admin/attendance-scanner/attendance-scanner.component.ts` — el mensaje emergente.
+  - `features/admin/attendance-scanner/attendance-scanner.component.scss` — el bloque del aviso.
+- **Ámbar y no rojo, a propósito.** El asistente es válido; lo repetido es el escaneo. Un rojo de error
+  invitaría a no dejarlo pasar, que es justo lo contrario de lo que hay que hacer.
+- **Los datos del asistente se siguen mostrando** —nombre, correo, evento y talleres—: en la puerta se
+  necesitan igual, y de hecho más, porque hay que decidir si el código se está compartiendo.
+- **La hora que se ve es la de la primera entrada**, no la del escaneo actual, y la etiqueta cambia a
+  «Entró a las» para que no se lea como si acabara de entrar.
+- **El mensaje emergente también cambia**, y dura más: cinco segundos en vez de tres. Quien escanea mira
+  el aviso, no la tarjeta.
+- **No es un error, así que no se comporta como tal:** la respuesta sigue siendo 200 y la pantalla sigue
+  siendo la de resultado. Si el backend devolviera 409, el escáner caería en su rama de error y no
+  mostraría a quién pertenece el código.
+- **Verificado:** `npx tsc --noEmit` sin errores y `ng build --configuration production` completa. Las
+  dos advertencias que salen (presupuesto de bundle y `qrcode` en CommonJS) son anteriores.
+- **Criterios de QA:**
+  1. **Escanear un QR válido:** icono verde y «¡Check-in exitoso!», como siempre.
+  2. **Escanear ese mismo QR otra vez:** icono ámbar, aviso «Este código ya se había usado» y la nota de
+     que no se registró una entrada nueva.
+  3. **Mirar la hora en esa segunda pantalla:** es la de la primera entrada, con la etiqueta «Entró a las».
+  4. **Comprobar que siguen saliendo** el nombre, el correo y los talleres del asistente.
+  5. **Escanear un QR inventado:** sigue saliendo el mensaje de error de siempre, no el aviso ámbar.
+  6. **Ver los inscritos de ese evento:** cuenta un asistente, no dos.
+
 ### [2026-08-18]: Modalidad y enlace de acceso en el formulario de evento
 
 - **Por qué:** los eventos ya distinguen presencial de virtual

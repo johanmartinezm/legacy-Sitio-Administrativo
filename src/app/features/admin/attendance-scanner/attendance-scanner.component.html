@@ -17,8 +17,18 @@
 
             <!-- Result View -->
             <div class="result-container" *ngIf="result && !loading">
-                <div class="success-icon">
-                    <mat-icon>check_circle</mat-icon>
+                <!--
+                  Una entrada repetida no es un error —el asistente es válido y
+                  hay que ver sus datos— pero tampoco es una entrada nueva. Sin
+                  esta distinción, en la puerta las dos pantallas eran idénticas.
+                -->
+                <div class="success-icon" [class.repetido]="result.alreadyCheckedIn">
+                    <mat-icon>{{ result.alreadyCheckedIn ? 'error_outline' : 'check_circle' }}</mat-icon>
+                </div>
+
+                <div class="aviso-repetido" *ngIf="result.alreadyCheckedIn">
+                    <strong>Este código ya se había usado.</strong>
+                    <span>No se ha registrado una entrada nueva.</span>
                 </div>
 
                 <h2>{{ result.userName }}</h2>
@@ -26,7 +36,10 @@
 
                 <div class="event-info">
                     <h3>{{ result.eventTitle }}</h3>
-                    <p class="time">Hora de entrada: {{ result.checkInTime | date:'shortTime' }}</p>
+                    <p class="time">
+                        {{ result.alreadyCheckedIn ? 'Entró a las' : 'Hora de entrada:' }}
+                        {{ result.checkInTime | date:'shortTime' }}
+                    </p>
                 </div>
 
                 <div class="workshops-list" *ngIf="result.workshops?.length">

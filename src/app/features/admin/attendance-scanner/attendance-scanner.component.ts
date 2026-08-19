@@ -45,10 +45,17 @@ export class AttendanceScannerComponent {
             next: (response) => {
                 this.result = response;
                 this.loading = false;
-                this.snackBar.open('¡Check-in exitoso!', 'Cerrar', {
-                    duration: 3000,
-                    panelClass: ['success-snackbar']
-                });
+                // El backend marca alreadyCheckedIn cuando ese QR ya había
+                // entrado: no registra una asistencia nueva, así que decir
+                // "check-in exitoso" sería mentir sobre lo que acaba de pasar.
+                const repetido = !!response?.alreadyCheckedIn;
+                this.snackBar.open(
+                    repetido ? 'Este código ya se había usado' : '¡Check-in exitoso!',
+                    'Cerrar',
+                    {
+                        duration: repetido ? 5000 : 3000,
+                        panelClass: [repetido ? 'error-snackbar' : 'success-snackbar']
+                    });
             },
             error: (err) => {
                 this.loading = false;
