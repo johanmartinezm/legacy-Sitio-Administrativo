@@ -38,17 +38,24 @@ sin recompilar nada. Si la URL de la API cambia, no hace falta un build nuevo.
 `src/assets/config/config.json`, y `angular.json` copia ambas rutas al mismo destino: uno
 sobrescribe al otro en `dist`. Hoy tienen contenido idéntico; mantenlos así o elimina uno.
 
-**El que no manda (salvo en un sitio): `src/environments/environment.ts`.** Solo existe la variante
-de desarrollo, con `apiUrl: 'http://localhost:8080'`, y `angular.json` no declara
-`fileReplacements`. Un único archivo lo importa:
+**El que no manda: `src/environments/environment.ts`.** Solo existe la variante de desarrollo, con
+`apiUrl: 'http://localhost:8080'`, y `angular.json` no declara `fileReplacements`.
 
-```
-src/app/core/services/payment.service.ts:4   import { environment } from '../../../environments/environment';
+**Ya no lo importa nadie.** Comprobado el 2026-08-18: cero resultados en todo `src/`.
+
+```bash
+grep -rn "environments/environment" src/ --include=*.ts | grep -v "environment.ts:"
 ```
 
-**Consecuencia real: en producción los pagos del panel apuntan a `http://localhost:8080` y
-fallan.** El resto del panel funciona porque pasa por `ConfigService`. Arreglarlo es cambiar ese
-servicio a `ConfigService` como los demás — no hace falta crear `environment.prod.ts`.
+Hasta el 2026-08-11 sí lo importaba `core/services/payment.service.ts`, y por eso **los pagos del
+panel llamaban a `http://localhost:8080` en producción** —es decir, al equipo de quien abriera el
+panel—. Ese servicio pasó a `ConfigService` ese día; ver la entrada del 11 de agosto en
+`qa_bitacora.md`.
+
+⚠️ **El archivo sigue ahí y la trampa con él.** Un servicio nuevo que lo importe apuntará a localhost
+en producción sin que nada avise: compila, arranca y solo falla al llamar. Si aparece uno, el arreglo
+es usar `ConfigService` como los demás, **no** crear `environment.prod.ts`. El `grep` de arriba es la
+comprobación que conviene correr antes de cerrar un despliegue.
 
 ## 2. Compilar
 
