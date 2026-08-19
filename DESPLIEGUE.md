@@ -64,13 +64,37 @@ El build de producción aplica `outputHashing: "all"` y tiene presupuestos de ta
 error** para el bundle inicial y **20 kB por hoja de estilos de componente**. Superarlos hace
 fallar el build, no solo advertir.
 
-## 3. Construir la imagen y levantar
+## 3. Subir el `dist` al servidor
+
+Este paso faltaba en la guía hasta el 2026-08-18; se documenta tal como se hizo ese día.
+
+El proyecto vive en el servidor en un directorio **distinto al del backend**, y el `Dockerfile` de
+allí copia `dist/legacy-app/browser`. Los datos de conexión están en el `.env` del backend
+(`SERVER_IP`, `SSH_USER`), que no está versionado; este repositorio no tiene `.env` propio.
+
+**Respalda el `dist` que está publicado antes de reemplazarlo.** Es el rollback más rápido, y en el
+servidor ya hay varias copias así de despliegues anteriores:
+
+```bash
+ssh "$SSH_USER@$SERVER_IP" 'cd /docker/legacy_frontend && cp -r dist dist.bak.$(date +%Y%m%d_%H%M)'
+```
+
+Sube el build empaquetado; son ~55 archivos y un `scp -r` directo tarda bastante más:
+
+```bash
+tar czf /tmp/dist_panel.tgz -C dist legacy-app
+scp /tmp/dist_panel.tgz "$SSH_USER@$SERVER_IP:/tmp/"
+ssh "$SSH_USER@$SERVER_IP" 'cd /docker/legacy_frontend && rm -rf dist && mkdir dist \
+    && tar xzf /tmp/dist_panel.tgz -C dist && rm /tmp/dist_panel.tgz'
+```
+
+## 4. Construir la imagen y levantar
 
 El `Dockerfile` **no compila**: copia `dist/legacy-app/browser` ya construido. Si te saltas el
 paso 2, publicas la versión anterior sin ningún aviso.
 
 ```bash
-docker compose up -d --build
+ssh "$SSH_USER@$SERVER_IP" 'cd /docker/legacy_frontend && docker compose up -d --build'
 ```
 
 Requiere que la red externa exista en el servidor:
@@ -79,7 +103,7 @@ Requiere que la red externa exista en el servidor:
 docker network ls | grep proxy-net    # si falta: docker network create proxy-net
 ```
 
-## 4. Verificar
+## 5. Verificar
 
 1. **Carga:** abrir `https://legacy.intelyclick.com` y comprobar que aparece el panel con el
    candado del certificado.
