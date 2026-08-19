@@ -1,4 +1,8 @@
-export type UserRole = 'familia' | 'empresa' | 'profesional';
+// Los cuatro valores del enum core.user_role del backend. 'junta' se añadió el
+// 2026-08-18 (Backend/scripts/20260818_add_junta_user_role.sql); sin él, el
+// panel no sabía mostrar el rol de quien se registra por la tercera opción del
+// onboarding de la app.
+export type UserRole = 'familia' | 'empresa' | 'profesional' | 'junta';
 
 export interface User {
     id: string;
