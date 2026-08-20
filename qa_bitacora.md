@@ -28,6 +28,11 @@ Entrada de trabajo para validación de Panel Administrativo.
   mostraría a quién pertenece el código.
 - **Verificado:** `npx tsc --noEmit` sin errores y `ng build --configuration production` completa. Las
   dos advertencias que salen (presupuesto de bundle y `qrcode` en CommonJS) son anteriores.
+- ✅ **Recorrido en producción el 2026-08-20 con el escáner real y un QR de verdad.** El primer escaneo
+  salió verde; el segundo, ámbar con «Este código ya se había usado» y la hora de la primera entrada.
+  El listado de inscritos del evento contó **un** asistente. Quedan por ver dos detalles: que la
+  pantalla de relectura siga mostrando los datos del asistente, y que un QR inventado siga saliendo en
+  rojo y no en ámbar.
 - **Criterios de QA:**
   1. **Escanear un QR válido:** icono verde y «¡Check-in exitoso!», como siempre.
   2. **Escanear ese mismo QR otra vez:** icono ámbar, aviso «Este código ya se había usado» y la nota de
