@@ -147,3 +147,35 @@ body {
     margin-right: 8px; // Slight margin if desired
   }
 }
+// ── Avisos del escáner de asistencia ────────────────────────────────────────
+//
+// El componente pedía `success-snackbar` y `error-snackbar` desde el commit
+// inicial, pero **no estaban definidas en ninguna parte**: los avisos salían en
+// el gris por defecto de Material, así que un check-in correcto y un QR
+// inválido se veían igual. Comprobado el 2026-08-20 recorriendo C5.
+//
+// Van aquí y no en el .scss del componente porque el snackbar se pinta en un
+// overlay, fuera del árbol del componente: los estilos con ámbito de
+// componente no le llegan nunca.
+//
+// Tres estados, y cada uno dice algo distinto:
+//   verde  — entró
+//   ámbar  — ese código ya se había usado; el asistente es válido
+//   rojo   — el código no sirve
+.success-snackbar {
+  --mdc-snackbar-container-color: #1B6248;
+  --mdc-snackbar-supporting-text-color: #FFFFFF;
+  --mat-snack-bar-button-color: #FFFFFF;
+}
+
+.warning-snackbar {
+  --mdc-snackbar-container-color: #B26A00;
+  --mdc-snackbar-supporting-text-color: #FFFFFF;
+  --mat-snack-bar-button-color: #FFFFFF;
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #9B2C22;
+  --mdc-snackbar-supporting-text-color: #FFFFFF;
+  --mat-snack-bar-button-color: #FFFFFF;
+}

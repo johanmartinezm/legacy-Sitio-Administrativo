@@ -2,6 +2,36 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-20]: Los avisos del escáner por fin tienen color
+
+Cierra C5 del recorrido manual.
+
+- **El problema:** el escáner pedía `success-snackbar` y `error-snackbar` desde el commit inicial, pero
+  **ninguna de las dos estaba definida en ninguna hoja de estilos**. Los avisos salían en el gris por
+  defecto de Material, así que un check-in correcto y un QR inválido **se veían igual**.
+- **Salió al confirmar C5**, que pedía que un código inválido saliera en rojo. Estaba escrito en el
+  código y no ocurría.
+- **Van en `styles.scss` y no en el `.scss` del componente**, que es la razón por la que no habrían
+  funcionado igual: el snackbar se pinta en un overlay, fuera del árbol del componente, así que los
+  estilos con ámbito de componente no le llegan nunca.
+- **Tres estados, y cada uno dice algo distinto:**
+  - **verde** — entró;
+  - **ámbar** — ese código ya se había usado, pero el asistente es válido;
+  - **rojo** — el código no sirve.
+- **La relectura pasa de rojo a ámbar**, para que el aviso diga lo mismo que la tarjeta que ya sale en
+  ámbar. Antes usaba `error-snackbar` y mezclaba dos mensajes: «no vale» y «ya entró» no son lo mismo,
+  y en la puerta se actúa distinto.
+- **Se usan las variables de Material** (`--mdc-snackbar-container-color` y compañía) en vez de
+  sobrescribir selectores internos, que cambian entre versiones.
+- **Verificado:** `npx tsc --noEmit` sin errores, `ng build --configuration production` completa, y
+  desplegado: las dos clases viajan en el bundle publicado y el panel responde 200.
+- **Criterios de QA:**
+  1. **Escanear un QR válido:** el aviso sale en verde.
+  2. **Escanear el mismo otra vez:** el aviso sale en ámbar, igual que la tarjeta.
+  3. **Escanear un QR inventado:** el aviso sale en rojo.
+  4. **Comparar los tres:** se distinguen de un vistazo, sin leer el texto.
+  5. **Que el texto siga siendo legible** sobre los tres fondos.
+
 ### [2026-08-19]: El escáner avisa cuando el QR ya se había usado
 
 - **Por qué:** el backend deja de registrar una segunda asistencia para el mismo código

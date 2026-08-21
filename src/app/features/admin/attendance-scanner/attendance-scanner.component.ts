@@ -54,7 +54,9 @@ export class AttendanceScannerComponent {
                     'Cerrar',
                     {
                         duration: repetido ? 5000 : 3000,
-                        panelClass: [repetido ? 'error-snackbar' : 'success-snackbar']
+                        // Ámbar y no rojo, igual que la tarjeta: el
+                        // asistente es válido, lo repetido es el escaneo.
+                        panelClass: [repetido ? 'warning-snackbar' : 'success-snackbar']
                     });
             },
             error: (err) => {
