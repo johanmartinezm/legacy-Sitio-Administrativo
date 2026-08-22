@@ -2,6 +2,28 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-22]: El panel avisa si no pudo guardar un usuario
+
+Contraparte de la entrada del mismo día en `Backend/qa_bitacora.md` («El panel ya puede editar una
+cuenta con fecha de nacimiento»), que trae el detalle del bug de fondo (`PUT /api/users/{id}` devolvía
+400 con cualquier fecha de nacimiento).
+
+- **El problema, solo del lado del panel:** `users-list.component.ts` llamaba a
+  `updateUser`/`createUser` sin callback de `error` en el `subscribe`. Cuando el backend rechazaba el
+  guardado, el diálogo se cerraba igual que si hubiera ido bien —no había ningún síntoma en pantalla—,
+  así que **cualquier fallo de guardado, no solo este, pasaba inadvertido**.
+- **El fix:** ambas llamadas ahora usan `{ next, error }`, y el `error` muestra un `MatSnackBar` con
+  «No se pudo guardar/crear el usuario. Inténtalo de nuevo.», siguiendo el mismo patrón que
+  `banner-list.component.ts` y `reset-password.component.ts`.
+- **Alcance:** `src/app/features/admin/users/users-list/users-list.component.ts`.
+- **Verificado:** `npx tsc --noEmit` limpio, `ng build --configuration production` sin errores.
+  Desplegado a producción junto con el fix del backend.
+- **Criterios de QA:**
+  1. Editar un usuario con datos válidos y guardar: se refresca la lista sin ningún aviso de error.
+  2. Provocar un fallo de guardado (red cortada, o un dato que el backend rechace) y comprobar que
+     aparece el aviso «No se pudo guardar el usuario. Inténtalo de nuevo.» en vez de cerrarse en
+     silencio.
+
 ### [2026-08-20]: Los avisos del escáner por fin tienen color
 
 Cierra C5 del recorrido manual.
