@@ -64,6 +64,13 @@ npm ci                  # o npm install
 ./build_web.sh          # equivale a: ng build --configuration production
 ```
 
+**Si hay un `ng serve` corriendo en local, `npm ci` falla a medias** (comprobado el 22-08):
+`node_modules` se queda con paquetes a medio borrar —`esbuild`, `msgpackr-extract`— porque `ng serve`
+tiene esos binarios abiertos. El síntoma en el build es engañoso: `Could not find the
+'@angular-devkit/build-angular:application' builder's node package`, que no menciona el bloqueo real.
+Hay que cerrar el `ng serve` antes de compilar para desplegar, y volver a levantarlo después con
+`.\levantar.ps1` o `npm start`.
+
 La salida queda en **`dist/legacy-app/browser`**, que es exactamente la ruta que copia el
 `Dockerfile`. Si cambias `outputPath` en `angular.json`, hay que cambiar el `Dockerfile` también.
 
