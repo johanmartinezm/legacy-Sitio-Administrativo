@@ -85,6 +85,15 @@ y la migración que hace falta aplicar.
   `manage-events.component.spec.ts` (arreglado).
 - **Verificado:** `npx tsc --noEmit` limpio, `ng build --configuration production` correcto, y los 12
   specs en verde, incluido el que renderiza la tabla y comprueba que los dos chips salen distintos.
+- **Desplegado el 2026-08-26**, junto con el backend y con el arreglo de la modalidad de aquí arriba.
+  Respaldo del `dist` publicado antes de reemplazarlo (`dist.bak.20260826_1541`) y
+  `docker compose up -d --build`. Comprobado desde fuera: el chunk que trae la columna nueva
+  (`chunk-AFBGIOIF.js`) lo sirve el dominio con 200.
+- **Revisado de paso el daño de la modalidad en producción:** de los siete eventos, solo uno es
+  virtual y **conserva su enlace**. Los otros seis figuran como presenciales; si alguno debería ser
+  virtual —«Planificación Patrimonial en la Era Digital» y «Sesión de bienvenida Legacy Network» son
+  los candidatos por el título—, hay que marcarlo y ponerle su enlace a mano, porque el arreglo evita
+  nuevas pérdidas pero no recupera las viejas.
 - ⚠️ **No se pilotó en el navegador**: la extensión de Chrome no estaba conectada. Los criterios 1 y 2
   son justo eso.
 - **Criterios de QA** (con la migración del backend aplicada):
