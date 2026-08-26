@@ -46,9 +46,13 @@ export class AuthService {
         return this.http.post(`${this.config.apiUrl}/forgot-password`, { email });
     }
 
-    resetPassword(email: string, token: string, newPassword: string): Observable<any> {
+    /**
+     * El correo ya no se manda: el backend lo resuelve desde el token. Iba
+     * también en la URL del enlace del correo, de donde se filtraba al
+     * historial, a la cabecera Referer y a los registros de los proxies.
+     */
+    resetPassword(token: string, newPassword: string): Observable<any> {
         return this.http.post(`${this.config.apiUrl}/reset-password`, {
-            email,
             token,
             new_password: newPassword
         });
