@@ -85,25 +85,14 @@
             <mat-form-field appearance="outline" class="third-width">
                 <mat-label>País</mat-label>
                 <mat-select formControlName="country">
-                    <mat-option value="Colombia">Colombia</mat-option>
-                    <mat-option value="Otro">Otro</mat-option>
+                    <mat-option *ngFor="let pais of paises" [value]="pais">{{ pais }}</mat-option>
                 </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="third-width">
                 <mat-label>Tipo Id</mat-label>
                 <mat-select formControlName="identificationType">
-                    <ng-container *ngIf="userForm.get('country')?.value === 'Colombia'">
-                        <mat-option value="CC">CC - Cédula</mat-option>
-                        <mat-option value="CE">CE - Extranjería</mat-option>
-                        <mat-option value="NIT">NIT - Empresa</mat-option>
-                        <mat-option value="Pasaporte">Pasaporte</mat-option>
-                    </ng-container>
-                    <ng-container *ngIf="userForm.get('country')?.value !== 'Colombia'">
-                        <mat-option value="Pasaporte">Pasaporte</mat-option>
-                        <mat-option value="ID Extranjero">ID Extranjero</mat-option>
-                        <mat-option value="Otro">Otro</mat-option>
-                    </ng-container>
+                    <mat-option *ngFor="let tipo of tiposIdentificacion" [value]="tipo">{{ tipo }}</mat-option>
                 </mat-select>
             </mat-form-field>
 

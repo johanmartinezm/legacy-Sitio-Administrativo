@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { User } from '../../../../core/models/user.model';
 import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
+import { PAISES_LATAM, tiposConValorActual } from '../../../../core/utils/identificacion';
 
 @Component({
     selector: 'app-user-form-dialog',
@@ -30,6 +31,20 @@ import { ImageUploadComponent } from '../../../../core/components/image-upload/i
 export class UserFormDialogComponent {
     userForm: FormGroup;
     isEditMode: boolean;
+
+    readonly paises = PAISES_LATAM;
+
+    /**
+     * Tipos que ofrece el desplegable para el país elegido. Incluye el valor ya
+     * guardado aunque no esté en el catálogo, para no vaciar el campo —ni
+     * borrarlo al guardar— en las cuentas antiguas con `CC` o `CE`.
+     */
+    get tiposIdentificacion(): readonly string[] {
+        return tiposConValorActual(
+            this.userForm?.get('country')?.value,
+            this.userForm?.get('identificationType')?.value,
+        );
+    }
 
     constructor(
         private fb: FormBuilder,
@@ -53,12 +68,27 @@ export class UserFormDialogComponent {
             companyName: [data?.companyName || ''],
             jobTitle: [data?.jobTitle || ''],
             country: [data?.country || 'Colombia'],
-            identificationType: [data?.identificationType || 'CC'],
+            // Sin valor por defecto: el `CC` que había aquí no existe en el
+            // catálogo de la app, así que toda cuenta creada desde el panel
+            // nacía con un tipo que la app no sabe leer.
+            identificationType: [data?.identificationType || ''],
             identificationNumber: [data?.identificationNumber || ''],
             customerStatus: [data?.customerStatus || 'Ya soy cliente'],
             isPublicProfile: [data?.isPublicProfile !== undefined ? data.isPublicProfile : true],
             allowMessagesFromStrangers: [data?.allowMessagesFromStrangers !== undefined ? data.allowMessagesFromStrangers : true],
             showActivity: [data?.showActivity !== undefined ? data.showActivity : true]
+        });
+
+        // Al cambiar de país, el tipo guardado casi nunca sigue valiendo —un RUC
+        // peruano no existe en Colombia—. Se limpia para obligar a elegir de
+        // nuevo, en vez de dejar una combinación que la app no reconocería.
+        // `valueChanges` no dispara con el valor inicial, así que abrir a editar
+        // no toca nada.
+        this.userForm.get('country')!.valueChanges.subscribe((pais: string) => {
+            const tipo = this.userForm.get('identificationType')!;
+            if (tipo.value && !tiposConValorActual(pais, null).includes(tipo.value)) {
+                tipo.setValue('');
+            }
         });
     }
 
