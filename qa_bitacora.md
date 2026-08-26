@@ -2,6 +2,73 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-25]: La pantalla de restablecer contraseña ya no necesita el correo
+
+Contraparte de la entrada del mismo día en `Backend/qa_bitacora.md`, que trae el detalle del problema
+(el correo viajaba en la URL del enlace de recuperación) y la migración que hace falta aplicar.
+
+- **Qué cambia aquí:** `reset-password.component` deja de leer `email` de la URL y `AuthService.
+  resetPassword()` deja de mandarlo; el backend lo resuelve desde el token.
+- **Se quitó el campo «Email» de solo lectura** que mostraba la pantalla. Pedírselo al servidor solo
+  para pintarlo volvería a exponer lo que se acaba de quitar del enlace, y no hace falta: el enlace
+  llega al buzón de su dueño.
+- **Los enlaces ya enviados siguen funcionando**: llevan el token, y el `&email=` sobrante se ignora.
+- **Alcance:** `src/app/core/services/auth.service.ts`,
+  `src/app/features/auth/reset-password/reset-password.component.ts` y `.html`.
+- **Verificado:** `npx tsc --noEmit` limpio y `ng build --configuration production` correcto.
+- **Criterios de QA** (con la migración del backend aplicada):
+  1. **Abrir un enlace de recuperación** y cambiar la contraseña: funciona sin que la pantalla muestre
+     el correo.
+  2. **Abrir `/reset-password` sin token**: sale «El enlace de recuperación no es válido».
+  3. **Un enlace antiguo** con `&email=`: sigue funcionando igual.
+
+### [2026-08-25]: El panel y la app comparten el catálogo de país y tipo de documento
+
+- **El problema:** el panel ofrecía **Colombia/Otro** y **`CC` / `CE` / `NIT` / `Pasaporte`**, mientras
+  la app guarda diecisiete países y nombres largos (`Cédula`, `Cédula de extranjería`, `RUC`, `RFC`,
+  `DNI`...). Como el valor se guarda tal cual, al abrir a editar a alguien registrado desde la app el
+  desplegable **no encontraba su opción y se pintaba vacío**: parecía que el dato no estaba, y guardar
+  lo borraba. Es lo que se vio como «"Tipo Id" no precarga» en la jornada del 21-08; el `FormControl`
+  sí recibía el valor, lo que faltaba era la `mat-option`.
+- **El fix:** `core/utils/identificacion.ts`, espejo de
+  `App-Movil/lib/domain/utils/identificacion_empresarial.dart`. El formulario recorre ese catálogo en
+  vez de tener las opciones escritas a mano.
+- **Las cuentas antiguas no se rompen.** `tiposConValorActual()` añade el valor guardado cuando no
+  está en el catálogo, así que quien tenga `CC` o `ID Extranjero` de antes lo sigue viendo y no lo
+  pierde al guardar otra cosa.
+- **Se quitó el `CC` por defecto** al crear: toda cuenta creada desde el panel nacía con un tipo que
+  la app no sabe leer. Ahora nace vacío y hay que elegir.
+- **Al cambiar de país se limpia el tipo** si deja de ser válido —un RUC peruano no existe en
+  Colombia—, pero abrir a editar no toca nada: `valueChanges` no dispara con el valor inicial.
+- **Ojo, es un espejo a mano:** si se toca el catálogo de la app hay que tocar este. Los dos
+  repositorios son independientes y nada lo verifica solo.
+- **Alcance:** `src/app/core/utils/identificacion.ts` (nuevo),
+  `src/app/core/utils/identificacion.spec.ts` (nuevo, 8 casos),
+  `src/app/features/admin/users/user-form-dialog/user-form-dialog.component.ts` y `.html`.
+- **Verificado:** `npx tsc --noEmit` limpio, `ng build --configuration production` correcto, y los 8
+  specs en verde.
+- **Criterios de QA:**
+  1. **Editar a alguien registrado desde la app** con país distinto de Colombia: «País» y «Tipo Id»
+     aparecen con su valor, no vacíos.
+  2. **Guardar sin tocar nada** y reabrir: los dos campos conservan lo que tenían.
+  3. **Cambiar el país** de Colombia a Perú: el tipo se limpia y ofrece RUC, DNI, Pasaporte y Otro.
+  4. **Editar una cuenta antigua** creada desde el panel (tipo `CC`): sigue mostrando `CC`, y se puede
+     cambiar a `Cédula` sin error.
+  5. **Crear un usuario nuevo**: «Tipo Id» empieza vacío y obliga a elegir.
+
+### [2026-08-25]: El logo de la pantalla de verificación de correo ya carga
+
+- **El problema:** `verify-email.component.html` apuntaba a `assets/images/logo-dark.png`, que **no
+  existe** en `src/assets` ni en `public/` — era la única referencia a ese archivo en todo el
+  repositorio. La pantalla salía con la imagen rota. Es la que abre cualquiera al verificar su correo
+  tras registrarse desde la app, así que es de las primeras que ve un usuario nuevo.
+- **El fix:** apunta a `/assets/images/logo.png`, el mismo que usa el login, con la barra inicial que
+  ya usaban las otras dos pantallas.
+- **Alcance:** `src/app/features/auth/verify-email/verify-email.component.html`.
+- **Verificado:** `ng build --configuration production` correcto.
+- **Criterios de QA:**
+  1. Abrir el enlace de verificación de un registro nuevo: el logo se ve, no el icono de imagen rota.
+
 ### [2026-08-22]: El panel avisa si no pudo guardar un usuario
 
 Contraparte de la entrada del mismo día en `Backend/qa_bitacora.md` («El panel ya puede editar una

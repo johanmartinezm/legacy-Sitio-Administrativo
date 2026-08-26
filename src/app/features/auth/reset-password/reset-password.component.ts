@@ -27,7 +27,6 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class ResetPasswordComponent implements OnInit {
     resetForm: FormGroup;
-    email: string | null = null;
     token: string | null = null;
     isLoading = false;
 
@@ -45,10 +44,12 @@ export class ResetPasswordComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.email = this.route.snapshot.queryParamMap.get('email');
+        // Solo el token. El correo venía antes como segundo parámetro; los
+        // enlaces ya enviados lo siguen llevando y aquí se ignora, así que
+        // siguen funcionando.
         this.token = this.route.snapshot.queryParamMap.get('token');
 
-        if (!this.email || !this.token) {
+        if (!this.token) {
             this.snackBar.open('Enlace inválido o incompleto.', 'Cerrar', { duration: 5000 });
         }
     }
@@ -59,11 +60,11 @@ export class ResetPasswordComponent implements OnInit {
     }
 
     onSubmit(): void {
-        if (this.resetForm.valid && this.email && this.token) {
+        if (this.resetForm.valid && this.token) {
             this.isLoading = true;
             const newPassword = this.resetForm.get('newPassword')?.value;
 
-            this.authService.resetPassword(this.email, this.token, newPassword).subscribe({
+            this.authService.resetPassword(this.token, newPassword).subscribe({
                 next: () => {
                     this.snackBar.open('Contraseña restablecida con éxito.', 'Cerrar', { duration: 3000 });
                     this.router.navigate(['/login']);
