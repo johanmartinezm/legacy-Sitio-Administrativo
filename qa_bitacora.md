@@ -28,6 +28,7 @@ misma fecha): buscar campos que el panel no envía y el `UPDATE` sí escribe.
 - **Alcance:** `src/app/core/services/admin.service.ts`,
   `src/app/core/services/admin-nombres.spec.ts` (nuevo, 4 casos).
 - **Verificado:** `npx tsc --noEmit` limpio y los 4 specs en verde.
+- **Desplegado el 2026-08-26**, con respaldo previo del `dist` publicado.
 - ⚠️ **Los tres administradores de producción siguen sin nombre.** El arreglo no los rellena solo: hay
   que abrir cada uno en el panel, escribir nombre y apellido y guardar.
 - **Criterios de QA:**
