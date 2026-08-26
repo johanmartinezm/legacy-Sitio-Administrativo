@@ -73,6 +73,84 @@ describe('EventService · visibilidad del evento', () => {
         req.flush({ id: 'evt-1', status: 'active' });
     });
 
+    // La modalidad se perdia en los dos sentidos: no se leia del DTO, asi que
+    // abrir a editar una masterclass virtual pintaba la casilla desmarcada; y no
+    // se enviaba en el PUT, asi que el backend —que escribe is_virtual y
+    // access_url siempre— la convertia en presencial y borraba el enlace de la
+    // sesion. Quien se inscribiera despues recibia QR en vez del enlace.
+    it('lee la modalidad y el enlace de la sesion', () => {
+        service.getEventById('evt-1').subscribe(evento => {
+            expect(evento.isVirtual).toBe(true);
+            expect(evento.accessUrl).toBe('https://legacynetworkco.com/aula');
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/evt-1`);
+        req.flush({
+            id: 'evt-1', title: 'Masterclass', workshops: [],
+            isVirtual: true, accessUrl: 'https://legacynetworkco.com/aula'
+        });
+    });
+
+    it('da por presencial un evento cuyo DTO no traiga modalidad', () => {
+        service.getEventById('evt-1').subscribe(evento => {
+            expect(evento.isVirtual).toBe(false);
+            expect(evento.accessUrl).toBeNull();
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/evt-1`);
+        req.flush({ id: 'evt-1', title: 'Encuentro', workshops: [] });
+    });
+
+    it('guardar un evento virtual conserva la modalidad y el enlace', () => {
+        const evento = {
+            id: 'evt-1', title: 'Masterclass', description: '', imageUrl: '',
+            category: '', categoryId: '', workshops: [], price: 0, isFree: true,
+            buttonText: '', actionStatus: 'register', includes: '',
+            isVirtual: true, accessUrl: 'https://legacynetworkco.com/aula'
+        } as Event;
+
+        service.updateEvent(evento).subscribe();
+
+        const req = httpMock.expectOne(`${apiUrl}/evt-1`);
+        expect(req.request.body.isVirtual).toBe(true);
+        expect(req.request.body.accessUrl).toBe('https://legacynetworkco.com/aula');
+        req.flush({ id: 'evt-1' });
+    });
+
+    it('un presencial se guarda sin enlace', () => {
+        const evento = {
+            id: 'evt-1', title: 'Encuentro', description: '', imageUrl: '',
+            category: '', categoryId: '', workshops: [], price: 0, isFree: true,
+            buttonText: '', actionStatus: 'register', includes: '',
+            isVirtual: false, accessUrl: null
+        } as Event;
+
+        service.updateEvent(evento).subscribe();
+
+        const req = httpMock.expectOne(`${apiUrl}/evt-1`);
+        expect(req.request.body.isVirtual).toBe(false);
+        expect(req.request.body.accessUrl).toBeNull();
+        req.flush({ id: 'evt-1' });
+    });
+
+    it('crear un evento virtual tambien lleva la modalidad', () => {
+        // Mismo mapeo que el guardado, asi que se perdia igual al crear.
+        const evento = {
+            id: '', title: 'Masterclass', description: '', imageUrl: '',
+            category: '', categoryId: '', workshops: [], price: 0, isFree: true,
+            buttonText: '', actionStatus: 'register', includes: '',
+            isVirtual: true, accessUrl: 'https://legacynetworkco.com/aula'
+        } as Event;
+
+        service.createEvent(evento).subscribe();
+
+        const req = httpMock.expectOne(apiUrl);
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body.isVirtual).toBe(true);
+        expect(req.request.body.accessUrl).toBe('https://legacynetworkco.com/aula');
+        req.flush({ id: 'evt-9' });
+    });
+
     it('guardar el formulario no envia el estado', () => {
         // Es la propiedad que impide la regresion: si el PUT del evento
         // llevara `status`, el formulario —que no tiene ese campo— lo mandaria

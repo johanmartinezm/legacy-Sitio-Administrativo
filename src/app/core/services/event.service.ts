@@ -129,6 +129,11 @@ export class EventService {
             categoryId: dto.category_id || '',
             price: dto.price || 0,
             location: dto.location || '',
+            // Sin estos dos, abrir un evento virtual a editar pintaba la
+            // casilla desmarcada y el enlace vacio: el formulario los pedia a
+            // este mapeo y aqui no estaban.
+            isVirtual: dto.isVirtual ?? false,
+            accessUrl: dto.accessUrl ?? null,
             speaker: dto.speaker || '',
             startDate: dto.date ? new Date(dto.date) : undefined,
             endDate: dto.end_date ? new Date(dto.end_date) : undefined,
@@ -160,6 +165,15 @@ export class EventService {
             category_id: event.categoryId,
             price: event.price,
             location: event.location,
+            // El PUT del backend escribe is_virtual y access_url siempre. Como
+            // este mapeo no los enviaba, cada guardado desde el panel dejaba
+            // is_virtual en false y borraba el enlace de la sesion: una
+            // masterclass virtual se convertia en presencial al editarla, y
+            // quien se inscribiera despues recibia QR en vez del enlace.
+            // El dialogo ya se encarga de que un presencial llegue con
+            // accessUrl a null.
+            isVirtual: !!event.isVirtual,
+            accessUrl: event.accessUrl ?? null,
             speaker: event.speaker,
             date: event.startDate?.toISOString(),
             end_date: event.endDate?.toISOString(),

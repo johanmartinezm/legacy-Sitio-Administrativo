@@ -2,6 +2,57 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-26]: Editar un evento virtual desde el panel ya no lo convierte en presencial
+
+Salió al tocar los mapeos de `event.service.ts` para la entrada de aquí abajo. **Es pérdida de datos
+en silencio, y estaba en producción.**
+
+- **El problema:** `mapDtoToEvent` no leía `isVirtual` ni `accessUrl`, y `mapEventToDto` tampoco los
+  enviaba. Como el `PUT` del backend escribe `is_virtual` y `access_url` **siempre**, cada guardado
+  desde el panel los dejaba en `false` y `NULL`. O sea: **abrir una masterclass virtual, guardar sin
+  tocar nada, y quedaba convertida en presencial y sin enlace de sesión**. Y como el formulario
+  tampoco leía la modalidad, la casilla aparecía desmarcada al abrir, de modo que ni siquiera había
+  un síntoma visible antes de guardar.
+- **Lo que rompe aguas abajo:** `isVirtual` decide qué recibe quien se inscribe —los presenciales dan
+  QR de acceso, los virtuales el enlace de la sesión—. Quien se inscribiera después del guardado
+  recibía un QR para una masterclass que se da por videollamada.
+- **Comprobado contra el entorno local** antes y después, con el cuerpo exacto que arma el panel:
+
+  ```
+  antes:   true  | https://legacynetworkco.com/aula
+  PUT del panel -> HTTP 200
+  después: false | (null)          <- antes del arreglo
+  después: true  | https://legacynetworkco.com/aula   <- después
+  ```
+
+- **El fix:** los dos campos viajan en los dos mapeos. El diálogo ya hacía su parte bien —manda
+  `accessUrl: null` cuando se desmarca la casilla—, el corte estaba solo en el servicio.
+- **Afecta también a crear**, no solo a editar: es el mismo `mapEventToDto`. Un evento virtual creado
+  desde el panel nacía presencial.
+- ⚠️ **Hay que revisar producción.** Cualquier evento virtual guardado desde el panel desde el
+  2026-08-18 —cuando se añadió la modalidad— habrá perdido su enlace. La consulta:
+
+  ```sql
+  SELECT id, title, is_virtual, access_url FROM events.events WHERE is_virtual = false;
+  ```
+
+  Los que deberían ser virtuales hay que volver a marcarlos y ponerles su enlace a mano.
+- **Alcance:** `src/app/core/services/event.service.ts` (los dos mapeos),
+  `src/app/core/services/event-status.spec.ts` (5 casos más, 10 en total).
+- **Verificado:** `npx tsc --noEmit` limpio, `ng build --configuration production` correcto, 10 specs
+  en verde, y los dos sentidos ejercitados contra el backend local: guardar un virtual conserva
+  modalidad y enlace, y desmarcar la casilla lo pasa a presencial borrando el enlace, que es lo que
+  debe hacer.
+- **Criterios de QA:**
+  1. **Abrir a editar una masterclass virtual**: la casilla «virtual» aparece **marcada** y el enlace
+     de la sesión relleno.
+  2. **Guardar sin tocar nada** y volver a abrir: sigue virtual y con su enlace.
+  3. **Inscribirse desde la app** a esa masterclass: llega el enlace de la sesión, no un QR.
+  4. **Desmarcar la casilla** y guardar: pasa a presencial y el enlace se borra, que es lo correcto.
+  5. **Crear un evento virtual nuevo** desde el panel: nace virtual, no presencial.
+
+---
+
 ### [2026-08-26]: El panel muestra qué eventos están ocultos, y deja reactivarlos
 
 Contraparte de la entrada del mismo día en `Backend/qa_bitacora.md`, que trae el detalle del problema
