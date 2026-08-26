@@ -44,7 +44,9 @@ describe('UserService', () => {
             expect(user.showActivity).toBe(true);
         });
 
-        const req = httpMock.expectOne('http://localhost:8080/api/users');
+        // getUsers() recorre paginas desde el 2026-08-26, asi que la peticion
+        // lleva limit y offset. Se compara por URL sin la query.
+        const req = httpMock.expectOne(r => r.url === 'http://localhost:8080/api/users');
         req.flush([mockDto]);
     });
 

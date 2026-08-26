@@ -48,9 +48,15 @@ export class EventRegistrantsComponent implements OnInit {
     filtro = signal('');
 
     /**
-     * El filtro se aplica en el cliente porque el endpoint devuelve la lista
-     * entera y no acepta parametros de busqueda. Si algun dia pagina, este es
-     * el punto a rehacer: filtrar en el cliente dejaria de ser correcto.
+     * El filtro se aplica en el cliente sobre la lista completa.
+     *
+     * El endpoint pagina desde el 2026-08-26, pero esta pantalla pide todas las
+     * paginas (`getAllEventRegistrants`) justamente para que el filtro y los
+     * totales sigan siendo correctos: buscar solo en la pagina visible diria
+     * "no esta" de alguien que si esta, y `recaudado` mostraria una fraccion.
+     *
+     * Buscar en el servidor no es posible hoy: el nombre, el correo y el
+     * telefono estan cifrados en la base.
      */
     filtrados = computed(() => {
         const texto = this.filtro().trim().toLowerCase();
@@ -95,7 +101,13 @@ export class EventRegistrantsComponent implements OnInit {
             error: () => this.eventTitle.set('')
         });
 
-        this.eventService.getEventRegistrants(this.eventId).subscribe({
+        // Se piden **todos** los inscritos, no una página: esta pantalla busca
+        // por nombre y correo —cifrados en la base, así que el servidor no
+        // puede buscarlos— y calcula los totales, incluido lo recaudado. Con
+        // una página, esa cifra mostraría una fracción sin avisar. El servicio
+        // recorre páginas por dentro, así que ninguna consulta pide más de 200
+        // filas de golpe.
+        this.eventService.getAllEventRegistrants(this.eventId).subscribe({
             next: (lista) => {
                 this.registrants.set(lista);
                 this.isLoading.set(false);

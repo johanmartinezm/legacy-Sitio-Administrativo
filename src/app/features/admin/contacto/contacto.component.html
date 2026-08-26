@@ -75,4 +75,16 @@
       </div>
     </li>
   </ul>
+
+  <!-- Contra el servidor: `length` es el total con el filtro puesto, no lo que
+       hay en pantalla. Se oculta mientras carga para no parpadear. -->
+  <mat-paginator
+    *ngIf="!loading && total > 0"
+    [length]="total"
+    [pageSize]="tamanoDePagina"
+    [pageIndex]="paginaActual"
+    [pageSizeOptions]="tamanosDePagina"
+    (page)="cambiarPagina($event)"
+    aria-label="Páginas de mensajes">
+  </mat-paginator>
 </div>

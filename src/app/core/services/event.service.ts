@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, of, switchMap } from 'rxjs';
 import { Event, Category } from '../models/event.model';
 import { WorkshopRating } from '../models/rating.model';
 import { EventSurveySummary } from '../models/survey.model';
 import { EventRegistrant } from '../models/registrant.model';
 import { ConfigService } from './config.service';
+import { Pagina, LIMITE_MAXIMO_DE_PAGINA } from '../models/pagina';
 
 @Injectable({
     providedIn: 'root'
@@ -84,15 +85,63 @@ export class EventService {
      * Inscritos de un evento. Ruta AdminOnly: con un token que no sea de
      * administrador responde 403.
      *
-     * El listado no pagina —ningún endpoint del backend lo hace todavía—, así
-     * que un evento multitudinario devuelve todas las filas de una vez.
+     * Pagina desde el 2026-08-26. El total llega en `X-Total-Count`, no en el
+     * cuerpo, porque la respuesta sigue siendo un array plano.
+     *
+     * **El orden lo manda el servidor** (fecha de inscripción descendente) y no
+     * se reordena aquí: los nombres están cifrados en la base, así que un orden
+     * alfabético solo puede hacerse sobre las filas ya traídas, y con páginas
+     * eso da una lista que vuelve a empezar en cada página.
      */
-    getEventRegistrants(eventId: string): Observable<EventRegistrant[]> {
-        return this.http.get<any[]>(`${this.apiUrl}/${eventId}/registrations`).pipe(
-            map(list => (list ?? []).map(r => ({
-                ...r,
-                registrationDate: new Date(r.registrationDate)
-            })))
+    getEventRegistrants(eventId: string, limit: number, offset: number): Observable<Pagina<EventRegistrant>> {
+        return this.http.get<any[]>(`${this.apiUrl}/${eventId}/registrations`, {
+            observe: 'response',
+            params: { limit, offset }
+        }).pipe(
+            map(res => {
+                const items = (res.body ?? []).map(r => ({
+                    ...r,
+                    registrationDate: new Date(r.registrationDate)
+                }));
+                const cabecera = Number(res.headers.get('X-Total-Count'));
+                return { items, total: Number.isFinite(cabecera) && cabecera > 0 ? cabecera : items.length };
+            })
+        );
+    }
+
+    /**
+     * **Todos** los inscritos de un evento, recorriendo páginas por dentro.
+     *
+     * La pantalla de inscritos no puede trabajar con una página suelta y no es
+     * capricho: busca por nombre, correo y teléfono —y esos campos están
+     * cifrados en la base, así que el servidor no puede buscarlos—, y además
+     * calcula los totales de confirmados, pendientes, asistencia y **lo
+     * recaudado**. Con una página, esa cifra de dinero mostraría una fracción
+     * del total sin avisar de nada, que es peor que no mostrarla.
+     *
+     * Lo que sí se gana paginando por dentro: ninguna consulta pide más de 200
+     * filas, y el backend descifra como mucho esas 200 de golpe.
+     *
+     * El día que un evento tenga miles de inscritos, la salida no es subir el
+     * techo sino que el servidor devuelva los totales ya calculados y que la
+     * búsqueda se haga contra él, con una columna auxiliar al estilo del
+     * `email_blind_index`.
+     */
+    getAllEventRegistrants(eventId: string): Observable<EventRegistrant[]> {
+        return this.recorrerInscritos(eventId, 0, []);
+    }
+
+    private recorrerInscritos(eventId: string, offset: number, acumulado: EventRegistrant[]): Observable<EventRegistrant[]> {
+        return this.getEventRegistrants(eventId, LIMITE_MAXIMO_DE_PAGINA, offset).pipe(
+            switchMap(pagina => {
+                const todo = acumulado.concat(pagina.items);
+                // Se para también con una página vacía: sin esa guarda, un total
+                // mal calculado dejaría el bucle pidiendo páginas para siempre.
+                if (pagina.items.length === 0 || todo.length >= pagina.total) {
+                    return of(todo);
+                }
+                return this.recorrerInscritos(eventId, offset + LIMITE_MAXIMO_DE_PAGINA, todo);
+            })
         );
     }
 

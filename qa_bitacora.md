@@ -2,6 +2,48 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-26]: Las tablas grandes del panel piden páginas, no la tabla entera
+
+Contraparte de la entrada del mismo día en `Backend/qa_bitacora.md`, que trae el detalle del diseño
+—`X-Total-Count`, el techo de 200 y por qué los inscritos dejan de ordenarse por nombre—.
+
+**Lo que más cuidado exigió no fue paginar, sino no romper lo que dependía de la lista completa.**
+
+- **`getUsers()` tiene cuatro consumidores** y tres de ellos necesitan **todas** las cuentas: el
+  selector de miembros de un grupo, el envío de notificaciones y el selector de inscripción. Si
+  hubiera pasado a devolver la primera página, esos tres se habrían quedado callando a la gente que no
+  cupiera —un grupo al que le faltan miembros— **sin que nada lo avisara**.
+  - **La solución:** `getUsersPage()` para la tabla, y `getUsers()` sigue devolviendo todo pero
+    **recorriendo páginas por dentro**, del tamaño máximo que acepta el backend. Ninguna consulta
+    pide más de 200 filas y ningún consumidor se entera.
+- **La pantalla de inscritos tampoco puede trabajar con una página**, y su propio comentario ya lo
+  avisaba («si algún día pagina, este es el punto a rehacer»). Busca por nombre, correo y teléfono
+  —cifrados en la base, así que el servidor no puede buscarlos— y calcula los totales, **incluido lo
+  recaudado**. Con una página, esa cifra de dinero habría mostrado una fracción sin avisar. Usa
+  `getAllEventRegistrants()`, que recorre páginas igual.
+- **Sí paginan de verdad, contra el servidor:** la tabla de usuarios (50 por página, con selector de
+  25/50/100/200) y la bandeja de contacto (25). No se usa `MatTableDataSource` a propósito: eso
+  pagina en memoria lo que ya se trajo, que es justo lo que se quería evitar.
+- **Al cambiar de filtro en la bandeja se vuelve a la primera página.** Sin eso, pasar de «Todos»
+  —estando en la página 4— a «Nuevos» pediría un offset que en ese filtro no existe y la bandeja
+  saldría vacía como si no hubiera mensajes.
+- **Al borrar la última fila de la última página se retrocede una** y se vuelve a pedir: si no, la
+  tabla queda vacía mientras el paginador dice que hay resultados.
+- **Si la cabecera no llega**, el total cae al largo de la página en vez de a cero: con cero, el
+  paginador diría que no hay resultados mientras se ven filas en pantalla.
+- **Alcance:** `src/app/core/models/pagina.ts` (nuevo), `user.service.ts`, `event.service.ts`,
+  `contacto.service.ts`, `users-list.component.ts` y `.html`, `contacto.component.ts` y `.html`,
+  `event-registrants.component.ts`, `paginacion.spec.ts` (nuevo, 5 casos) y `user.service.spec.ts`
+  (adaptado al contrato nuevo).
+- **Verificado:** `npx tsc --noEmit` limpio, `ng build --configuration production` correcto, y la
+  suite pasa de 53 a 58 specs en verde **con los mismos 7 fallos de antes** —los `should create`
+  generados a los que les faltan providers, comprobado corriendo la suite con los cambios guardados
+  aparte—.
+- ⚠️ **No se pilotó en el navegador**: la extensión de Chrome no estaba conectada. Los criterios de QA
+  de la entrada del backend son justo eso.
+
+---
+
 ### [2026-08-26]: El nombre de un administrador ya se guarda y se ve
 
 Sale de la misma auditoría que el arreglo de la fecha de publicación (ver `Backend/qa_bitacora.md`,

@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../../core/services/user.service';
 import { User } from '../../../../core/models/user.model';
 import { UserFormDialogComponent } from '../user-form-dialog/user-form-dialog.component';
@@ -12,13 +13,24 @@ import { UserFormDialogComponent } from '../user-form-dialog/user-form-dialog.co
 @Component({
     selector: 'app-users-list',
     standalone: true,
-    imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatSnackBarModule],
+    imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatSnackBarModule, MatPaginatorModule],
     templateUrl: './users-list.component.html',
     styleUrls: ['./users-list.component.scss']
 })
 export class UsersListComponent implements OnInit {
     displayedColumns: string[] = ['name', 'email', 'identification', 'status', 'role', 'company', 'actions'];
     users = signal<User[]>([]);
+
+    /**
+     * La tabla pide una página al servidor, no la tabla entera.
+     *
+     * Antes se traía todo de una vez y **cada fila se descifra en el backend**,
+     * así que el coste crecía con el número de cuentas, no con lo que se ve.
+     */
+    total = signal(0);
+    tamanoDePagina = 50;
+    paginaActual = 0;
+    readonly tamanosDePagina = [25, 50, 100, 200];
 
     constructor(private userService: UserService, private dialog: MatDialog, private snackBar: MatSnackBar) { }
 
@@ -27,9 +39,26 @@ export class UsersListComponent implements OnInit {
     }
 
     loadUsers() {
-        this.userService.getUsers().subscribe(data => {
-            this.users.set(data);
-        });
+        this.userService.getUsersPage(this.tamanoDePagina, this.paginaActual * this.tamanoDePagina)
+            .subscribe(pagina => {
+                this.users.set(pagina.items);
+                this.total.set(pagina.total);
+
+                // Si se borra la última fila de la última página, esa página deja
+                // de existir y la tabla se quedaría vacía con el paginador
+                // diciendo que hay resultados. Se retrocede una y se vuelve a
+                // pedir.
+                if (pagina.items.length === 0 && this.paginaActual > 0) {
+                    this.paginaActual--;
+                    this.loadUsers();
+                }
+            });
+    }
+
+    cambiarPagina(evento: PageEvent) {
+        this.paginaActual = evento.pageIndex;
+        this.tamanoDePagina = evento.pageSize;
+        this.loadUsers();
     }
 
     openUserDialog(user?: User) {

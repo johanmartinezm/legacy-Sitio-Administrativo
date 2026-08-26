@@ -71,4 +71,16 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+
+    <!-- El paginador va contra el servidor: `length` es el total de cuentas, no
+         las de esta página, y cada cambio vuelve a pedir. Por eso no se usa
+         MatTableDataSource, que paginaría en memoria lo que ya se trajo. -->
+    <mat-paginator
+        [length]="total()"
+        [pageSize]="tamanoDePagina"
+        [pageIndex]="paginaActual"
+        [pageSizeOptions]="tamanosDePagina"
+        (page)="cambiarPagina($event)"
+        aria-label="Páginas de usuarios">
+    </mat-paginator>
 </div>

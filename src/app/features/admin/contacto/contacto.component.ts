@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { ContactoService } from '../../../core/services/contacto.service';
 import {
   EstadoContacto,
@@ -17,7 +18,7 @@ import {
 @Component({
   selector: 'app-contacto',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatPaginatorModule],
   templateUrl: './contacto.component.html',
   styleUrls: ['./contacto.component.scss'],
 })
@@ -34,6 +35,18 @@ export class ContactoComponent implements OnInit {
 
   readonly etiquetas = ETIQUETAS_ESTADO_CONTACTO;
 
+  /**
+   * La bandeja pide una página. Es la lista que más crece de todo el panel:
+   * gana una fila cada vez que alguien escribe y nadie la vacía nunca.
+   *
+   * 25 por página porque cada mensaje trae su cuerpo entero, así que las filas
+   * pesan mucho más que las de una tabla de usuarios.
+   */
+  total = 0;
+  tamanoDePagina = 25;
+  paginaActual = 0;
+  readonly tamanosDePagina = [25, 50, 100];
+
   constructor(private service: ContactoService) {}
 
   ngOnInit(): void {
@@ -45,9 +58,10 @@ export class ContactoComponent implements OnInit {
     this.error = null;
 
     const estado = this.filtro === 'all' ? undefined : this.filtro;
-    this.service.listar(estado).subscribe({
-      next: (data) => {
-        this.mensajes = data ?? [];
+    this.service.listar(estado, this.tamanoDePagina, this.paginaActual * this.tamanoDePagina).subscribe({
+      next: (pagina) => {
+        this.mensajes = pagina.items;
+        this.total = pagina.total;
         this.loading = false;
       },
       error: (err) => {
@@ -64,6 +78,17 @@ export class ContactoComponent implements OnInit {
 
   cambiarFiltro(filtro: EstadoContacto | 'all'): void {
     this.filtro = filtro;
+    this.abierto = null;
+    // Se vuelve a la primera página. Sin esto, pasar de «Todos» —donde se
+    // estaba en la página 4— a «Nuevos» pediría un offset que en el filtro
+    // nuevo no existe, y la bandeja saldría vacía como si no hubiera mensajes.
+    this.paginaActual = 0;
+    this.cargar();
+  }
+
+  cambiarPagina(evento: PageEvent): void {
+    this.paginaActual = evento.pageIndex;
+    this.tamanoDePagina = evento.pageSize;
     this.abierto = null;
     this.cargar();
   }
