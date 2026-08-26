@@ -2,6 +2,52 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-26]: El panel muestra qué eventos están ocultos, y deja reactivarlos
+
+Contraparte de la entrada del mismo día en `Backend/qa_bitacora.md`, que trae el detalle del problema
+y la migración que hace falta aplicar.
+
+- **El problema, del lado del panel:** desde el 25-08 la app solo lista los eventos `active`, pero
+  esta pantalla no conocía esa columna. Un evento oculto se veía aquí **exactamente igual** que uno
+  visible —ni una marca que los distinguiera— y no había ninguna forma de volver a mostrarlo: el
+  formulario no envía `status` y el `PUT` del evento lo ignora, así que solo se podía por SQL.
+- **El fix:** columna «En la app» con un chip Visible/Oculto, y un botón de ojo que llama a
+  `EventService.updateStatus()`, contra la ruta nueva `PUT /api/events/{id}/status`.
+- **`updateStatus` va aparte de `updateEvent` a propósito.** Si el guardado del formulario llevara
+  `status`, lo mandaría vacío —el formulario no tiene ese campo— y el evento dejaría de verse en la
+  app al editarlo. Hay un spec que fija que el `PUT` del formulario **no** envía el campo.
+- **Un DTO sin `status` se da por visible**, no por oculto: pintar «Oculto» sobre eventos que la app
+  sí está mostrando sería peor que no pintar nada.
+- **Se pide confirmación** antes de cambiarlo, porque el efecto no se ve en esta pantalla sino en la
+  app de quien la tenga abierta. Y el `subscribe` lleva callback de `error` con `MatSnackBar`: sin él
+  un fallo dejaría la lista igual que estaba y parecería que se guardó, que es el mismo descuido que
+  tenía el guardado de usuarios hasta el 22-08.
+- **De paso, los tooltips de esta pantalla vuelven a funcionar.** Los cinco botones de acciones usaban
+  `matTooltip` sin que nadie importara `MatTooltipModule`, así que ninguno mostraba nada al pasar el
+  ratón. Hacía falta para el botón nuevo, cuyo icono no se explica solo.
+- **Y el spec generado de la pantalla, que fallaba desde siempre**, ya pasa: le faltaban
+  `HttpClientTestingModule`, `RouterModule` y `NoopAnimationsModule`.
+- **Alcance:** `src/app/core/models/event.model.ts`, `src/app/core/services/event.service.ts`,
+  `src/app/features/admin/manage-events/manage-events.component.ts`, `.html` y `.scss`,
+  `src/app/core/services/event-status.spec.ts` (nuevo, 5 casos),
+  `src/app/features/admin/manage-events/visibilidad-evento.spec.ts` (nuevo, 6 casos),
+  `manage-events.component.spec.ts` (arreglado).
+- **Verificado:** `npx tsc --noEmit` limpio, `ng build --configuration production` correcto, y los 12
+  specs en verde, incluido el que renderiza la tabla y comprueba que los dos chips salen distintos.
+- ⚠️ **No se pilotó en el navegador**: la extensión de Chrome no estaba conectada. Los criterios 1 y 2
+  son justo eso.
+- **Criterios de QA** (con la migración del backend aplicada):
+  1. **Abrir «Administrar Eventos»**: hay una columna «En la app» con «Visible» en verde y «Oculto»
+     en gris, y un botón de ojo en las acciones.
+  2. **Pasar el ratón por los botones de acciones**: ahora sí sale el texto de cada uno.
+  3. **Ocultar un evento visible** y aceptar la confirmación: el chip cambia, sale el aviso abajo y el
+     evento desaparece del listado de la app.
+  4. **Volver a mostrarlo**: reaparece en la app.
+  5. **Cancelar la confirmación**: no cambia nada.
+  6. **Editar un evento oculto** con el formulario de siempre y guardar: sigue oculto.
+
+---
+
 ### [2026-08-25]: La pantalla de restablecer contraseña ya no necesita el correo
 
 Contraparte de la entrada del mismo día en `Backend/qa_bitacora.md`, que trae el detalle del problema

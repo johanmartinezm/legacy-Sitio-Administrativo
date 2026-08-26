@@ -54,6 +54,19 @@ export class EventService {
         );
     }
 
+    /**
+     * Oculta un evento de la app o lo vuelve a mostrar.
+     *
+     * Va por su propia ruta y no por updateEvent() a proposito: el PUT del
+     * evento **no** escribe `status`, porque este formulario no lo envia y
+     * meterlo alli lo dejaria vacio en cada guardado; como la app lista solo
+     * los `active`, el evento desapareceria al editarlo. Hasta el 2026-08-26 no
+     * habia forma de reactivar un evento desde el panel: solo por SQL.
+     */
+    updateStatus(id: string, status: 'active' | 'inactive'): Observable<any> {
+        return this.http.put(`${this.apiUrl}/${id}/status`, { status });
+    }
+
     deleteEvent(id: string): Observable<any> {
         return this.http.delete(`${this.apiUrl}/${id}`);
     }
@@ -124,6 +137,7 @@ export class EventService {
             actionStatus: dto.actionStatus || 'register',
             buttonText: dto.buttonText || '',
             includes: dto.includes || '',
+            status: dto.status || 'active',
             workshops: dto.workshops ? dto.workshops.map((w: any) => ({
                 id: w.id,
                 name: w.name,

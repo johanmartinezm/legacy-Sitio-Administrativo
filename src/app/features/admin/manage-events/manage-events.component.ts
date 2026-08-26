@@ -7,6 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
+// El template ya usaba matTooltip en los cinco botones de acciones sin importar
+// su modulo, asi que ninguno mostraba nada al pasar el raton. Hace falta para
+// que se lea el de ocultar/mostrar, que es el unico cuyo icono no se explica
+// solo.
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { EventService } from '../../../core/services/event.service';
 import { Event } from '../../../core/models/event.model';
 import { EventFormDialogComponent } from '../event-form-dialog/event-form-dialog.component';
@@ -25,6 +31,8 @@ import { CalendarViewComponent } from '../calendar-view/calendar-view.component'
     MatTableModule,
     MatDialogModule,
     MatTabsModule,
+    MatTooltipModule,
+    MatSnackBarModule,
     CalendarViewComponent
   ],
   templateUrl: './manage-events.component.html',
@@ -32,12 +40,13 @@ import { CalendarViewComponent } from '../calendar-view/calendar-view.component'
 })
 export class ManageEventsComponent implements OnInit {
   events: Event[] = [];
-  displayedColumns: string[] = ['image', 'title', 'description', 'workshops', 'actions'];
+  displayedColumns: string[] = ['image', 'title', 'description', 'workshops', 'status', 'actions'];
 
   constructor(
     private eventService: EventService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -115,6 +124,46 @@ export class ManageEventsComponent implements OnInit {
    */
   viewRegistrants(event: Event) {
     this.router.navigate(['/admin/events', event.id, 'registrations']);
+  }
+
+  /**
+   * Oculta un evento de la app o lo vuelve a mostrar.
+   *
+   * Hasta el 2026-08-26 esto no se podia hacer desde ninguna pantalla: la
+   * columna `status` decide si el evento sale en la app, pero el formulario no
+   * la enviaba y el PUT del evento la ignora, asi que un evento oculto solo se
+   * recuperaba por SQL. Y en esta misma lista se veia igual que los demas.
+   *
+   * Se pide confirmacion porque el efecto no se ve aqui, sino en la app de
+   * quien la tenga abierta.
+   */
+  toggleStatus(event: Event) {
+    const ocultar = event.status !== 'inactive';
+    const pregunta = ocultar
+      ? `¿Ocultar "${event.title}" de la aplicación? Dejará de aparecer en el listado. Quien ya esté inscrito conserva su credencial.`
+      : `¿Volver a mostrar "${event.title}" en la aplicación?`;
+
+    if (!confirm(pregunta)) {
+      return;
+    }
+
+    const nuevo = ocultar ? 'inactive' : 'active';
+    this.eventService.updateStatus(event.id, nuevo).subscribe({
+      next: () => {
+        this.snackBar.open(
+          ocultar ? 'El evento ya no se ve en la aplicación.' : 'El evento vuelve a verse en la aplicación.',
+          'Cerrar',
+          { duration: 4000 }
+        );
+        this.loadEvents();
+      },
+      // Sin este callback el fallo no dejaria rastro: la lista se quedaria como
+      // estaba y pareceria que el cambio se guardo. Mismo patron que
+      // users-list y banner-list.
+      error: () => {
+        this.snackBar.open('No se pudo cambiar la visibilidad del evento. Inténtalo de nuevo.', 'Cerrar', { duration: 5000 });
+      }
+    });
   }
 
   deleteEvent(id: string) {

@@ -39,4 +39,9 @@ export interface Event {
     actionStatus: string;
     attendeesLimit?: number;
     includes: string;
+    /** 'active' = se ve en la app; 'inactive' = solo se ve aquí, en el panel.
+     *  Es de solo lectura desde el formulario: cambiarlo va por su propia
+     *  llamada (EventService.updateStatus), porque el PUT del evento no
+     *  escribe este campo. */
+    status?: string;
 }
