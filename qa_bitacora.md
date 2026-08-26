@@ -2,6 +2,43 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-08-26]: El nombre de un administrador ya se guarda y se ve
+
+Sale de la misma auditoría que el arreglo de la fecha de publicación (ver `Backend/qa_bitacora.md`,
+misma fecha): buscar campos que el panel no envía y el `UPDATE` sí escribe.
+
+- **El problema:** el panel manda `firstName`/`lastName` y el backend lee `first_name`/`last_name`
+  —el payload de `RegisterAdmin` y `domain.AdminUser`—, así que recibía cadena vacía y la escribía.
+  `email` y `role` sí funcionaban, por ser una sola palabra: eso es lo que ocultaba el fallo.
+- **En producción los tres administradores tienen el nombre y el apellido en blanco.** No es que se
+  hubieran borrado: nunca se guardaron. Y la lista los pintaba vacíos porque leía `admin.firstName`
+  de un DTO que trae `first_name`.
+- **Reproducido contra el backend local**, que es la prueba de que era eso y no otra cosa:
+
+  ```
+  PUT con {"firstName":"Camel","lastName":"Case"}   -> HTTP 200, en la base quedó  [ | ]
+  PUT con {"first_name":"QA","last_name":"Status"}  -> HTTP 200, en la base quedó  [QA|Status]
+  ```
+
+- **El fix:** `aDto()` y `desdeDto()` en `AdminService`, que traducen en las dos direcciones. Mismo
+  patrón que ya usaba `user.service.ts`, que por eso no tenía este problema.
+- **La contraseña va aparte** en el alta: es el único campo que no vive en el modelo.
+- **Un administrador sin nombre no rompe la lista**: `desdeDto` devuelve cadena vacía, que es como
+  están los tres de producción hasta que alguien los reedite.
+- **Alcance:** `src/app/core/services/admin.service.ts`,
+  `src/app/core/services/admin-nombres.spec.ts` (nuevo, 4 casos).
+- **Verificado:** `npx tsc --noEmit` limpio y los 4 specs en verde.
+- ⚠️ **Los tres administradores de producción siguen sin nombre.** El arreglo no los rellena solo: hay
+  que abrir cada uno en el panel, escribir nombre y apellido y guardar.
+- **Criterios de QA:**
+  1. **Abrir «Administradores»**: la columna «Nombre» sigue vacía en los tres (todavía no se han
+     reeditado), pero ya no es un fallo del panel.
+  2. **Editar uno**, ponerle nombre y apellido y guardar: la lista los muestra al recargar.
+  3. **Crear un administrador nuevo** con nombre: aparece con su nombre, no en blanco.
+  4. **Volver a abrirlo a editar**: los dos campos vienen rellenos.
+
+---
+
 ### [2026-08-26]: Editar un evento virtual desde el panel ya no lo convierte en presencial
 
 Salió al tocar los mapeos de `event.service.ts` para la entrada de aquí abajo. **Es pérdida de datos
