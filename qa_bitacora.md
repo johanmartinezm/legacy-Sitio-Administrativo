@@ -2,6 +2,59 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-03]: `ng test` vuelve a servir para algo: de 7 rojos a 84 verdes
+
+Siete specs llevaban fallando desde que se generaron, y **ninguno era un fallo del panel**: eran los
+archivos que escribe `ng generate` y que nadie llegó a cablear. El daño de eso no es que no prueben
+nada; es que **acostumbran a ver `ng test` en rojo**, y a partir de ahí la suite deja de avisar de
+nada porque siete rojos de fondo esconden el octavo, que sí importaría.
+
+Lo que le faltaba a cada uno, que resultó ser siempre lo mismo —proveedores— salvo el primero:
+
+| Spec | Qué le faltaba |
+|---|---|
+| `AppComponent` · «should render title» | **La prueba estaba mal, no el código.** Buscaba `<h1>Hello, legacy-app</h1>`, la plantilla de ejemplo del CLI que este proyecto borró en su primera pantalla. Ahora comprueba lo que AppComponent sí hace: montar el `<router-outlet>` |
+| `MainLayoutComponent` | El router y las animaciones (`NG05105: Unexpected synthetic listener @transform.start`) |
+| `LoginComponent` | Las animaciones: los campos de Material las usan para el mensaje de error (`@transitionMessages`) |
+| `EventFormDialogComponent` | `HttpClient` —pide las categorías—, animaciones, y un **adaptador de fechas** para el datepicker |
+| `ForumsComponent` | `HttpClient`: pide los foros en `ngOnInit` |
+| `ForumFlaggedPostsComponent` | `HttpClient`, mismo caso |
+| `ForumTreeComponent` | `HttpClient`, el router y sobre todo la **ruta activa**: lee el id del foro de la URL |
+
+- **Se arreglaron, no se borraron.** Un «se construye» con `detectChanges()` recorre la plantilla de
+  verdad, así que salta el día que alguien añada un servicio al constructor y se olvide de
+  declararlo. Es justo el fallo que **no se ve compilando**, porque un componente standalone que no
+  declara lo que usa compila igual y revienta al abrir la pantalla.
+- **Comprobado que las pruebas tienen dientes**, no solo que están en verde: se le añadió a mano una
+  dependencia sin proveer a `ForumsComponent` y la prueba falló. Restaurado después.
+- **Se moderniza el andamiaje de paso**: `provideHttpClient()` + `provideHttpClientTesting()`,
+  `provideRouter([])` y `provideNoopAnimations()` en lugar de `HttpClientTestingModule` y
+  `RouterTestingModule`, que están obsoletos en Angular 18.
+- **El adaptador de fechas es el mismo que usa la app** (`provideNativeDateAdapter`, de
+  `app.config.ts`) y no otro cualquiera: si algún día se cambia allí, que la prueba refleje lo que
+  corre de verdad.
+- Las peticiones que los componentes lanzan al arrancar **se quedan en la cola de pruebas sin
+  responder**, a propósito: aquí interesa que la pantalla se monte, no qué devuelve el servidor.
+
+- **Alcance:** `src/app/app.component.spec.ts`,
+  `src/app/core/layout/main-layout/main-layout.component.spec.ts`,
+  `src/app/features/auth/login/login.component.spec.ts`,
+  `src/app/features/admin/event-form-dialog/event-form-dialog.component.spec.ts`,
+  `src/app/features/admin/forums/forums.component.spec.ts`,
+  `src/app/features/admin/forums/forum-tree/forum-tree.component.spec.ts`,
+  `src/app/features/admin/forum-flagged-posts/forum-flagged-posts.component.spec.ts`.
+  **Ni una línea de código de producción.**
+- **Verificado:** `ng test` → **84/84**, desde 77/84. Y `ng build --configuration production` sigue
+  sin errores.
+
+- **Criterios de QA:**
+  1. `npx ng test --watch=false --browsers=ChromeHeadless` termina en `TOTAL: 84 SUCCESS`.
+  2. Añadir a mano un servicio al constructor de cualquiera de esos componentes y volver a correr:
+     su prueba falla. Deshacerlo: vuelve a pasar. Eso es lo que estas pruebas compran.
+  3. `ng build --configuration production` sigue sin errores; no se tocó código de producción.
+
+---
+
 ### [2026-09-03]: La carga va por tandas, porque medida no cabía en una petición
 
 Sale de medir lo que el ensayo de la fase 4 no había medido: **cuánto tarda de verdad una carga
