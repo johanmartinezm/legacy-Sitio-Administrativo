@@ -72,6 +72,16 @@ export class ImportarUsuariosDialogComponent {
     filas = signal<FilaImportacion[]>([]);
     columnasIgnoradas = signal<string[]>([]);
     columnasFaltantes = signal<string[]>([]);
+    /**
+     * En qué fila de la hoja se encontraron las cabeceras.
+     *
+     * Se enseña porque el archivo del cliente **no las trae en la primera** —trae
+     * su título arriba y un renglón en blanco— y el lector tiene que buscarlas.
+     * Si alguna vez se equivoca de fila, quien mira el informe puede darse
+     * cuenta; sin decirlo, el error saldría como «faltan columnas» y nadie
+     * sabría por qué.
+     */
+    filaDeCabeceras = signal(0);
 
     informe = signal<ResultadoImportacion | null>(null);
     /** True cuando el informe de arriba corresponde a una carga ya aplicada. */
@@ -169,6 +179,7 @@ export class ImportarUsuariosDialogComponent {
             this.filas.set(leido.filas);
             this.columnasIgnoradas.set(leido.columnasIgnoradas);
             this.columnasFaltantes.set(leido.columnasFaltantes);
+            this.filaDeCabeceras.set(leido.filaDeCabeceras);
 
             if (leido.filas.length === 0) {
                 this.errorLectura.set('El archivo no tiene ninguna fila con datos.');
@@ -246,6 +257,7 @@ export class ImportarUsuariosDialogComponent {
         this.filas.set([]);
         this.columnasIgnoradas.set([]);
         this.columnasFaltantes.set([]);
+        this.filaDeCabeceras.set(0);
         this.informe.set(null);
         this.aplicado.set(false);
         this.errorLectura.set('');

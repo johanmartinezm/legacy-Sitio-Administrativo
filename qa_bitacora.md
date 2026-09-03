@@ -2,6 +2,77 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-03]: Carga masiva · fase 4, el ensayo con el archivo real
+
+Cuarta y última fase del plan (`reports/20260826_plan_carga_masiva.md` §5). No traía código previsto
+—es simular, revisar el informe y cargar— pero el archivo del cliente sacó **dos fallos que ningún
+archivo inventado podía enseñar**. Los dos estaban en el lector, y los dos están corregidos.
+
+🔴 **Las cabeceras no están en la primera fila, y el lector daba por hecho que sí.**
+
+El archivo que entrega la plataforma de tickets trae su título en una fila, un renglón en blanco y
+**las cabeceras en la cuarta** —lo decía el propio plan en §1 y se pasó por alto al escribir la fase
+2, que se probó con un archivo generado a mano con las cabeceras arriba—. `sheet_to_json` sin más
+toma la primera fila del rango como encabezado, así que tomaba el título como única columna y
+bautizaba las demás `__EMPTY`, `__EMPTY_1`… El resultado: el panel decía que al archivo le faltaban
+las catorce columnas y **no dejaba ni revisarlo**.
+
+Falla del lado seguro —no importa basura, se planta— pero el archivo real no se podía cargar, que era
+justo el trabajo. Ahora el lector **busca** la fila de cabeceras: mira las quince primeras y se queda
+con la que reconoce más columnas conocidas, no con la primera que reconozca alguna. Con menos de tres
+aciertos dice que no reconoce el archivo, en vez de importar cualquier cosa.
+
+De paso, el número de fila de cada problema pasó a calcularse desde la cabecera encontrada, así que
+vuelve a ser **el número que se ve en Excel**: con el archivo real, la primera fila con datos es la 5.
+Antes habría dicho 2, y quien fuera a corregirla habría mirado el renglón equivocado.
+
+🔴 **Se le comía el punto final a los nombres de empresa.**
+
+`limpiar()` recortaba la puntuación de **todos** los campos, así que «Agroandina S.A.S.» entraba a la
+base como «Agroandina S.A.S» —o sea, casi cualquier empresa colombiana— y una dirección escrita con
+punto final lo perdía. La regla del plan es recortar la puntuación **antes de comparar contra un
+catálogo**, y eso ahora lo hace `limpiarParaCatalogo`, que se usa solo donde toca: el tipo de
+documento, la casilla de términos y la fecha. Lo demás es texto libre y se guarda tal cual llega.
+
+**Lo demás del ensayo salió como decía el plan**, sin sorpresas: el archivo real se lee entero, se
+reconocen sus 15 columnas y se ignoran sus 27, y las trampas que anota el plan —la casilla que llega
+como `1.0`, la columna «Dirección:» con dos puntos, la puntuación pegada en el tipo— se resuelven
+solas.
+
+**Se añade un `.spec` para el lector** con los dos fallos convertidos en prueba, más los acentos, las
+filas vacías de la cola y el archivo que no es del formato. Se apoya en un `.xls` de verdad —BIFF,
+como el del cliente— construido dentro de la propia prueba.
+
+**Y se enseña en pantalla en qué fila se encontraron las cabeceras**, al lado del nombre del archivo.
+Es barato y evita el peor escenario: que el buscador acierte de fila equivocada algún día y el error
+salga disfrazado de «faltan columnas», sin nada que apunte a la causa.
+
+- **Alcance:** `src/app/core/utils/lector-importacion.ts` (busca la fila de cabeceras, numera las
+  filas desde ella, separa `limpiar` de `limpiarParaCatalogo`),
+  `src/app/core/utils/lector-importacion.spec.ts` (nuevo, 10 casos),
+  `src/app/features/admin/importaciones/importar-usuarios-dialog/*` (muestra la fila de cabeceras y
+  distingue «faltan columnas» de «no reconozco el archivo»).
+- **Verificado:** `ng test --include='**/lector-importacion.spec.ts'` → 10/10.
+  `ng build --configuration production` sin errores. Y el lector **real**, ejecutado contra el
+  archivo **real** del cliente (`docs/Formato de carga masiva Legacy Summit 2026 (1).xls`): antes
+  decía que faltaban 14 columnas; ahora no falta ninguna e ignora 27, que son exactamente las que el
+  plan descarta.
+
+- **Criterios de QA:**
+  1. Abrir *Importar asistentes* y elegir el archivo original del cliente, sin tocarlo: al lado del
+     nombre dice «cabeceras en la fila 4» y **no** aparece ningún aviso de columnas que faltan.
+  2. Con un archivo lleno, los números de fila del informe de problemas coinciden con los de Excel:
+     ir a esa fila en la hoja y comprobar que es la que el mensaje describe.
+  3. Una empresa escrita «Agroandina S.A.S.» llega al perfil con su punto final.
+  4. Un tipo de documento escrito «Pasaporte,» —con coma, como lo trae el archivo— se traduce a
+     «Pasaporte» y no da error de catálogo.
+  5. Un archivo cualquiera que no sea el formato dice que no se reconocen las cabeceras, no una lista
+     de catorce columnas que no significa nada para quien lo lee.
+  6. Un archivo con las cabeceras en la primera fila —los que se venían usando para probar— se sigue
+     leyendo igual.
+
+---
+
 ### [2026-09-03]: Carga masiva · fase 3, importar asistentes y generar credenciales
 
 Tercera fase del plan (`reports/20260826_plan_carga_masiva.md` §5). El motor y las dos rutas son del

@@ -24,15 +24,23 @@
             <input #entrada type="file" accept=".xls,.xlsx" hidden (change)="archivoElegido($event)">
             <span class="archivo" *ngIf="nombreArchivo()">
                 {{ nombreArchivo() }} — {{ filas().length }} fila(s) con datos
+                <ng-container *ngIf="filaDeCabeceras() > 0">
+                    · cabeceras en la fila {{ filaDeCabeceras() }}
+                </ng-container>
             </span>
         </div>
     </div>
 
     <p class="error" *ngIf="errorLectura()">{{ errorLectura() }}</p>
 
-    <p class="error" *ngIf="columnasFaltantes().length > 0">
+    <p class="error" *ngIf="columnasFaltantes().length > 0 && filaDeCabeceras() > 0">
         Al archivo le faltan columnas que hacen falta para crear las cuentas:
         <strong>{{ columnasFaltantes().join(', ') }}</strong>.
+    </p>
+
+    <p class="error" *ngIf="columnasFaltantes().length > 0 && filaDeCabeceras() === 0 && !errorLectura()">
+        No se reconocieron las cabeceras del archivo. Tiene que ser el formato de carga masiva de
+        asistentes, con su fila de encabezados; si se editó a mano, comprueba que esa fila sigue ahí.
     </p>
 
     <p class="nota" *ngIf="columnasIgnoradas().length > 0">
