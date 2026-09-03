@@ -2,6 +2,45 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-03]: Desplegado a producción — las dos entradas de importación y el resto
+
+`carga-masiva` fusionada a `main` (avance rápido, sin divergencia) y publicada junto con el backend.
+Con ella entró también el módulo **Páginas** de Legacy Board, que venía en la rama base.
+
+**Comprobaciones previas de la guía, hechas antes de compilar:**
+
+- `grep -rn "environments/environment" src/ --include=*.ts` → **ningún servicio lo importa**. Es la
+  comprobación que evita repetir lo de `payment.service.ts`, que apuntaba a `localhost:8080` en
+  producción.
+- Los **dos** `config.json` —el de `src/assets` y el de `public/assets`, que `angular.json` copia al
+  mismo destino— apuntan a `https://legacy.intelyclick.com`. Siguen idénticos.
+
+**Pasos:** `rm -rf dist` y build limpio → respaldo del `dist` publicado
+(`dist.bak.20260903_1949`) → subida empaquetada en `.tgz` (61 entradas, 828 K) →
+`docker compose up -d --build`.
+
+**Verificado a través del dominio:**
+
+| Comprobación | Resultado |
+|---|---|
+| Salud del contenedor, con `127.0.0.1` y no `localhost` | `OK` |
+| `/` y `/health` | 200 |
+| `/admin/events` —ruta profunda, la prueba del F5— | 200, no 404 |
+| `config.json` que sirve el dominio | apunta a producción |
+| **El hash del bundle** | `main-KHZY2K7B.js` servido == el del build local |
+
+Ese último es el que cierra la duda que deja este despliegue: el `Dockerfile` **no compila**, copia
+un `dist` ya hecho, así que saltarse el build publica la versión anterior sin ningún aviso. Comparar
+el hash que sirve el dominio con el del `dist` local es la única forma barata de probar que lo que
+está publicado es lo que se acaba de compilar, y no algo cacheado.
+
+- **Rollback:** el `dist` anterior está en `dist.bak.20260903_1949`; restaurarlo y reconstruir.
+- **Lo que queda por probar con credenciales:** entrar al panel, abrir *Usuarios → Importar usuarios*
+  y *Inscritos → Importar asistentes*, y comprobar el diálogo contra el backend recién desplegado.
+  Todo eso se probó de punta a punta en local durante la fase 4.
+
+---
+
 ### [2026-09-03]: `ng test` vuelve a servir para algo: de 7 rojos a 84 verdes
 
 Siete specs llevaban fallando desde que se generaron, y **ninguno era un fallo del panel**: eran los
