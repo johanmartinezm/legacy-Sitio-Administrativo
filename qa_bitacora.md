@@ -2,6 +2,65 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-03]: La carga va por tandas, porque medida no cabía en una petición
+
+Sale de medir lo que el ensayo de la fase 4 no había medido: **cuánto tarda de verdad una carga
+grande**. Contra el servidor local, con el importador ya terminado:
+
+| Filas | Simular | Aplicar |
+|---|---|---|
+| 50 | 0,06 s | **5,5 s** |
+| 200 | 0,12 s | **23,9 s** |
+
+Son ~120 ms por fila y casi todo es **bcrypt** hasheando la contraseña, que no se puede bajar sin
+debilitar el hash. Extrapolando: 300 personas ≈ 36 s, 500 ≈ 60 s.
+
+**El problema no es la espera, es quién corta primero.** Nuestro servidor Go no tiene `WriteTimeout`
+—no corta nunca—, pero delante hay un HAProxy que sí tiene el suyo, y el navegador también. El fallo
+que eso produce es de los peores que hay: **el panel diría «no se pudo» mientras el backend sigue
+creando cuentas tan tranquilo**, y quien está haciendo la carga del Summit no tiene forma de saber
+que sí funcionó.
+
+**Ahora `aplicar` va en tandas de 50 filas.** Ninguna petición pasa de unos segundos.
+
+- **Se puede partir porque el importador es reejecutable**, que es una propiedad que ya tenía y que
+  aquí se cobra: la identidad es el correo, así que una tanda repetida no duplica a nadie —cuenta
+  esas filas como «ya existían»— y una carga cortada se retoma pasando el mismo archivo.
+- **La simulación NO se parte, y tiene que seguir así.** La comprobación de correos repetidos *dentro
+  del archivo* solo funciona mirando todas las filas juntas: partida, un duplicado entre la tanda 1 y
+  la 3 no lo vería nadie. Puede permitírselo porque no escribe: 200 filas se revisan en 0,12 s.
+- **Se para en la primera tanda con problemas.** Aplicar solo se permite tras una simulación limpia,
+  así que un problema aquí es un fallo de la base y seguir solo acumularía el mismo error.
+- **El informe se suma** —`total` es el del archivo, no el de la tanda— y **deja de decir
+  «simulación» en cuanto una tanda escribe algo**, aunque una posterior falle. Decir lo contrario
+  mandaría a buscar cuentas que sí existen.
+- **Si se corta a mitad, el mensaje lo dice:** cuántas filas quedaron creadas y que volver a pasar el
+  mismo archivo sigue donde se quedó. El reflejo de quien ve un error es pensar que no se hizo nada.
+- **Y se ve el avance**: barra de progreso real con «Creando cuentas… 150 de 300». Una barra
+  indeterminada quieta durante un minuto parece una pantalla colgada.
+
+- **Alcance:** `src/app/core/services/importacion.service.ts` (tandas, suma de informes, aviso de
+  avance), `src/app/core/services/importacion.service.spec.ts` (nuevo, 9 casos),
+  `src/app/features/admin/importaciones/importar-usuarios-dialog/*` (barra de avance y el mensaje de
+  la carga cortada).
+- **Verificado:** `ng test --include='**/importacion.service.spec.ts'` → 9/9, incluidos el reparto en
+  tandas, que las opciones viajan en **todas** —no solo en la primera—, que se para en la que falla y
+  que no manda las siguientes, y la suma del informe. `ng build --configuration production` sin
+  errores.
+
+- **Criterios de QA:**
+  1. Cargar un archivo de más de 50 filas y mirar la pestaña de red del navegador: hay una petición
+     por cada 50 filas, no una sola.
+  2. Durante la carga, la barra avanza y dice «Creando cuentas… N de M». No se queda quieta.
+  3. Al terminar, las cifras del resumen cuadran con el archivo entero, no con la última tanda.
+  4. Cortar la red a mitad de la carga: el mensaje dice cuántas quedaron creadas y que se puede
+     repasar el mismo archivo. Al repasarlo, esas filas salen como «ya existían» y sigue con el resto.
+  5. Un archivo de menos de 50 filas se manda en una sola petición, como antes.
+  6. La revisión previa sigue yendo en una sola petición con el archivo entero: un correo repetido
+     entre la fila 10 y la 200 se sigue detectando.
+
+---
+
 ### [2026-09-03]: Carga masiva · fase 4, el ensayo con el archivo real
 
 Cuarta y última fase del plan (`reports/20260826_plan_carga_masiva.md` §5). No traía código previsto

@@ -95,7 +95,18 @@
         </div>
     </div>
 
-    <mat-progress-bar mode="indeterminate" *ngIf="trabajando()"></mat-progress-bar>
+    <!-- Mientras corren las tandas se enseña cuánto va: una carga de
+         trescientas personas tarda cerca de un minuto, y una barra que no se
+         mueve durante un minuto parece una pantalla colgada. -->
+    <ng-container *ngIf="aplicando; else barraSuelta">
+        <mat-progress-bar mode="determinate" [value]="porcentaje"></mat-progress-bar>
+        <p class="nota avance">
+            Creando cuentas… {{ aplicadas() }} de {{ porAplicar() }}. No cierres esta ventana.
+        </p>
+    </ng-container>
+    <ng-template #barraSuelta>
+        <mat-progress-bar mode="indeterminate" *ngIf="trabajando()"></mat-progress-bar>
+    </ng-template>
 
     <ng-container *ngIf="informe() as informe">
         <div class="resumen" [class.limpio]="informe.problemas.length === 0">

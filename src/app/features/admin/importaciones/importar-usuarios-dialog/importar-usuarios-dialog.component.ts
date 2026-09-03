@@ -91,6 +91,19 @@ export class ImportarUsuariosDialogComponent {
     errorLectura = signal('');
 
     /**
+     * Cuántas filas van aplicadas, de cuántas.
+     *
+     * La carga va por tandas porque crear una cuenta cuesta ~120 ms —bcrypt— y
+     * un archivo grande en una sola petición se pasaría del tiempo que aguanta
+     * el proxy de delante. Con tandas, lo que hay que evitar es lo contrario:
+     * que la pantalla parezca colgada durante un minuto sin decir nada.
+     *
+     * En cero significa que no hay carga en curso.
+     */
+    aplicadas = signal(0);
+    porAplicar = signal(0);
+
+    /**
      * Los dos interruptores de la entrada del evento, **los dos apagados por
      * defecto** y válidos para toda la carga (§4.1).
      *
@@ -165,6 +178,17 @@ export class ImportarUsuariosDialogComponent {
         return this.conEvento ? 'Crear e inscribir' : 'Crear las cuentas';
     }
 
+    /** True mientras corren las tandas, para enseñar el avance en vez de nada. */
+    get aplicando(): boolean {
+        return this.porAplicar() > 0;
+    }
+
+    /** El avance en tanto por ciento, para la barra. */
+    get porcentaje(): number {
+        const total = this.porAplicar();
+        return total > 0 ? Math.round((this.aplicadas() / total) * 100) : 0;
+    }
+
     async archivoElegido(evento: Event): Promise<void> {
         const input = evento.target as HTMLInputElement;
         const archivo = input.files?.[0];
@@ -225,18 +249,37 @@ export class ImportarUsuariosDialogComponent {
 
     aplicar(): void {
         this.trabajando.set(true);
-        this.servicio.aplicar(this.filas(), this.opciones).subscribe({
+        this.aplicadas.set(0);
+        this.porAplicar.set(this.filas().length);
+
+        this.servicio.aplicar(
+            this.filas(),
+            this.opciones,
+            (hechas, total) => {
+                this.aplicadas.set(hechas);
+                this.porAplicar.set(total);
+            }
+        ).subscribe({
             next: (informe) => {
                 this.informe.set(informe);
                 this.aplicado.set(!informe.simulacion);
                 this.trabajando.set(false);
+                this.porAplicar.set(0);
                 if (!informe.simulacion) {
                     this.snackBar.open(this.resumenDeLaCarga(informe), 'Cerrar', { duration: 5000 });
                 }
             },
             error: (err) => {
                 this.trabajando.set(false);
-                this.avisarDelError(err, 'No se pudo completar la carga');
+                this.porAplicar.set(0);
+                // Si cayó a mitad de las tandas, lo ya creado está creado. Se
+                // dice, porque el reflejo de quien lo ve es pensar que no se
+                // hizo nada y volver a intentarlo a ciegas.
+                const yaHechas = this.aplicadas();
+                this.avisarDelError(err, yaHechas > 0
+                    ? `La carga se cortó tras ${yaHechas} fila(s), que sí quedaron creadas. `
+                      + 'Vuelve a pasar el mismo archivo: las hechas se saltan y sigue donde se quedó.'
+                    : 'No se pudo completar la carga');
             }
         });
     }
@@ -254,6 +297,8 @@ export class ImportarUsuariosDialogComponent {
     }
 
     private reiniciar(): void {
+        this.aplicadas.set(0);
+        this.porAplicar.set(0);
         this.filas.set([]);
         this.columnasIgnoradas.set([]);
         this.columnasFaltantes.set([]);
