@@ -1,6 +1,12 @@
 .users-container {
     padding: 24px;
 
+    .header .acciones {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
     .header {
         display: flex;
         justify-content: space-between;

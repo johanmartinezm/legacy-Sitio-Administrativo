@@ -2,6 +2,60 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-02]: Carga masiva · fase 2, importar usuarios desde el archivo
+
+Segunda fase del plan (`reports/20260826_plan_carga_masiva.md` §5). El motor es del backend —ver su
+bitácora del mismo día—; esto es la puerta genérica, en *Usuarios*, sin evento de por medio. Va antes
+que la del evento a propósito: es el camino más corto de extremo a extremo.
+
+- **Tres pasos numerados, y el tercero está bloqueado hasta que el segundo salga limpio.** Elegir
+  archivo → *Revisar sin crear nada* → *Crear las cuentas*. El botón de crear solo se habilita si la
+  simulación no devolvió problemas y hay al menos una cuenta nueva.
+- **El archivo lo lee el panel con SheetJS** (`xlsx`, única dependencia nueva del plan), que abre el
+  `.xls` viejo y el `.xlsx` por igual. El backend recibe JSON y no necesita lector de Excel.
+- **Las cabeceras se comparan normalizadas**: sin tildes, sin mayúsculas y sin la puntuación pegada
+  al final. Hacía falta —la columna del archivo se llama «Dirección:», con dos puntos— y protege de
+  que un espacio de más rompa la importación entera.
+- **La casilla de términos llega como `1.0` / `0.0`**, no como texto; se aceptan también «Sí» y
+  «true» por si alguien edita el archivo a mano.
+- **Las fechas pueden venir como fecha de Excel o como texto**; las dos se convierten a `DD/MM/AAAA`,
+  que el backend ya acepta.
+- **Las filas vacías del final de la hoja se descartan** sin contarlas como error: son la cola
+  habitual de cualquier exportación.
+- **Se avisa de las columnas ignoradas** (las de sesiones, las de facturación y el rol del evento)
+  para que nadie piense que se perdieron por un fallo, y **se bloquea la importación si falta una
+  columna necesaria**.
+- **El informe de errores es una tabla de fila, columna y motivo.** Quien la usa no es técnico: dice
+  «fila 4 · CC/TI/CE · tiene 3 caracteres y la contraseña necesita al menos 6», no «el archivo tiene
+  errores».
+
+- **Alcance:** `src/app/core/models/importacion.model.ts`, `src/app/core/utils/lector-importacion.ts`,
+  `src/app/core/services/importacion.service.ts`,
+  `src/app/features/admin/importaciones/importar-usuarios-dialog/` (los tres archivos),
+  `src/app/features/admin/users/users-list/` (botón «Importar usuarios» y recarga al terminar),
+  `package.json` (`xlsx`).
+- **Verificado:** `npx tsc --noEmit` y `ng build --configuration production` limpios —el bundle
+  inicial no crece: `xlsx` queda en el trozo diferido de Usuarios—. Y en el navegador, contra el
+  backend local, con un `.xls` de verdad generado con las 42 cabeceras del archivo del Summit:
+
+  | Paso | Resultado |
+  |---|---|
+  | Subir un archivo con 3 filas, una mala | «3 filas con datos», avisa de 5 columnas ignoradas |
+  | Revisar | 3 leídas · 2 nuevas · 0 existentes, y **dos problemas en la fila 4** con su columna |
+  | Con problemas | *Crear las cuentas* sigue deshabilitado |
+  | Subir el archivo corregido y revisar | Informe en verde: «se van a crear 2 cuentas» |
+  | Crear | «Listo: 2 cuenta(s) creada(s)» |
+  | Entrar con el correo y el documento de una de ellas | 200, y su perfil trae rol `profesional`, «Cédula» traducido, departamento, dirección, sexo, ciudad y fecha bien puestos |
+
+- **Criterios de QA:**
+  1. **Usuarios → Importar usuarios**: se abre el diálogo con los tres pasos y los dos últimos
+     deshabilitados.
+  2. **Subir un archivo con errores y revisar**: sale la tabla de problemas y no se crea nada.
+  3. **Corregir el archivo y volver a subirlo**: el informe anterior desaparece al elegir el nuevo.
+  4. **Revisar con el archivo bueno**: el resumen sale en verde y se habilita crear.
+  5. **Crear**: avisa cuántas cuentas se crearon y, al cerrar, el listado se recarga con ellas.
+  6. **Volver a subir el mismo archivo**: dice que ya existen y no duplica a nadie.
+
 ### [2026-09-02]: Módulo «Páginas de la App»
 
 Contraparte del corte vertical del mismo día en `Backend/qa_bitacora.md`. Es el lugar desde donde se

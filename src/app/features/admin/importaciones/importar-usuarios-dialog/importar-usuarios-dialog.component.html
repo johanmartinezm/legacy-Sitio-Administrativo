@@ -1,0 +1,110 @@
+<h2 mat-dialog-title>Importar usuarios desde un archivo</h2>
+
+<mat-dialog-content>
+    <p class="ayuda">
+        Crea cuentas a partir del archivo de asistentes. Primero se revisa sin crear nada; solo
+        cuando la revisión sale limpia se habilita el botón de crear.
+    </p>
+
+    <!-- Paso 1: el archivo -->
+    <div class="paso">
+        <span class="numero">1</span>
+        <div class="contenido">
+            <button mat-stroked-button color="primary" (click)="entrada.click()" [disabled]="trabajando()">
+                <mat-icon>upload_file</mat-icon> Elegir archivo
+            </button>
+            <input #entrada type="file" accept=".xls,.xlsx" hidden (change)="archivoElegido($event)">
+            <span class="archivo" *ngIf="nombreArchivo()">
+                {{ nombreArchivo() }} — {{ filas().length }} fila(s) con datos
+            </span>
+        </div>
+    </div>
+
+    <p class="error" *ngIf="errorLectura()">{{ errorLectura() }}</p>
+
+    <p class="error" *ngIf="columnasFaltantes().length > 0">
+        Al archivo le faltan columnas que hacen falta para crear las cuentas:
+        <strong>{{ columnasFaltantes().join(', ') }}</strong>.
+    </p>
+
+    <p class="nota" *ngIf="columnasIgnoradas().length > 0">
+        Se ignoran {{ columnasIgnoradas().length }} columnas que Legacy no guarda (las de sesiones,
+        las de facturación y el rol del evento). No es un problema.
+    </p>
+
+    <!-- Paso 2: la revisión -->
+    <div class="paso">
+        <span class="numero">2</span>
+        <div class="contenido">
+            <button mat-stroked-button (click)="simular()" [disabled]="!puedeSimular">
+                <mat-icon>fact_check</mat-icon> Revisar sin crear nada
+            </button>
+        </div>
+    </div>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="trabajando()"></mat-progress-bar>
+
+    <ng-container *ngIf="informe() as informe">
+        <div class="resumen" [class.limpio]="informe.problemas.length === 0">
+            <div class="cifra">
+                <strong>{{ informe.total }}</strong><span>filas leídas</span>
+            </div>
+            <div class="cifra">
+                <strong>{{ informe.nuevas }}</strong><span>cuentas nuevas</span>
+            </div>
+            <div class="cifra">
+                <strong>{{ informe.ya_existian }}</strong><span>ya existían</span>
+            </div>
+            <div class="cifra" *ngIf="aplicado()">
+                <strong>{{ informe.creadas }}</strong><span>creadas</span>
+            </div>
+        </div>
+
+        <p class="ok" *ngIf="informe.problemas.length === 0 && !aplicado()">
+            El archivo está correcto. Se van a crear {{ informe.nuevas }} cuenta(s); las
+            {{ informe.ya_existian }} que ya existen se dejan como están.
+        </p>
+
+        <p class="ok" *ngIf="aplicado()">
+            Listo: {{ informe.creadas }} cuenta(s) creada(s). Cada persona entra con su correo y su
+            número de documento, y la app le pedirá cambiar la contraseña.
+        </p>
+
+        <ng-container *ngIf="informe.problemas.length > 0">
+            <p class="error">
+                Hay {{ informe.problemas.length }} cosa(s) que corregir <strong>en el archivo</strong>.
+                No se creó ninguna cuenta.
+            </p>
+            <table mat-table [dataSource]="informe.problemas" class="mat-elevation-z2 problemas">
+                <ng-container matColumnDef="fila">
+                    <th mat-header-cell *matHeaderCellDef> Fila </th>
+                    <td mat-cell *matCellDef="let p"> {{ p.fila }} </td>
+                </ng-container>
+                <ng-container matColumnDef="columna">
+                    <th mat-header-cell *matHeaderCellDef> Columna </th>
+                    <td mat-cell *matCellDef="let p"> {{ p.columna }} </td>
+                </ng-container>
+                <ng-container matColumnDef="motivo">
+                    <th mat-header-cell *matHeaderCellDef> Qué pasa </th>
+                    <td mat-cell *matCellDef="let p"> {{ p.motivo }} </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="columnasDelInforme"></tr>
+                <tr mat-row *matRowDef="let row; columns: columnasDelInforme;"></tr>
+            </table>
+        </ng-container>
+    </ng-container>
+
+    <!-- Paso 3: crear -->
+    <div class="paso">
+        <span class="numero">3</span>
+        <div class="contenido">
+            <button mat-raised-button color="primary" (click)="aplicar()" [disabled]="!puedeAplicar">
+                <mat-icon>group_add</mat-icon> Crear las cuentas
+            </button>
+        </div>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="cerrar()">{{ aplicado() ? 'CERRAR' : 'CANCELAR' }}</button>
+</mat-dialog-actions>

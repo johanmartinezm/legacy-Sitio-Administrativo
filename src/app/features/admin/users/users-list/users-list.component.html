@@ -1,9 +1,14 @@
 <div class="users-container">
     <div class="header">
         <h1>Administración de Usuarios</h1>
-        <button mat-raised-button color="primary" (click)="openUserDialog()">
-            <mat-icon>add</mat-icon> Crear Usuario
-        </button>
+        <div class="acciones">
+            <button mat-stroked-button color="primary" (click)="abrirImportacion()">
+                <mat-icon>upload_file</mat-icon> Importar usuarios
+            </button>
+            <button mat-raised-button color="primary" (click)="openUserDialog()">
+                <mat-icon>add</mat-icon> Crear Usuario
+            </button>
+        </div>
     </div>
 
     <table mat-table [dataSource]="users()" class="mat-elevation-z8">

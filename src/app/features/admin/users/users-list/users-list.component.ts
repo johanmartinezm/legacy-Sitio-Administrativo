@@ -9,6 +9,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { UserService } from '../../../../core/services/user.service';
 import { User } from '../../../../core/models/user.model';
 import { UserFormDialogComponent } from '../user-form-dialog/user-form-dialog.component';
+import { ImportarUsuariosDialogComponent } from '../../importaciones/importar-usuarios-dialog/importar-usuarios-dialog.component';
 
 @Component({
     selector: 'app-users-list',
@@ -36,6 +37,24 @@ export class UsersListComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadUsers();
+    }
+
+    /**
+     * Carga masiva desde el archivo de asistentes. El diálogo devuelve `true`
+     * solo si llegó a crear cuentas, y entonces se recarga la página actual.
+     */
+    abrirImportacion(): void {
+        const ref = this.dialog.open(ImportarUsuariosDialogComponent, {
+            width: '860px',
+            maxHeight: '90vh',
+            disableClose: true
+        });
+
+        ref.afterClosed().subscribe(seCrearon => {
+            if (seCrearon) {
+                this.loadUsers();
+            }
+        });
     }
 
     loadUsers() {

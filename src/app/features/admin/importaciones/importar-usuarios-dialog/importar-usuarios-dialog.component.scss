@@ -1,0 +1,102 @@
+.ayuda {
+    margin: 0 0 20px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.paso {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+
+    .numero {
+        flex: 0 0 26px;
+        height: 26px;
+        border-radius: 50%;
+        background-color: #1e2f4d;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .contenido {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .archivo {
+        font-size: 13px;
+        color: #1e2f4d;
+    }
+}
+
+.resumen {
+    display: flex;
+    gap: 24px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+
+    &.limpio {
+        background-color: #f0fdf4;
+        border-color: #bbf7d0;
+    }
+
+    .cifra {
+        display: flex;
+        flex-direction: column;
+
+        strong {
+            font-size: 20px;
+            color: #1e2f4d;
+        }
+
+        span {
+            font-size: 12px;
+            color: #64748b;
+        }
+    }
+}
+
+.ok {
+    color: #166534;
+    font-size: 13px;
+    margin: 8px 0;
+}
+
+.error {
+    color: #991b1b;
+    font-size: 13px;
+    margin: 8px 0;
+}
+
+.nota {
+    color: #64748b;
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+table.problemas {
+    width: 100%;
+    margin: 12px 0 4px;
+
+    th {
+        background-color: #fef2f2;
+        color: #991b1b;
+        font-weight: 600;
+    }
+
+    td {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+}
