@@ -9,6 +9,15 @@
                 <p class="event-title" *ngIf="eventTitle()">{{ eventTitle() }}</p>
             </div>
         </div>
+
+        <!-- La carga masiva vive aqui y no en una pantalla suelta: el evento lo
+             fija esta URL, y al terminar la gente ya esta en la tabla de abajo. -->
+        <div class="acciones" *ngIf="!isLoading() && !errorMessage()">
+            <button mat-stroked-button color="primary" (click)="abrirImportacion()"
+                matTooltip="Crear las cuentas que falten y dejarlas inscritas en este evento">
+                <mat-icon>upload_file</mat-icon> Importar asistentes
+            </button>
+        </div>
     </div>
 
     <div *ngIf="isLoading()" class="loading-container">
@@ -47,9 +56,28 @@
             </div>
         </div>
 
+        <!-- Quien se importo sin credencial no pasa el check-in. Se avisa aqui
+             arriba, con la accion al lado, para que no se descubra en la puerta
+             el dia del evento. -->
+        <div class="aviso-credenciales" *ngIf="sinCredencial() > 0">
+            <mat-icon>badge</mat-icon>
+            <div class="texto">
+                <strong>{{ sinCredencial() }}</strong> persona(s) no tienen codigo de acceso todavia y
+                <strong>no podran pasar el check-in</strong>.
+            </div>
+            <button mat-raised-button color="primary" [disabled]="generando()"
+                (click)="generarCredenciales()"
+                matTooltip="Crea el codigo que falta y lo envia por correo con el QR">
+                <mat-icon>qr_code_2</mat-icon> Generar credenciales
+            </button>
+        </div>
+
         <div *ngIf="total() === 0" class="state-message">
             <mat-icon>group_off</mat-icon>
-            <p>Todavia nadie se ha inscrito en este evento.</p>
+            <p>
+                Todavia nadie se ha inscrito en este evento.
+                Puedes cargar la lista con <strong>Importar asistentes</strong>.
+            </p>
         </div>
 
         <ng-container *ngIf="total() > 0">
@@ -101,6 +129,38 @@
                             [ngClass]="r.registrationStatus === 'pending_payment' ? 'pending' : 'confirmed'">
                             {{ estadoTexto(r) }}
                         </span>
+                    </td>
+                </ng-container>
+
+                <!-- Quien tiene credencial y quien no. Sin esta columna, una
+                     carga masiva sin credencial pasa inadvertida hasta la puerta. -->
+                <ng-container matColumnDef="credencial">
+                    <th mat-header-cell *matHeaderCellDef> Credencial </th>
+                    <td mat-cell *matCellDef="let r">
+                        <!-- En un evento virtual no hay credencial que tener: el
+                             acceso es el enlace de la sesion. -->
+                        <span class="sin-credencial" *ngIf="eventIsVirtual()"
+                            matTooltip="Evento virtual: el acceso es el enlace de la sesion">
+                            No aplica
+                        </span>
+
+                        <ng-container *ngIf="!eventIsVirtual()">
+                            <mat-icon class="con-credencial" *ngIf="r.tieneCredencial"
+                                matTooltip="Tiene codigo de acceso">badge</mat-icon>
+
+                            <ng-container *ngIf="!r.tieneCredencial">
+                                <span class="sin-credencial" *ngIf="r.registrationStatus === 'pending_payment'"
+                                    matTooltip="Una inscripcion sin pagar no da derecho a entrar">
+                                    Sin pagar
+                                </span>
+                                <button mat-stroked-button class="generar-una"
+                                    *ngIf="r.registrationStatus !== 'pending_payment'"
+                                    [disabled]="!puedeGenerar(r)" (click)="generarCredenciales(r)"
+                                    matTooltip="Generar su codigo y enviarselo por correo">
+                                    <mat-icon>qr_code_2</mat-icon> Generar
+                                </button>
+                            </ng-container>
+                        </ng-container>
                     </td>
                 </ng-container>
 

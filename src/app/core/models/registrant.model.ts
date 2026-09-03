@@ -19,4 +19,13 @@ export interface EventRegistrant {
     registrationDate: Date;
     totalPaid: number;
     attendanceConfirmed: boolean;
+    /**
+     * Si esa inscripción tiene código de acceso — no cuál es: el `qrData` sigue
+     * sin salir del backend, por lo mismo de siempre.
+     *
+     * Lo trae porque una carga masiva puede dejar gente sin credencial (el
+     * interruptor de `reports/20260826_plan_carga_masiva.md` §4.1), y sin verlo
+     * en la tabla el que se entera es quien está en la puerta el día del evento.
+     */
+    tieneCredencial: boolean;
 }

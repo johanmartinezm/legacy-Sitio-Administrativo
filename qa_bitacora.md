@@ -2,6 +2,95 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-03]: Carga masiva · fase 3, importar asistentes y generar credenciales
+
+Tercera fase del plan (`reports/20260826_plan_carga_masiva.md` §5). El motor y las dos rutas son del
+backend —ver su bitácora del mismo día—; esto es la segunda puerta, la que tiene evento de por medio,
+y la vuelta de su interruptor.
+
+**Un solo diálogo para las dos entradas**, igual que el backend tiene un solo importador y una sola
+ruta: lo único que cambia es si se abre con un evento. Se le pasa por `MAT_DIALOG_DATA` y con eso
+aparecen los dos interruptores y cambian los textos y el informe. Dos pantallas sobre dos motores
+distintos se separan al tercer arreglo.
+
+**Dónde está cada cosa:**
+
+- *Administrar Eventos* → **Inscritos** → botón **Importar asistentes**, arriba a la derecha. Crea
+  las cuentas que falten y deja a todo el archivo inscrito **a ese** evento; el evento lo fija la
+  URL, no el archivo, así que la columna «Ticket» ni se lee. Al terminar la tabla se recarga sola y
+  la gente ya está ahí.
+- En esa misma tabla, columna **Credencial** con quién tiene código de acceso y quién no, y un botón
+  *Generar* por fila.
+- Y arriba, cuando falta alguna, un aviso con el número de personas que **no podrán pasar el
+  check-in** y el botón **Generar credenciales** para todas de una vez.
+
+**Los dos interruptores**, los dos apagados por defecto:
+
+- *Generar la credencial de acceso.* Apagado, esa gente queda sin código. La pista de debajo lo dice
+  con esas palabras, porque es la consecuencia que se paga en la puerta el día del evento.
+- *Avisar por correo a cada persona.* Apagado no sale nada; la pista recuerda cuántas filas trae el
+  archivo, que es cuántos correos se mandarían. El texto cambia según el otro interruptor y explica
+  **qué correo** va a salir, porque nunca salen los dos.
+
+**En un evento virtual el interruptor de credencial sale apagado y deshabilitado**, con la razón
+escrita al lado: allí el acceso es el enlace de la sesión y la app nunca muestra credencial. Dejarlo
+activable sería ofrecer una decisión que no tiene efecto, y el día que alguien la marcara creería
+haber hecho algo. La columna de la tabla dice «No aplica» y el botón de generar no aparece.
+
+- **Cambiar un interruptor borra la revisión hecha.** No es cosmético: ese informe se calculó con las
+  otras opciones, y dejarlo en pantalla haría creer que se confirmó lo que se ve. Se vuelve a revisar
+  y ya está.
+- **El botón de confirmar sigue bloqueado hasta que la revisión salga limpia**, como en la fase 2.
+  Con evento basta con que haya alguien a quien inscribir: un archivo entero de gente que ya tiene
+  cuenta no crea ninguna, y aun así dejarlos inscritos es trabajo que sirve.
+- **El informe distingue lo que pasó de lo que pasaría.** La simulación dice «quedarían inscritas»;
+  la carga aplicada dice «inscritas» y, si las hubo, «ya estaban inscritas» —repasar el mismo archivo
+  no duplica a nadie, y el informe tiene que decirlo en vez de dejar creer que no hizo nada—.
+- **Al terminar, si se importó sin credencial, se avisa ahí mismo** de que hay que generarla antes
+  del evento. Es el momento en que quien hizo la carga todavía está mirando.
+- **Generar credenciales avisa siempre por correo**: crear el código y entregarlo son la misma cosa,
+  y un código que nadie recibe no sirve de nada.
+- El aviso de credenciales que faltan **no cuenta a quien está pendiente de pago**: esa inscripción
+  no da derecho a entrar, así que no es una credencial que falte sino una que no toca.
+- El error del backend se muestra tal cual —responde texto plano—, que es lo que hace útil el `409`
+  del evento virtual en vez de un «no se pudo» genérico.
+
+- **Alcance:** `src/app/core/models/registrant.model.ts` (`tieneCredencial`),
+  `src/app/core/models/importacion.model.ts` (`OpcionesImportacion` y los tres contadores nuevos),
+  `src/app/core/services/importacion.service.ts` (las opciones viajan en el cuerpo),
+  `src/app/core/services/event.service.ts` (`generarCredenciales`),
+  `src/app/features/admin/importaciones/importar-usuarios-dialog/*` (los tres archivos: datos del
+  diálogo, interruptores, informe con evento),
+  `src/app/features/admin/event-registrants/*` (los tres archivos: botón de importar, columna de
+  credencial, aviso y acción de generar).
+- **Verificado:** `ng build --configuration production` sin errores (los dos avisos de siempre: el
+  presupuesto del bundle inicial y el `qrcode` que no es ESM). Las respuestas del backend se
+  comprobaron contra el servidor local antes de pintarlas —ver la tabla de la bitácora del backend—.
+
+- **Criterios de QA:**
+  1. Entrar a un evento presencial → **Inscritos**. Aparece el botón *Importar asistentes* arriba a
+     la derecha, también si el evento no tiene todavía ningún inscrito.
+  2. Abrirlo: el título dice «Importar asistentes al evento» y el texto nombra el evento. Aparecen
+     los dos interruptores, apagados.
+  3. Elegir el archivo y pulsar *Revisar sin escribir nada*: sale el informe con «quedarían
+     inscritas», y el botón de *Crear e inscribir* se habilita solo si no hay problemas.
+  4. Cambiar un interruptor después de revisar: el informe desaparece y hay que volver a revisar.
+  5. Aplicar: el resumen dice cuántas se inscribieron y cuántas cuentas se crearon, y avisa de que
+     quedaron sin credencial.
+  6. Cerrar el diálogo: la tabla se recarga sola y la gente ya está, con la marca **sin credencial**.
+  7. Arriba aparece el aviso con cuántas personas no podrán pasar el check-in. Pulsar *Generar
+     credenciales*: el mensaje dice cuántas se generaron y la tabla se actualiza.
+  8. Volver a pulsarlo: dice que no había ninguna que generar.
+  9. En una fila suelta sin credencial, el botón *Generar* de la columna hace lo mismo solo para esa
+     persona.
+  10. Repetir el punto 1 en un evento **virtual**: el interruptor de credencial está apagado y
+      deshabilitado con la explicación al lado, la columna dice «No aplica» y no hay aviso ni botón
+      de generar.
+  11. En *Usuarios* → *Importar usuarios*, el diálogo sigue como en la fase 2: sin interruptores, sin
+      cifras de inscripción, y no inscribe a nadie a ningún evento.
+
+---
+
 ### [2026-09-02]: Carga masiva · fase 2, importar usuarios desde el archivo
 
 Segunda fase del plan (`reports/20260826_plan_carga_masiva.md` §5). El motor es del backend —ver su

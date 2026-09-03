@@ -100,3 +100,37 @@ table.problemas {
         font-size: 13px;
     }
 }
+
+/* Los dos interruptores de la entrada del evento. Se separan en un bloque
+   propio porque son la decisión más consecuente del diálogo: uno decide si la
+   gente puede pasar el check-in y el otro cuántos correos salen. */
+.interruptores {
+    margin: 18px 0;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+
+    mat-slide-toggle {
+        display: block;
+        margin-bottom: 4px;
+
+        &:not(:first-child) {
+            margin-top: 16px;
+        }
+    }
+
+    .pista {
+        margin: 0 0 0 4px;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #64748b;
+
+        &.aviso {
+            color: #92400e;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+    }
+}

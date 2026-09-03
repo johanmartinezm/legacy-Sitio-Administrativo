@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConfigService } from './config.service';
-import { FilaImportacion, ResultadoImportacion } from '../models/importacion.model';
+import { FilaImportacion, OpcionesImportacion, ResultadoImportacion } from '../models/importacion.model';
 
 /**
  * Carga masiva de asistentes.
@@ -24,13 +24,19 @@ export class ImportacionService {
         return `${this.config.apiUrl}/api/admin/importaciones/usuarios`;
     }
 
-    /** No escribe nada: cuenta cuántas cuentas se crearían y qué hay que corregir. */
-    simular(filas: FilaImportacion[]): Observable<ResultadoImportacion> {
-        return this.http.post<ResultadoImportacion>(`${this.apiUrl}?simular=true`, { filas });
+    /**
+     * No escribe nada: cuenta cuántas cuentas se crearían, cuántas quedarían
+     * inscritas y qué hay que corregir.
+     */
+    simular(filas: FilaImportacion[], opciones: OpcionesImportacion = {}): Observable<ResultadoImportacion> {
+        return this.http.post<ResultadoImportacion>(`${this.apiUrl}?simular=true`, { filas, ...opciones });
     }
 
-    /** Crea las cuentas que faltan. Si el archivo trae problemas, no escribe nada. */
-    aplicar(filas: FilaImportacion[]): Observable<ResultadoImportacion> {
-        return this.http.post<ResultadoImportacion>(this.apiUrl, { filas });
+    /**
+     * Crea las cuentas que faltan y, con `evento_id`, además inscribe. Si el
+     * archivo trae problemas, no escribe nada.
+     */
+    aplicar(filas: FilaImportacion[], opciones: OpcionesImportacion = {}): Observable<ResultadoImportacion> {
+        return this.http.post<ResultadoImportacion>(this.apiUrl, { filas, ...opciones });
     }
 }

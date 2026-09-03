@@ -164,6 +164,31 @@ export class EventService {
         );
     }
 
+    /**
+     * Rellena el código de acceso que falta, en bloque o por persona.
+     *
+     * Es la vuelta del interruptor de la carga masiva: quien se importó sin
+     * credencial tiene el `qr_data` vacío y **no pasa el check-in** hasta pasar
+     * por aquí (`reports/20260826_plan_carga_masiva.md` §4.1).
+     *
+     * `registrationIds` vacío significa «todos los que les falte». Nunca le
+     * cambia el código a quien ya lo tiene: el QR que esa persona lleva encima
+     * seguiría siendo el bueno.
+     *
+     * En un evento virtual responde 409 con la explicación: allí el acceso es
+     * el enlace de la sesión y el QR no se muestra nunca.
+     */
+    generarCredenciales(
+        eventId: string,
+        registrationIds: string[] = [],
+        avisarPorCorreo = false
+    ): Observable<{ generadas: number }> {
+        return this.http.post<{ generadas: number }>(
+            `${this.apiUrl}/${eventId}/registrations/credenciales`,
+            { registrationIds, avisarPorCorreo }
+        );
+    }
+
     checkIn(qrData: string): Observable<any> {
         return this.http.post<any>(`${this.apiUrl}/check-in`, { qrData });
     }

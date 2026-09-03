@@ -1,9 +1,17 @@
-<h2 mat-dialog-title>Importar usuarios desde un archivo</h2>
+<h2 mat-dialog-title>
+    {{ conEvento ? 'Importar asistentes al evento' : 'Importar usuarios desde un archivo' }}
+</h2>
 
 <mat-dialog-content>
-    <p class="ayuda">
+    <p class="ayuda" *ngIf="!conEvento">
         Crea cuentas a partir del archivo de asistentes. Primero se revisa sin crear nada; solo
         cuando la revisión sale limpia se habilita el botón de crear.
+    </p>
+
+    <p class="ayuda" *ngIf="conEvento">
+        Crea las cuentas que falten y deja a todo el archivo inscrito en
+        <strong>{{ datos?.tituloEvento || 'este evento' }}</strong>. El evento lo fija esta pantalla,
+        no el archivo. Primero se revisa sin escribir nada.
     </p>
 
     <!-- Paso 1: el archivo -->
@@ -32,12 +40,49 @@
         las de facturación y el rol del evento). No es un problema.
     </p>
 
+    <!-- Los dos interruptores. Solo con evento: sin él no hay credencial ni
+         correo de inscripción que decidir. -->
+    <div class="interruptores" *ngIf="conEvento">
+        <mat-slide-toggle [checked]="generarCredencial()" [disabled]="credencialSinEfecto || trabajando()"
+            (change)="generarCredencial.set($event.checked); interruptorCambiado()">
+            Generar la credencial de acceso
+        </mat-slide-toggle>
+        <p class="pista" *ngIf="!credencialSinEfecto">
+            Apagado, la inscripción queda <strong>sin código</strong> y esa persona no pasa el
+            check-in hasta que se le genere desde esta pantalla.
+        </p>
+        <p class="pista aviso" *ngIf="credencialSinEfecto">
+            <mat-icon inline>info</mat-icon>
+            Este evento es <strong>virtual</strong>: el acceso es el enlace de la sesión y la app
+            nunca muestra credencial, así que este interruptor no tendría ningún efecto.
+        </p>
+
+        <mat-slide-toggle [checked]="avisarPorCorreo()" [disabled]="trabajando()"
+            (change)="avisarPorCorreo.set($event.checked); interruptorCambiado()">
+            Avisar por correo a cada persona
+        </mat-slide-toggle>
+        <p class="pista">
+            <ng-container *ngIf="!avisarPorCorreo()">
+                Apagado no se manda nada. Con {{ filas().length || 'muchas' }} filas, encenderlo
+                significa un correo por persona.
+            </ng-container>
+            <ng-container *ngIf="avisarPorCorreo() && generarCredencial() && !credencialSinEfecto">
+                Sale el <strong>correo con el código de acceso</strong>, que además le dice a quien
+                acaba de importarse con qué usuario y contraseña entrar a la app.
+            </ng-container>
+            <ng-container *ngIf="avisarPorCorreo() && (!generarCredencial() || credencialSinEfecto)">
+                Sale la <strong>confirmación de inscripción</strong> de siempre, sin código de
+                acceso. Nunca salen los dos correos.
+            </ng-container>
+        </p>
+    </div>
+
     <!-- Paso 2: la revisión -->
     <div class="paso">
         <span class="numero">2</span>
         <div class="contenido">
             <button mat-stroked-button (click)="simular()" [disabled]="!puedeSimular">
-                <mat-icon>fact_check</mat-icon> Revisar sin crear nada
+                <mat-icon>fact_check</mat-icon> Revisar sin escribir nada
             </button>
         </div>
     </div>
@@ -55,25 +100,58 @@
             <div class="cifra">
                 <strong>{{ informe.ya_existian }}</strong><span>ya existían</span>
             </div>
+            <div class="cifra" *ngIf="conEvento && !aplicado()">
+                <strong>{{ informe.por_inscribir }}</strong><span>quedarían inscritas</span>
+            </div>
+            <div class="cifra" *ngIf="conEvento && aplicado()">
+                <strong>{{ informe.inscritas }}</strong><span>inscritas</span>
+            </div>
+            <div class="cifra" *ngIf="conEvento && aplicado() && informe.ya_inscritas > 0">
+                <strong>{{ informe.ya_inscritas }}</strong><span>ya estaban inscritas</span>
+            </div>
             <div class="cifra" *ngIf="aplicado()">
                 <strong>{{ informe.creadas }}</strong><span>creadas</span>
             </div>
         </div>
 
-        <p class="ok" *ngIf="informe.problemas.length === 0 && !aplicado()">
+        <p class="ok" *ngIf="informe.problemas.length === 0 && !aplicado() && !conEvento">
             El archivo está correcto. Se van a crear {{ informe.nuevas }} cuenta(s); las
             {{ informe.ya_existian }} que ya existen se dejan como están.
         </p>
 
-        <p class="ok" *ngIf="aplicado()">
+        <p class="ok" *ngIf="informe.problemas.length === 0 && !aplicado() && conEvento">
+            El archivo está correcto. Se van a crear {{ informe.nuevas }} cuenta(s) y quedarán
+            {{ informe.por_inscribir }} persona(s) inscritas en este evento. Quien ya tenga cuenta
+            la conserva tal cual.
+        </p>
+
+        <p class="ok" *ngIf="aplicado() && !conEvento">
             Listo: {{ informe.creadas }} cuenta(s) creada(s). Cada persona entra con su correo y su
             número de documento, y la app le pedirá cambiar la contraseña.
         </p>
 
+        <ng-container *ngIf="aplicado() && conEvento">
+            <p class="ok">
+                Listo: {{ informe.inscritas }} inscrito(s) y {{ informe.creadas }} cuenta(s) nueva(s).
+                Cada persona nueva entra con su correo y su número de documento, y la app le pedirá
+                cambiar la contraseña.
+            </p>
+            <p class="nota" *ngIf="!generarCredencial() || credencialSinEfecto">
+                <ng-container *ngIf="!credencialSinEfecto">
+                    Se importaron <strong>sin credencial</strong>. Antes del evento hay que generarla
+                    desde esta pantalla, o no podrán pasar el check-in.
+                </ng-container>
+                <ng-container *ngIf="credencialSinEfecto">
+                    Es un evento virtual: el acceso es el enlace de la sesión, no hace falta
+                    credencial.
+                </ng-container>
+            </p>
+        </ng-container>
+
         <ng-container *ngIf="informe.problemas.length > 0">
             <p class="error">
                 Hay {{ informe.problemas.length }} cosa(s) que corregir <strong>en el archivo</strong>.
-                No se creó ninguna cuenta.
+                No se escribió nada.
             </p>
             <table mat-table [dataSource]="informe.problemas" class="mat-elevation-z2 problemas">
                 <ng-container matColumnDef="fila">
@@ -94,12 +172,12 @@
         </ng-container>
     </ng-container>
 
-    <!-- Paso 3: crear -->
+    <!-- Paso 3: aplicar -->
     <div class="paso">
         <span class="numero">3</span>
         <div class="contenido">
             <button mat-raised-button color="primary" (click)="aplicar()" [disabled]="!puedeAplicar">
-                <mat-icon>group_add</mat-icon> Crear las cuentas
+                <mat-icon>group_add</mat-icon> {{ textoDeAplicar }}
             </button>
         </div>
     </div>
