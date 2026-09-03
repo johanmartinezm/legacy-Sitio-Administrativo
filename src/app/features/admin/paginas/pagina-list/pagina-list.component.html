@@ -1,0 +1,58 @@
+<div class="paginas-container">
+    <div class="header">
+        <h1>Páginas de la App</h1>
+    </div>
+
+    <p class="ayuda">
+        El texto de estas páginas se publica en la app en cuanto se guarda: no hace falta
+        actualizar la aplicación en las tiendas. Se pueden editar y despublicar, pero no crear
+        ni borrar, porque cada una tiene su pantalla dentro de la app.
+    </p>
+
+    <table mat-table [dataSource]="paginas()" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="titulo">
+            <th mat-header-cell *matHeaderCellDef> Página </th>
+            <td mat-cell *matCellDef="let pagina">
+                <strong>{{ pagina.titulo }}</strong>
+                <div class="subtitulo">{{ pagina.subtitulo }}</div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="donde">
+            <th mat-header-cell *matHeaderCellDef> Dónde se ve </th>
+            <td mat-cell *matCellDef="let pagina"> {{ ubicacionDe(pagina) }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef> Estado </th>
+            <td mat-cell *matCellDef="let pagina">
+                <span class="status-badge" [ngClass]="{'active': pagina.publicada, 'inactive': !pagina.publicada}">
+                    {{ pagina.publicada ? 'Publicada' : 'Oculta' }}
+                </span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actualizada">
+            <th mat-header-cell *matHeaderCellDef> Última edición </th>
+            <td mat-cell *matCellDef="let pagina"> {{ pagina.actualizada_en | date:'dd/MM/yyyy HH:mm' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let pagina">
+                <button mat-icon-button color="accent" (click)="editarPagina(pagina)" aria-label="Editar página">
+                    <mat-icon>edit</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <p class="vacio" *ngIf="!cargando() && paginas().length === 0">
+        No hay páginas configuradas. Si esto no es lo esperado, falta aplicar la migración
+        <code>20260902_paginas_informativas.sql</code> en el servidor.
+    </p>
+</div>

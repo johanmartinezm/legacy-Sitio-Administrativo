@@ -80,6 +80,11 @@
                         <mat-icon matListItemIcon>library_books</mat-icon>
                         <span matListItemTitle>Contenido de Valor</span>
                     </a>
+                    <a mat-list-item routerLink="/admin/paginas" routerLinkActive="active-link"
+                        (click)="isAboutVisible = false">
+                        <mat-icon matListItemIcon>description</mat-icon>
+                        <span matListItemTitle>Páginas de la App</span>
+                    </a>
                     <a mat-list-item routerLink="/admin/statistics" routerLinkActive="active-link"
                         (click)="isAboutVisible = false">
                         <mat-icon matListItemIcon>bar_chart</mat-icon>

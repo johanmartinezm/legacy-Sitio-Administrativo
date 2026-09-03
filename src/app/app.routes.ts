@@ -21,6 +21,7 @@ export const routes: Routes = [
       { path: 'admin/check-in', loadComponent: () => import('./features/admin/attendance-scanner/attendance-scanner.component').then(m => m.AttendanceScannerComponent) },
       { path: 'admin/banners', loadComponent: () => import('./features/admin/banners/banner-list/banner-list.component').then(m => m.BannerListComponent) },
       { path: 'admin/content', loadComponent: () => import('./features/admin/custom-content/content-list/content-list.component').then(m => m.ContentListComponent) },
+      { path: 'admin/paginas', loadComponent: () => import('./features/admin/paginas/pagina-list/pagina-list.component').then(m => m.PaginaListComponent) },
       { path: 'admin/statistics', loadComponent: () => import('./features/admin/statistics/statistics.component').then(m => m.StatisticsComponent) },
       { path: 'admin/notifications', loadComponent: () => import('./features/admin/push-notifications/push-notifications.component').then(m => m.PushNotificationsComponent) },
       { path: 'admin/groups', loadComponent: () => import('./features/admin/groups/groups.component').then(m => m.GroupsComponent) },

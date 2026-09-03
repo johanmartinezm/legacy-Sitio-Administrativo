@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>Editar “{{ data.titulo }}”</h2>
+
+<form [formGroup]="paginaForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+        <p class="aviso">
+            Lo que guarde aquí se ve en la app la próxima vez que alguien abra la pantalla.
+        </p>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Título</mat-label>
+                <input matInput formControlName="titulo" placeholder="Ej: Legacy Board">
+                <mat-error *ngIf="paginaForm.get('titulo')?.hasError('required')">
+                    El título es obligatorio: la app lo usa como encabezado.
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Subtítulo</mat-label>
+                <input matInput formControlName="subtitulo" placeholder="Una línea que acompaña al título">
+            </mat-form-field>
+        </div>
+
+        <app-image-upload formControlName="imagen_url" label="Imagen de cabecera (opcional)"></app-image-upload>
+
+        <mat-form-field appearance="outline" class="cuerpo">
+            <mat-label>Contenido</mat-label>
+            <textarea matInput formControlName="cuerpo" rows="14"
+                placeholder="Escriba aquí el texto de la página."></textarea>
+            <mat-hint>
+                Texto corrido. Deje una línea en blanco entre párrafos: la app los separa por ahí.
+                {{ largoCuerpo }} / {{ maxCuerpo }} caracteres.
+            </mat-hint>
+            <mat-error *ngIf="paginaForm.get('cuerpo')?.hasError('maxlength')">
+                El contenido supera los {{ maxCuerpo }} caracteres.
+            </mat-error>
+        </mat-form-field>
+
+        <div class="toggle-container">
+            <mat-slide-toggle formControlName="publicada">
+                Publicada en la app
+            </mat-slide-toggle>
+            <span class="toggle-ayuda" *ngIf="!paginaForm.get('publicada')?.value">
+                Oculta: quien entre desde la app verá un aviso de que la sección no está disponible.
+            </span>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button type="button" (click)="onCancel()">CANCELAR</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="paginaForm.invalid || guardando">
+            GUARDAR CAMBIOS
+        </button>
+    </mat-dialog-actions>
+</form>

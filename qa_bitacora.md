@@ -2,6 +2,56 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-02]: Módulo «Páginas de la App»
+
+Contraparte del corte vertical del mismo día en `Backend/qa_bitacora.md`. Es el lugar desde donde se
+edita el texto de Legacy Board sin publicar una versión nueva en las tiendas.
+
+- **Listar y editar, sin crear ni borrar.** El backend no expone esas dos operaciones: cada página
+  tiene una pantalla en la app, así que una página nueva creada desde aquí no la vería nadie. Por eso
+  la pantalla no tiene botón «Nueva página» y la columna de acciones solo trae el lápiz.
+- **La columna «Dónde se ve»** traduce el slug a un sitio de la app («Inicio → Explore libremente»).
+  Vive en el componente y no en la base porque lo decide el código de la app, no el contenido.
+- **La casilla «Publicada»** avisa, cuando se apaga, de que quien entre desde la app verá un aviso de
+  que la sección no está disponible: apagarla no deja la pantalla en blanco.
+- **Los errores del backend se muestran tal cual** cuando vienen en texto plano (400 y 404), en vez
+  del «error al guardar» genérico que no dice qué corregir.
+- **Reutiliza `ImageUploadComponent`**, así que la imagen de cabecera se sube desde el panel; no hace
+  falta pegar una URL alojada en otra parte.
+- ⚠️ **Encontrado al probar, no es de este módulo:** con `.\levantar.ps1` el panel local **habla con
+  producción**. `levantar.ps1` anuncia «apunta a localhost:8080», pero no toca
+  `src/assets/config/config.json` ni la copia de `public/`, que siguen en
+  `https://legacy.intelyclick.com`. Para probar contra el backend local hay que cambiar las **dos**
+  copias a mano y devolverlas después. Vale para cualquier módulo que se pruebe en local.
+
+- **Alcance:**
+  - `src/app/core/models/pagina-informativa.model.ts` (nuevo; ojo, `pagina.ts` es otra cosa: la
+    página de resultados de un listado)
+  - `src/app/core/services/pagina_admin.service.ts` (nuevo)
+  - `src/app/features/admin/paginas/pagina-list/` y `pagina-form-dialog/` (nuevos)
+  - `src/app/app.routes.ts` (`admin/paginas`)
+  - `src/app/core/layout/main-layout/main-layout.component.html` (App Móvil → «Páginas de la App»)
+- **Verificado:** `ng build --configuration production` sin errores —quedan las advertencias de
+  siempre, presupuesto de bundle y `qrcode` en CommonJS—, y en el navegador contra el backend local:
+  el listado muestra la fila, el diálogo trae el texto sembrado, y **al guardar se comprobó por la
+  API** (`GET /api/paginas/legacy-board`) que el párrafo nuevo quedó escrito; que el diálogo se
+  cierre no prueba nada.
+
+- **Desplegado a producción el 2026-09-02**: `dist` publicado respaldado antes de reemplazarlo
+  (`dist.bak.20260903_0120`), build nuevo subido empaquetado y contenedor recreado. Verificado que
+  el `main-*.js` servido es el de este build, que el chunk del módulo trae `api/admin/paginas`, que
+  `/admin/paginas` recargado con F5 responde 200 y que el `config.json` servido apunta al dominio y
+  no a `localhost`.
+
+- **Criterios de QA:**
+  1. **Entrar a App Móvil → Páginas de la App**: aparece «Legacy Board», con su estado y la fecha de
+     la última edición.
+  2. **Editar el contenido y guardar**: el aviso confirma, la fecha de la fila cambia, y al reabrir el
+     diálogo está el texto nuevo.
+  3. **Borrar el título y guardar**: el formulario no deja enviar y explica que es obligatorio.
+  4. **Apagar «Publicada» y guardar**: la fila pasa a «OCULTA» y la app deja de mostrar la sección.
+  5. **Subir una imagen de cabecera**: queda la URL en el campo y la app la pinta arriba del texto.
+
 ### [2026-08-26]: Las tablas grandes del panel piden páginas, no la tabla entera
 
 Contraparte de la entrada del mismo día en `Backend/qa_bitacora.md`, que trae el detalle del diseño
