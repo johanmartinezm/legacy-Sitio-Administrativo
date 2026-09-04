@@ -31,10 +31,22 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" style="flex: 1;">
-                    <mat-label>Precio</mat-label>
+                    <mat-label>Precio (USD)</mat-label>
                     <input matInput type="number" formControlName="price" placeholder="0.00">
                     <mat-icon matSuffix>attach_money</mat-icon>
+                    <mat-hint>En dolares. La app lo muestra como «USD $499».</mat-hint>
                 </mat-form-field>
+            </div>
+
+            <!-- Gratuito es una casilla propia, no «precio cero»: mientras la
+                 pasarela de CredibanCo siga bloqueada todo evento se cobra
+                 fuera de la app, pero el precio se guarda para cuando se
+                 reactive. Marcada, la app muestra «Reservar cupo gratis» e
+                 inscribe en el acto, sin pasar por la pasarela. -->
+            <div class="row">
+                <mat-checkbox formControlName="isFree" color="primary">
+                    Evento gratuito en la app (no cobra al inscribirse)
+                </mat-checkbox>
             </div>
 
             <!-- La modalidad decide qué recibe quien se inscribe: los

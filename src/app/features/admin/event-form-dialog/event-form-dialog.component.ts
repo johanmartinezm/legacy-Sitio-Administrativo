@@ -51,6 +51,13 @@ export class EventFormDialogComponent implements OnInit {
       categoryId: ['', Validators.required],
       speaker: [''],
       price: [0, [Validators.required, Validators.min(0)]],
+      // Control propio, no derivado del precio. Hasta el 2026-09-04 se
+      // guardaba `isFree: price === 0`, asi que un evento con precio no
+      // podia estar gratuito: al reabrirlo y guardar volvia a ser de pago
+      // sin avisar. Nace en `true` porque, mientras la pasarela de
+      // CredibanCo siga bloqueada, todo evento nuevo tiene que ser
+      // gratuito; el precio se guarda igual para cuando se reactive.
+      isFree: [true],
       imageUrl: [''],
       location: [''],
       // Un evento virtual necesita enlace; uno presencial no. El validador se
@@ -144,6 +151,7 @@ export class EventFormDialogComponent implements OnInit {
       categoryId: event.categoryId,
       speaker: event.speaker,
       price: event.price,
+      isFree: event.isFree ?? (event.price === 0),
       imageUrl: event.imageUrl,
       location: event.location,
       isVirtual: event.isVirtual ?? false,
@@ -237,9 +245,9 @@ export class EventFormDialogComponent implements OnInit {
         startDate: formValue.startDate,
         endDate: formValue.endDate,
         attendeesLimit: formValue.attendeesLimit,
-        isFree: formValue.price === 0,
+        isFree: !!formValue.isFree,
         actionStatus: formValue.actionStatus || 'register',
-        buttonText: formValue.buttonText || (formValue.price === 0 ? 'Registrarme Gratis' : 'Comprar Ticket'),
+        buttonText: formValue.buttonText || (formValue.isFree ? 'Registrarme Gratis' : 'Comprar Ticket'),
         includes: formValue.includes || '',
         workshops: processedWorkshops
       };

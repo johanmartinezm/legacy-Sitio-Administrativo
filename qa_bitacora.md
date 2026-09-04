@@ -2,6 +2,58 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-04]: «Gratuito» deja de ser «precio cero», y el precio dice USD
+
+Sale de preparar el envío a la App Store. La pasarela de CredibanCo sigue devolviendo `errorCode 5`
+desde el 06-08, y en el detalle de un evento la app decide el botón por `is_free`: con `false` abre
+la pantalla de pago, crea la inscripción como pendiente y **lanza la pasarela**. El Legacy Summit
+estaba en producción con `is_free = false`, activo y visible, así que cualquiera que lo tocara
+terminaba con una inscripción sin pagar y un error — y contradecía lo que se le declaró a Apple ese
+mismo día: que la app no procesa pagos.
+
+🔴 **Lo que impedía arreglarlo solo con datos:** el formulario guardaba `isFree: formValue.price === 0`.
+Poner el precio real del Summit (499) y dejarlo gratuito era **imposible de expresar**: bastaba con
+que alguien abriera el evento en el panel y guardara para que volviera a ser de pago, sin ningún
+aviso y sin tocar ese campo. Por eso el arreglo empieza aquí y no en la base.
+
+- **Casilla propia «Evento gratuito en la app (no cobra al inscribirse)»**, independiente del precio.
+  **Nace marcada** en un evento nuevo: mientras la pasarela esté bloqueada, todo evento tiene que ser
+  gratuito en la app. Al abrir uno existente respeta su valor real, con `event.price === 0` solo como
+  repliegue para eventos anteriores a este cambio.
+- **El texto del botón se deriva de la casilla**, no del precio.
+- **La etiqueta del precio pasa a «Precio (USD)»**, con la ayuda «En dólares. La app lo muestra como
+  “USD $499”». Los precios son en dólares desde la decisión del 20-08 y nada en el formulario lo
+  decía; el Summit estaba cargado con 3150000, que es su precio en pesos.
+
+**El precio no se borra nunca al marcar gratuito.** Queda guardado para cuando la pasarela vuelva:
+con `is_free = true` la app muestra «GRATIS» y ni lo lee (`event_model.dart:125`).
+
+- **Alcance:**
+  - `src/app/features/admin/event-form-dialog/event-form-dialog.component.ts` — control `isFree`
+    propio, carga y guardado.
+  - `src/app/features/admin/event-form-dialog/event-form-dialog.component.html` — casilla nueva y
+    etiqueta del precio.
+  - Acompaña a `Backend/scripts/20260904_eventos_gratuitos_mientras_pasarela.sql`, que aplica el
+    cambio a los eventos que ya existen y al `DEFAULT` de la columna.
+
+- **Verificado:** `ng build --configuration production` sin errores nuevos (siguen los dos avisos de
+  siempre: presupuesto del bundle y `qrcode` no-ESM).
+
+⚠️ **Hay que desplegar el panel para que la casilla exista.** Hasta entonces, quien edite un evento
+en el panel de producción seguirá guardando `isFree` derivado del precio y **desharía la migración en
+ese evento**. O se despliega, o no se tocan eventos en el panel.
+
+- **Criterios de QA:**
+  1. **Crear un evento nuevo:** la casilla «Evento gratuito» aparece **marcada** por defecto.
+  2. Poner precio `499` y dejar la casilla marcada, guardar y **reabrir**: sigue marcada y el precio
+     sigue en 499. Es la comprobación que antes fallaba.
+  3. Desmarcarla, guardar y reabrir: sigue desmarcada.
+  4. La etiqueta del campo dice **«Precio (USD)»** y muestra la ayuda debajo.
+  5. En la app, un evento con la casilla marcada muestra «Reservar cupo gratis» e inscribe en el
+     acto, **sin abrir la pasarela**.
+
+---
+
 ### [2026-09-03]: Desplegado a producción — las dos entradas de importación y el resto
 
 `carga-masiva` fusionada a `main` (avance rápido, sin divergencia) y publicada junto con el backend.
