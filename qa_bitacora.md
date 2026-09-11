@@ -32,6 +32,12 @@ correctos en `styles.scss` —venían de `diseno.md`—, así que aquí el traba
     (`--color-blue-4/5`) se igualan a los del vector, `#70ABE0` y `#8AC6FB`, para que panel y app
     tengan exactamente los mismos tonos.
   - 11 componentes: 21 hexadecimales sueltos sustituidos por las variables de marca.
+  - **Favicon regenerado** con el mismo icono que la app: el símbolo blanco sobre el Azul No.1.
+    `public/favicon.ico` pasa de tres tamaños (16, 32, 48) a seis, hasta 256; los pequeños llevan el
+    símbolo proporcionalmente más grande, porque con el margen de los grandes a 16 px no se
+    distinguía nada. Se añade `public/favicon.svg`, declarado **después** del `.ico` en
+    `src/index.html` a propósito: el navegador que entiende SVG se queda con el último icono que
+    soporta, y así la pestaña se ve nítida en pantallas densas.
   - Se retiran `logo.png` y `logo2.png`, que ya no los nombra ningún archivo del código fuente.
 
 - **Verificado:** `ng build --configuration production` compila —los dos avisos, el de presupuesto de
@@ -50,6 +56,11 @@ correctos en `styles.scss` —venían de `diseno.md`—, así que aquí el traba
      de marca; **ninguno debe verse en el índigo** que traía Material.
   6. Abrir el correo de verificación de cuenta y seguir el enlace: la pantalla muestra el mismo logo
      que el login.
+  7. Mirar la **pestaña del navegador**: cuadrado azul con el símbolo blanco. Si sigue saliendo el
+     icono anterior, es la caché del navegador —recargar con Ctrl+Shift+R o abrir una ventana de
+     incógnito—, no el despliegue.
+  8. Añadir el panel a favoritos y comprobar que el icono se ve bien también en la barra de
+     marcadores, que es donde se dibuja más pequeño.
 
 
 ### [2026-09-04]: «Gratuito» deja de ser «precio cero», y el precio dice USD
