@@ -15,7 +15,7 @@
         flex: 0 0 26px;
         height: 26px;
         border-radius: 50%;
-        background-color: #1e2f4d;
+        background-color: var(--color-blue-1);
         color: #fff;
         font-size: 13px;
         font-weight: 600;
@@ -33,7 +33,7 @@
 
     .archivo {
         font-size: 13px;
-        color: #1e2f4d;
+        color: var(--color-blue-1);
     }
 }
 
@@ -57,7 +57,7 @@
 
         strong {
             font-size: 20px;
-            color: #1e2f4d;
+            color: var(--color-blue-1);
         }
 
         span {
@@ -139,5 +139,5 @@ table.problemas {
 .nota.avance {
     margin-top: 6px;
     font-weight: 500;
-    color: #1e2f4d;
+    color: var(--color-blue-1);
 }

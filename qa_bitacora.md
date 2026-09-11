@@ -2,6 +2,56 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-09-11]: El panel usa el logo en vector y el azul del manual
+
+Mismo origen que la entrada de hoy en la app: el cliente entregó el vector maestro
+(`Log_LegNet-abierto.ai`) y el Manual de Imagen de julio 2023. El panel ya tenía los tres azules
+correctos en `styles.scss` —venían de `diseno.md`—, así que aquí el trabajo era menor que en la app.
+
+**Lo que estaba mal:**
+
+- La barra lateral pintaba el logo `logo2.png`: una versión **plateada con degradado y fondo azul
+  incrustado**, de 362×170. El manual reserva el plateado para piezas impresas conmemorativas y
+  prohíbe aplicar efectos al logo.
+- El login mostraba `logo.png` (232×227, borroso en pantallas densas) y, debajo, `<h1>LEGACY
+  Network</h1>` en Barlow: el nombre de la marca repetido en una tipografía que no es la suya.
+- El fondo de la barra lateral era `#001F3F`, un azul que no está en el manual.
+- 21 azules sueltos por los componentes: `#1e2f4d` como color de títulos y `#1a237e`, que es el
+  índigo por defecto de Material y nunca fue de la marca.
+
+- **Alcance:**
+  - `src/assets/images/brand/` (nuevo): las 16 versiones del logo en SVG, las mismas que la app.
+  - `core/layout/main-layout/main-layout.component.html`: la barra lateral pasa a la versión
+    horizontal blanca a una tinta, que es la que el manual pide sobre fondo oscuro.
+  - `features/auth/login/`: versión vertical a color, y fuera el `<h1>` que repetía el nombre. El
+    ancho sube a 160 px —el manual fija 100 px como mínimo digital—.
+  - `features/auth/verify-email/`: mismo cambio de logo.
+  - `features/admin/manage-events/`: la imagen de respaldo de un evento sin portada pasa a ser el
+    símbolo en vector.
+  - `src/styles.scss`: el fondo de la barra lateral pasa a `var(--color-blue-1)`; los dos pasteles
+    (`--color-blue-4/5`) se igualan a los del vector, `#70ABE0` y `#8AC6FB`, para que panel y app
+    tengan exactamente los mismos tonos.
+  - 11 componentes: 21 hexadecimales sueltos sustituidos por las variables de marca.
+  - Se retiran `logo.png` y `logo2.png`, que ya no los nombra ningún archivo del código fuente.
+
+- **Verificado:** `ng build --configuration production` compila —los dos avisos, el de presupuesto de
+  bundle y el de `qrcode`, ya estaban—; los SVG llegan a `dist/` y el servidor los entrega como
+  `image/svg+xml`; login abierto en el navegador, con el logo en vector y sin el nombre duplicado.
+
+- **Criterios de QA:**
+  1. Abrir el login del panel: el logo se ve nítido, incluye «LEGACY Network®» y **no** hay un
+     título repitiendo el nombre debajo.
+  2. Iniciar sesión y mirar la **barra lateral**: logo blanco sobre azul `#162540`, sin el plateado
+     con degradado ni el recuadro de fondo más oscuro que se veía antes.
+  3. Ampliar el navegador al 200 %: el logo de la barra lateral debe seguir nítido (es SVG).
+  4. Entrar en **Eventos** y buscar uno sin imagen de portada: debe salir el símbolo azul, no el
+     logo plateado.
+  5. Recorrer Banners, Páginas, Estadísticas, Importaciones y Administradores: los títulos son azul
+     de marca; **ninguno debe verse en el índigo** que traía Material.
+  6. Abrir el correo de verificación de cuenta y seguir el enlace: la pantalla muestra el mismo logo
+     que el login.
+
+
 ### [2026-09-04]: «Gratuito» deja de ser «precio cero», y el precio dice USD
 
 Sale de preparar el envío a la App Store. La pasarela de CredibanCo sigue devolviendo `errorCode 5`

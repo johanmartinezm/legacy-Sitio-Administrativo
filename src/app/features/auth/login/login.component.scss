@@ -24,17 +24,10 @@
             align-items: center;
 
             .app-logo {
-                width: 100px; // Slightly larger for better visibility
+                // El manual fija 100 px de ancho como minimo digital.
+                width: 160px;
                 height: auto;
                 margin-bottom: 1rem;
-            }
-
-            h1 {
-                font-family: var(--font-primary);
-                color: var(--color-blue-1);
-                font-weight: 600;
-                margin: 0;
-                font-size: 1.5rem;
             }
         }
     }

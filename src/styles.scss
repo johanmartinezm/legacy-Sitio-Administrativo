@@ -3,8 +3,8 @@
   --color-blue-1: #162540;
   --color-blue-2: #183D6B;
   --color-blue-3: #306C9E;
-  --color-blue-4: #75A6CD;
-  --color-blue-5: #95BAD8;
+  --color-blue-4: #70ABE0;
+  --color-blue-5: #8AC6FB;
 
   --color-black: #000000;
   --color-grey-dark: #333333;
@@ -30,7 +30,7 @@ body {
 // CENTRALIZED SIDEBAR STYLES
 // =============================================================================
 .app-sidenav {
-  background-color: #001F3F !important; // Deep Navy
+  background-color: var(--color-blue-1) !important; // Azul No.1 del manual
   color: #FFFFFF !important;
 
   // Header Styles

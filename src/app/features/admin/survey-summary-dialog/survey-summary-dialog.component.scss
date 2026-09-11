@@ -28,7 +28,7 @@
 }
 
 .summary-card {
-    background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+    background: linear-gradient(135deg, var(--color-blue-2) 0%, #0d47a1 100%);
     color: white;
     padding: 2rem;
     border-radius: 12px;

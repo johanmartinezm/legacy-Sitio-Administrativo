@@ -12,7 +12,7 @@
         h1 {
             margin: 0;
             font-size: 24px;
-            color: #1e2f4d;
+            color: var(--color-blue-1);
             font-weight: 600;
         }
     }
@@ -30,7 +30,7 @@
 
         td {
             padding: 12px;
-            color: #1e2f4d;
+            color: var(--color-blue-1);
         }
 
         .banner-preview {
