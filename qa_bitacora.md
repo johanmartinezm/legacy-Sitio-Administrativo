@@ -38,6 +38,9 @@ correctos en `styles.scss` —venían de `diseno.md`—, así que aquí el traba
     distinguía nada. Se añade `public/favicon.svg`, declarado **después** del `.ico` en
     `src/index.html` a propósito: el navegador que entiende SVG se queda con el último icono que
     soporta, y así la pestaña se ve nítida en pantallas densas.
+  - El título de la pestaña pasa de `LegacyApp` a `LEGACY Network · Administración`. De paso,
+    `<html lang="en">` pasa a `es`: el panel está íntegramente en español, y con `en` Chrome ofrecía
+    traducirlo y los lectores de pantalla lo leían con voz inglesa.
   - Se retiran `logo.png` y `logo2.png`, que ya no los nombra ningún archivo del código fuente.
 
 - **Verificado:** `ng build --configuration production` compila —los dos avisos, el de presupuesto de
@@ -61,6 +64,9 @@ correctos en `styles.scss` —venían de `diseno.md`—, así que aquí el traba
      incógnito—, no el despliegue.
   8. Añadir el panel a favoritos y comprobar que el icono se ve bien también en la barra de
      marcadores, que es donde se dibuja más pequeño.
+  9. Con varias pestañas abiertas, comprobar que la del panel se distingue por el nombre: debe
+     empezar por «LEGACY Network», no por «LegacyApp». Y que Chrome **ya no ofrece traducir** la
+     página.
 
 
 ### [2026-09-04]: «Gratuito» deja de ser «precio cero», y el precio dice USD
