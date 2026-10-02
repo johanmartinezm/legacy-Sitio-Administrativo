@@ -2,6 +2,20 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-02]: El panel apunta a la API de `app.legacynetworkco.com`
+- **Alcance:** `public/assets/config/config.json` y `src/assets/config/config.json` (idénticos).
+  Compilado y desplegado en el servidor nuevo, que sirve el panel en `https://app.legacynetworkco.com`.
+  ⚠️ Si se vuelve a desplegar este build en el servidor viejo, el panel de `legacy.intelyclick.com`
+  también llamará a la API nueva.
+- **Criterios de QA:**
+  1. `https://app.legacynetworkco.com/assets/config/config.json` muestra
+     `"apiUrl": "https://app.legacynetworkco.com"` (confirmado).
+  2. En la consola del navegador aparece `External config loaded` con esa URL.
+  3. Iniciar sesión como administrador: en la pestaña Red, las peticiones salen hacia
+     `app.legacynetworkco.com`, no hacia `legacy.intelyclick.com` ni hacia `localhost`.
+  4. Abrir una subruta y recargar con F5: carga sin 404 (confirmado con `/dashboard` → 200).
+- **Rollback:** `dist.bak.20261002_1805` en `/docker/legacy_frontend`.
+
 ### [2026-09-11]: El panel usa el logo en vector y el azul del manual
 
 Mismo origen que la entrada de hoy en la app: el cliente entregó el vector maestro
