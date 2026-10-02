@@ -1,7 +1,11 @@
 # Despliegue del panel administrativo
 
 Guía para publicar el back-office Angular, que se sirve en la raíz de
-`https://legacy.intelyclick.com`.
+`https://app.legacynetworkco.com`.
+
+> **Desde el 2026-10-02 todos los despliegues van al servidor nuevo**, que sirve
+> `https://app.legacynetworkco.com` detrás de Cloudflare. El de `legacy.intelyclick.com` es el
+> anterior y ya no se despliega en él. El destino lo fija `SERVER_IP` en el `.env`.
 
 > Este repositorio es **público**. No añadas aquí ni en ningún archivo versionado la IP del
 > servidor, el usuario SSH ni contraseñas.
@@ -28,7 +32,7 @@ Esta es la parte que más confunde del proyecto, porque hay **dos** mecanismos y
 `this.config.apiUrl`. Ya apunta a producción:
 
 ```json
-{ "apiUrl": "https://legacy.intelyclick.com", "production": true }
+{ "apiUrl": "https://app.legacynetworkco.com", "production": true }
 ```
 
 Como se resuelve **en tiempo de ejecución**, este archivo se puede editar dentro del contenedor
@@ -119,7 +123,7 @@ docker network ls | grep proxy-net    # si falta: docker network create proxy-ne
 
 ## 5. Verificar
 
-1. **Carga:** abrir `https://legacy.intelyclick.com` y comprobar que aparece el panel con el
+1. **Carga:** abrir `https://app.legacynetworkco.com` y comprobar que aparece el panel con el
    candado del certificado.
 2. **Config cargada:** en la consola del navegador debe verse `External config loaded: {apiUrl: ...}`.
    Si en su lugar aparece `Could not load external config, using fallback`, el `config.json` no
