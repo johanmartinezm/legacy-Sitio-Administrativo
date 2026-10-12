@@ -2,6 +2,19 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-12]: Formulario de eventos: campo «Modelo (opcional)»
+- **Alcance:** `core/models/event.model.ts`, `core/services/event.service.ts` (lee y envía `model`;
+  vacío viaja como `null`), `features/admin/event-form-dialog/` (campo debajo de «Que incluye») y dos
+  casos nuevos en `core/services/event-status.spec.ts`. Desplegado junto con el backend que guarda el
+  campo.
+- **Criterios de QA:**
+  1. Editar el Legacy Summit 2026: el campo «Modelo (opcional)» aparece con «7 dimensiones
+     DINASTÍA».
+  2. Guardar sin cambiarlo y reabrir: sigue ahí.
+  3. Escribir un modelo en una masterclass y guardar: en la app, su ficha muestra la fila «Modelo».
+  4. Vaciarlo y guardar: la fila desaparece de la app.
+- **Rollback:** `dist.bak.20261012_1847` en `/docker/legacy_frontend`.
+
 ### [2026-10-02]: El panel apunta a la API de `app.legacynetworkco.com`
 - **Alcance:** `public/assets/config/config.json` y `src/assets/config/config.json` (idénticos).
   Compilado y desplegado en el servidor nuevo, que sirve el panel en `https://app.legacynetworkco.com`.
