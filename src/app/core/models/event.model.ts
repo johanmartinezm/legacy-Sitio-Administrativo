@@ -39,6 +39,9 @@ export interface Event {
     actionStatus: string;
     attendeesLimit?: number;
     includes: string;
+    /** Modelo de trabajo del evento (p. ej. «7 dimensiones DINASTÍA»).
+     *  Opcional: si queda vacío la app no muestra la fila. */
+    model?: string | null;
     /** 'active' = se ve en la app; 'inactive' = solo se ve aquí, en el panel.
      *  Es de solo lectura desde el formulario: cambiarlo va por su propia
      *  llamada (EventService.updateStatus), porque el PUT del evento no

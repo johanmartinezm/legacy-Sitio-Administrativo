@@ -70,6 +70,7 @@ export class EventFormDialogComponent implements OnInit {
       actionStatus: ['register'],
       buttonText: ['Registrarme Agora'],
       includes: [''],
+      model: [''],
       workshops: this.fb.array([])
     });
   }
@@ -161,7 +162,8 @@ export class EventFormDialogComponent implements OnInit {
       attendeesLimit: event.attendeesLimit,
       actionStatus: event.actionStatus,
       buttonText: event.buttonText,
-      includes: event.includes || ''
+      includes: event.includes || '',
+      model: event.model || ''
     });
 
     // Clear existing workshops first
@@ -249,6 +251,7 @@ export class EventFormDialogComponent implements OnInit {
         actionStatus: formValue.actionStatus || 'register',
         buttonText: formValue.buttonText || (formValue.isFree ? 'Registrarme Gratis' : 'Comprar Ticket'),
         includes: formValue.includes || '',
+        model: formValue.model || '',
         workshops: processedWorkshops
       };
 

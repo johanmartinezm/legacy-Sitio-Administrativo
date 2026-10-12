@@ -133,6 +133,38 @@ describe('EventService · visibilidad del evento', () => {
         req.flush({ id: 'evt-1' });
     });
 
+    it('guardar un evento envia su modelo', () => {
+        // El PUT escribe la columna siempre: si el mapeo no lo enviara, cada
+        // guardado borraria el modelo del Summit.
+        const evento = {
+            id: 'evt-1', title: 'Legacy Summit', description: '', imageUrl: '',
+            category: '', categoryId: '', workshops: [], price: 0, isFree: true,
+            buttonText: '', actionStatus: 'register', includes: '',
+            model: '7 dimensiones DINASTÍA'
+        } as Event;
+
+        service.updateEvent(evento).subscribe();
+
+        const req = httpMock.expectOne(`${apiUrl}/evt-1`);
+        expect(req.request.body.model).toBe('7 dimensiones DINASTÍA');
+        req.flush({ id: 'evt-1' });
+    });
+
+    it('un modelo vacio viaja como null', () => {
+        const evento = {
+            id: 'evt-1', title: 'Masterclass', description: '', imageUrl: '',
+            category: '', categoryId: '', workshops: [], price: 0, isFree: true,
+            buttonText: '', actionStatus: 'register', includes: '',
+            model: '   '
+        } as Event;
+
+        service.updateEvent(evento).subscribe();
+
+        const req = httpMock.expectOne(`${apiUrl}/evt-1`);
+        expect(req.request.body.model).toBeNull();
+        req.flush({ id: 'evt-1' });
+    });
+
     it('crear un evento virtual tambien lleva la modalidad', () => {
         // Mismo mapeo que el guardado, asi que se perdia igual al crear.
         const evento = {

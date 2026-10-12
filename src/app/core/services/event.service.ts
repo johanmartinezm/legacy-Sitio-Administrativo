@@ -216,6 +216,7 @@ export class EventService {
             actionStatus: dto.actionStatus || 'register',
             buttonText: dto.buttonText || '',
             includes: dto.includes || '',
+            model: dto.model || '',
             status: dto.status || 'active',
             workshops: dto.workshops ? dto.workshops.map((w: any) => ({
                 id: w.id,
@@ -256,6 +257,10 @@ export class EventService {
             actionStatus: event.actionStatus,
             buttonText: event.buttonText,
             includes: event.includes,
+            // Vacío viaja como null, no como '': así la base distingue «sin
+            // modelo» y la app no pinta una fila en blanco. El PUT escribe la
+            // columna siempre, así que omitirlo la borraría en cada guardado.
+            model: event.model?.trim() || null,
             workshops: event.workshops.map(w => ({
                 name: w.name,
                 description: w.description,

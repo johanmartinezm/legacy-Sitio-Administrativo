@@ -135,6 +135,14 @@
             </div>
 
             <div class="row">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Modelo (opcional)</mat-label>
+                    <input matInput formControlName="model" placeholder="Ej: 7 dimensiones DINASTÍA">
+                    <mat-hint>Si queda vacío, la app no muestra la fila «Modelo».</mat-hint>
+                </mat-form-field>
+            </div>
+
+            <div class="row">
                 <app-image-upload formControlName="imageUrl" label="Imagen del evento"></app-image-upload>
             </div>
         </div>
