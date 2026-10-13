@@ -3,6 +3,30 @@
     margin-bottom: 8px;
 }
 
+.vista-previa-texto {
+    margin-top: 16px;
+    max-width: 420px;
+    padding: 20px;
+    border-radius: 14px;
+    background-color: #1b3156;
+    border: 1px solid rgba(48, 108, 158, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .titulo {
+        color: #fff;
+        font-weight: 700;
+        font-size: 20px;
+    }
+
+    .texto {
+        color: #9fb2c2;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+}
+
 .vista-previa {
     position: relative;
     margin-top: 16px;

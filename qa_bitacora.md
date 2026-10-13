@@ -2,6 +2,29 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: Módulo «Texto de Asesoría»
+- **Alcance:** ruta `admin/asesoria` y entrada en el menú App Móvil, sobre el mismo listado y diálogo
+  de `features/admin/inicio/`. `CAMPOS_POR_PANTALLA` en `seccion-inicio.model.ts` decide qué se
+  edita en cada página: Inicio (imagen, título y texto), LSO (título y texto) y Asesoría (solo
+  texto). Requiere el backend con `20261013_texto_asesoria.sql`.
+- **Criterios de QA:**
+  1. Menú App Móvil → Texto de Asesoría: una fila, «Texto de bienvenida», con el texto de la app
+     en gris y sin título.
+  2. Editarla: el diálogo solo pide el texto; guardar y verlo en la app al volver a entrar a Asesoría.
+  3. Tarjetas del Inicio y Textos de LSO siguen igual.
+
+### [2026-10-13]: Módulo «Textos de LSO»
+- **Alcance:** ruta `admin/lso` en `app.routes.ts` y entrada en el menú App Móvil. Reutiliza el
+  listado y el diálogo de `features/admin/inicio/` según `data.pantalla` de la ruta: en LSO no hay
+  imagen ni «Quitar imagen», y la vista previa es el recuadro del banner. `seccion-inicio.model.ts`
+  suma `pantalla`, los textos de siempre de LSO y sube el texto a 300 caracteres. Requiere el backend
+  con `20261013_textos_lso.sql`.
+- **Criterios de QA:**
+  1. Menú App Móvil → Textos de LSO: dos filas, Encabezado y Banner principal, con los textos de la
+     app en gris.
+  2. Tarjetas del Inicio sigue mostrando solo las 11 tarjetas.
+  3. Editar el Banner principal, guardar, y verlo en la app al volver a entrar a LSO · Escuela.
+
 ### [2026-10-13]: «Tarjetas del Inicio»: también título y texto
 - **Alcance:** `features/admin/inicio/` (diálogo con campos Título y Texto, contador de caracteres,
   vista previa con los dos textos; columna «Título y texto» en el listado, en gris lo que es el de

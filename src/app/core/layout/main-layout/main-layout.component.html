@@ -90,6 +90,16 @@
                         <mat-icon matListItemIcon>home</mat-icon>
                         <span matListItemTitle>Tarjetas del Inicio</span>
                     </a>
+                    <a mat-list-item routerLink="/admin/lso" routerLinkActive="active-link"
+                        (click)="isAboutVisible = false">
+                        <mat-icon matListItemIcon>school</mat-icon>
+                        <span matListItemTitle>Textos de LSO</span>
+                    </a>
+                    <a mat-list-item routerLink="/admin/asesoria" routerLinkActive="active-link"
+                        (click)="isAboutVisible = false">
+                        <mat-icon matListItemIcon>support_agent</mat-icon>
+                        <span matListItemTitle>Texto de Asesoría</span>
+                    </a>
                     <a mat-list-item routerLink="/admin/statistics" routerLinkActive="active-link"
                         (click)="isAboutVisible = false">
                         <mat-icon matListItemIcon>bar_chart</mat-icon>

@@ -1,7 +1,7 @@
-<h2 mat-dialog-title>Tarjeta «{{ data.nombre }}»</h2>
+<h2 mat-dialog-title>{{ conImagen ? 'Tarjeta' : data.pantalla === 'asesoria' ? 'Asesoría ·' : 'LSO ·' }} «{{ data.nombre }}»</h2>
 
 <mat-dialog-content>
-    <mat-form-field appearance="outline" class="campo">
+    <mat-form-field *ngIf="conTitulo" appearance="outline" class="campo">
         <mat-label>Título</mat-label>
         <input matInput [formControl]="titulo" [maxlength]="maxTitulo" [placeholder]="porDefecto.titulo">
         <mat-hint>Vacío: «{{ porDefecto.titulo }}»</mat-hint>
@@ -16,11 +16,17 @@
         <mat-hint align="end">{{ texto.value.length }}/{{ maxTexto }}</mat-hint>
     </mat-form-field>
 
-    <app-image-upload [formControl]="imagen" label="Imagen de la tarjeta"></app-image-upload>
+    <app-image-upload *ngIf="conImagen" [formControl]="imagen" label="Imagen de la tarjeta"></app-image-upload>
+
+    <!-- LSO: sin imagen, la vista previa es el recuadro tal como lo pinta la app. -->
+    <div class="vista-previa-texto" *ngIf="!conImagen">
+        <span *ngIf="conTitulo" class="titulo">{{ tituloVisible }}</span>
+        <span class="texto">{{ textoVisible }}</span>
+    </div>
 
     <!-- Vista aproximada de cómo la pinta la app: la foto de fondo (o el azul de
          la tarjeta sin foto) con la capa oscura abajo y los textos encima. -->
-    <div class="vista-previa">
+    <div class="vista-previa" *ngIf="conImagen">
         <img *ngIf="imagen.value" [src]="imagen.value" alt="">
         <div class="capa"></div>
         <div class="textos">
@@ -32,7 +38,7 @@
 
 <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close [disabled]="guardando">Cancelar</button>
-    <button mat-button color="warn" (click)="quitarImagen()" [disabled]="guardando || !data.imagen_url">
+    <button *ngIf="conImagen" mat-button color="warn" (click)="quitarImagen()" [disabled]="guardando || !data.imagen_url">
         Quitar imagen
     </button>
     <button mat-flat-button color="primary" (click)="guardar()" [disabled]="guardando || !valido">

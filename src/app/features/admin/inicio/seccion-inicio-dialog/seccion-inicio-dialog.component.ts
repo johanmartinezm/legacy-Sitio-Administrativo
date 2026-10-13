@@ -7,11 +7,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
+    CAMPOS_POR_PANTALLA,
     CambiosSeccionInicio,
     MAX_TEXTO_SECCION,
     MAX_TITULO_SECCION,
     SeccionInicio,
-    TEXTOS_POR_DEFECTO
+    TEXTOS_POR_DEFECTO,
+    pantallaDe
 } from '../../../../core/models/seccion-inicio.model';
 import { SeccionInicioAdminService } from '../../../../core/services/seccion_inicio_admin.service';
 import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
@@ -60,6 +62,15 @@ export class SeccionInicioDialogComponent {
         this.porDefecto = TEXTOS_POR_DEFECTO[data.slug] ?? { titulo: data.nombre, texto: '' };
     }
 
+    /** Qué campos lleva la fila según su pantalla (CAMPOS_POR_PANTALLA). */
+    get conImagen(): boolean {
+        return CAMPOS_POR_PANTALLA[pantallaDe(this.data.pantalla)].imagen;
+    }
+
+    get conTitulo(): boolean {
+        return CAMPOS_POR_PANTALLA[pantallaDe(this.data.pantalla)].titulo;
+    }
+
     /** Lo que se verá en la app: lo escrito o, si está vacío, lo de siempre. */
     get tituloVisible(): string {
         return this.titulo.value.trim() || this.porDefecto.titulo;
@@ -75,11 +86,10 @@ export class SeccionInicioDialogComponent {
 
     guardar(): void {
         if (!this.valido) return;
-        this.enviar({
-            imagen_url: this.imagen.value.trim(),
-            titulo: this.titulo.value.trim(),
-            texto: this.texto.value.trim()
-        });
+        const cambios: CambiosSeccionInicio = { texto: this.texto.value.trim() };
+        if (this.conTitulo) cambios.titulo = this.titulo.value.trim();
+        if (this.conImagen) cambios.imagen_url = this.imagen.value.trim();
+        this.enviar(cambios);
     }
 
     /** Solo la imagen: el título y el texto guardados no se tocan. */
@@ -99,7 +109,7 @@ export class SeccionInicioDialogComponent {
                 // cual para que diga qué corregir.
                 const detalle = typeof err?.error === 'string' && err.error.trim()
                     ? err.error.trim()
-                    : 'No se pudo guardar la tarjeta';
+                    : 'No se pudo guardar';
                 this.snackBar.open(detalle, 'Cerrar', { duration: 5000 });
             }
         });

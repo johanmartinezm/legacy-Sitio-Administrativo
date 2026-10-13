@@ -1,11 +1,12 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { SeccionInicio, TEXTOS_POR_DEFECTO } from '../../../../core/models/seccion-inicio.model';
+import { CAMPOS_POR_PANTALLA, Pantalla, SeccionInicio, TEXTOS_POR_DEFECTO, pantallaDe } from '../../../../core/models/seccion-inicio.model';
 import { SeccionInicioAdminService } from '../../../../core/services/seccion_inicio_admin.service';
 import { SeccionInicioDialogComponent } from '../seccion-inicio-dialog/seccion-inicio-dialog.component';
 
@@ -23,10 +24,18 @@ import { SeccionInicioDialogComponent } from '../seccion-inicio-dialog/seccion-i
     templateUrl: './seccion-inicio-list.component.html',
     styleUrls: ['./seccion-inicio-list.component.scss']
 })
+/**
+ * Sirve a tres páginas del panel, según `data.pantalla` de la ruta: «Tarjetas
+ * del Inicio» (admin/inicio), «Textos de LSO» (admin/lso) y «Texto de
+ * Asesoría» (admin/asesoria). Todas editan filas de core.secciones_inicio; qué
+ * campos lleva cada una lo dice CAMPOS_POR_PANTALLA.
+ */
 export class SeccionInicioListComponent implements OnInit {
-    secciones = signal<SeccionInicio[]>([]);
+    private todas = signal<SeccionInicio[]>([]);
+    readonly pantalla: Pantalla;
+    secciones = computed(() => this.todas().filter(s => pantallaDe(s.pantalla) === this.pantalla));
     cargando = signal(true);
-    displayedColumns: string[] = ['imagen', 'nombre', 'textos', 'donde', 'actualizada', 'acciones'];
+    displayedColumns: string[];
 
     /**
      * Dónde está cada tarjeta en el Inicio. Vive aquí y no en la base porque lo
@@ -36,14 +45,31 @@ export class SeccionInicioListComponent implements OnInit {
         'nuevo-cada-semana': 'Destacado, arriba del todo',
         'beneficios': 'Explore libremente y Servicios Legacy (las dos tarjetas)',
         'miembros': 'Servicios Legacy',
-        'legacy-test': 'Bloque final del Inicio'
+        'legacy-test': 'Bloque final del Inicio',
+        'lso-encabezado': 'Arriba de la pantalla, junto al botón de volver',
+        'lso-banner': 'Primer recuadro, antes de los programas',
+        'asesoria-banner': 'Primer recuadro, antes de las unidades'
     };
 
     constructor(
         private seccionService: SeccionInicioAdminService,
         private dialog: MatDialog,
-        private snackBar: MatSnackBar
-    ) { }
+        private snackBar: MatSnackBar,
+        route: ActivatedRoute
+    ) {
+        this.pantalla = pantallaDe(route.snapshot.data['pantalla']);
+        this.displayedColumns = this.campos.imagen
+            ? ['imagen', 'nombre', 'textos', 'donde', 'actualizada', 'acciones']
+            : ['nombre', 'textos', 'donde', 'actualizada', 'acciones'];
+    }
+
+    get esInicio(): boolean {
+        return this.pantalla === 'inicio';
+    }
+
+    get campos() {
+        return CAMPOS_POR_PANTALLA[this.pantalla];
+    }
 
     ngOnInit(): void {
         this.cargarSecciones();
@@ -53,7 +79,7 @@ export class SeccionInicioListComponent implements OnInit {
         this.cargando.set(true);
         this.seccionService.listAll().subscribe({
             next: (data) => {
-                this.secciones.set(data);
+                this.todas.set(data);
                 this.cargando.set(false);
             },
             error: () => {
@@ -73,7 +99,7 @@ export class SeccionInicioListComponent implements OnInit {
     }
 
     ubicacionDe(seccion: SeccionInicio): string {
-        return this.ubicaciones[seccion.slug] ?? 'Explore libremente';
+        return this.ubicaciones[seccion.slug] ?? (this.esInicio ? 'Explore libremente' : '—');
     }
 
     editar(seccion: SeccionInicio): void {
@@ -84,7 +110,7 @@ export class SeccionInicioListComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(guardada => {
             if (guardada) {
-                this.snackBar.open('Tarjeta guardada', 'Cerrar', { duration: 3000 });
+                this.snackBar.open('Guardado', 'Cerrar', { duration: 3000 });
                 this.cargarSecciones();
             }
         });
