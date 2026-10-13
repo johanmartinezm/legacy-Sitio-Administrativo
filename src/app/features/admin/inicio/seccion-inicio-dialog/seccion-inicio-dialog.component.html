@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>{{ conImagen ? 'Tarjeta' : 'LSO ·' }} «{{ data.nombre }}»</h2>
+<h2 mat-dialog-title>{{ prefijo }} «{{ data.nombre }}»</h2>
 
 <mat-dialog-content>
     <mat-form-field *ngIf="conTitulo" appearance="outline" class="campo">
@@ -8,7 +8,7 @@
         <mat-hint align="end">{{ titulo.value.length }}/{{ maxTitulo }}</mat-hint>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="campo">
+    <mat-form-field *ngIf="conTexto" appearance="outline" class="campo">
         <mat-label>Texto</mat-label>
         <textarea matInput rows="3" [formControl]="texto" [maxlength]="maxTexto"
             [placeholder]="porDefecto.texto"></textarea>
@@ -21,7 +21,7 @@
     <!-- LSO: sin imagen, la vista previa es el recuadro tal como lo pinta la app. -->
     <div class="vista-previa-texto" *ngIf="!conImagen">
         <span *ngIf="conTitulo" class="titulo">{{ tituloVisible }}</span>
-        <span class="texto">{{ textoVisible }}</span>
+        <span *ngIf="conTexto" class="texto">{{ textoVisible }}</span>
     </div>
 
     <!-- Vista aproximada de cómo la pinta la app: la foto de fondo (o el azul de

@@ -2,6 +2,20 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: «Textos de Legacy+», «Puntos de Legacy+» y la tarjeta Diagnósticos
+- **Alcance:** `features/admin/legacy-plus/` (listado y diálogo de puntos: grupo, orden, título,
+  texto, visible), `core/models/legacy-plus-item.model.ts`,
+  `core/services/legacy_plus_item_admin.service.ts` (+ spec), rutas `admin/legacy-plus/textos`
+  (el listado de secciones con pantalla `legacy-plus`) y `admin/legacy-plus/puntos`, y dos entradas
+  en el menú. `seccion-inicio.model.ts` suma la pantalla `legacy-plus`, `camposDe` (Cómo accedo
+  solo texto; subtítulo de beneficios solo título) y los textos de siempre de Legacy+ y de
+  Diagnósticos; Legacy Board queda como «Ya no se muestra».
+- **Criterios de QA:**
+  1. Textos de Legacy+: Banner (título y texto), Cómo accedo (solo texto) y Subtítulo de beneficios
+     (solo título).
+  2. Puntos de Legacy+: los 5 puntos; crear, editar, ocultar y borrar.
+  3. Tarjetas del Inicio: aparece Diagnósticos; Legacy Board, «Ya no se muestra».
+
 ### [2026-10-13]: Tarjetas del Inicio: Legacy Test ya no se muestra
 - **Alcance:** `features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component.ts`. La app
   retiró el banner de Legacy Test; «Dónde se ve» lo indica.

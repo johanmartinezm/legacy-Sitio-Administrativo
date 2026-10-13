@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>{{ editando ? 'Editar punto' : 'Nuevo punto' }}</h2>
+
+<mat-dialog-content [formGroup]="form">
+    <div class="fila">
+        <mat-form-field appearance="outline">
+            <mat-label>Grupo</mat-label>
+            <mat-select formControlName="grupo">
+                <mat-option *ngFor="let g of grupos" [value]="g.valor">{{ g.nombre }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Orden</mat-label>
+            <input matInput type="number" formControlName="orden">
+            <mat-hint>Menor va primero, dentro del grupo</mat-hint>
+        </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="campo">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="titulo" [maxlength]="maxTitulo" placeholder="Ej: Chats de sinergia">
+        <mat-hint align="end">{{ form.value.titulo?.length || 0 }}/{{ maxTitulo }}</mat-hint>
+        <mat-error>El título es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="campo">
+        <mat-label>Texto</mat-label>
+        <textarea matInput rows="4" formControlName="texto" [maxlength]="maxTexto"></textarea>
+        <mat-hint align="end">{{ form.value.texto?.length || 0 }}/{{ maxTexto }}</mat-hint>
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName="activo">Visible en la app</mat-slide-toggle>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close [disabled]="guardando">Cancelar</button>
+    <button mat-flat-button color="primary" (click)="guardar()" [disabled]="guardando">
+        Guardar
+    </button>
+</mat-dialog-actions>

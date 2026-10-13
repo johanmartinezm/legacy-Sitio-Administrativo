@@ -7,13 +7,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-    CAMPOS_POR_PANTALLA,
     CambiosSeccionInicio,
     MAX_TEXTO_SECCION,
     MAX_TITULO_SECCION,
     SeccionInicio,
     TEXTOS_POR_DEFECTO,
-    pantallaDe
+    camposDe
 } from '../../../../core/models/seccion-inicio.model';
 import { SeccionInicioAdminService } from '../../../../core/services/seccion_inicio_admin.service';
 import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
@@ -64,11 +63,21 @@ export class SeccionInicioDialogComponent {
 
     /** Qué campos lleva la fila según su pantalla (CAMPOS_POR_PANTALLA). */
     get conImagen(): boolean {
-        return CAMPOS_POR_PANTALLA[pantallaDe(this.data.pantalla) ?? 'inicio'].imagen;
+        return camposDe(this.data).imagen;
     }
 
     get conTitulo(): boolean {
-        return CAMPOS_POR_PANTALLA[pantallaDe(this.data.pantalla) ?? 'inicio'].titulo;
+        return camposDe(this.data).titulo;
+    }
+
+    get conTexto(): boolean {
+        return camposDe(this.data).texto;
+    }
+
+    /** Prefijo del encabezado del diálogo según la pantalla. */
+    get prefijo(): string {
+        if (this.conImagen) return 'Tarjeta';
+        return this.data.pantalla === 'legacy-plus' ? 'Legacy+ ·' : 'LSO ·';
     }
 
     /** Lo que se verá en la app: lo escrito o, si está vacío, lo de siempre. */
@@ -86,7 +95,8 @@ export class SeccionInicioDialogComponent {
 
     guardar(): void {
         if (!this.valido) return;
-        const cambios: CambiosSeccionInicio = { texto: this.texto.value.trim() };
+        const cambios: CambiosSeccionInicio = {};
+        if (this.conTexto) cambios.texto = this.texto.value.trim();
         if (this.conTitulo) cambios.titulo = this.titulo.value.trim();
         if (this.conImagen) cambios.imagen_url = this.imagen.value.trim();
         this.enviar(cambios);

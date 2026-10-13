@@ -3,6 +3,12 @@
         <h1>{{ campos.nombre }}</h1>
     </div>
 
+    <p class="ayuda" *ngIf="pantalla === 'legacy-plus'">
+        Los textos fijos de la pantalla Legacy+ de la app (pestaña inferior): el recuadro de arriba,
+        «Cómo accedo» y el subtítulo de beneficios. Los puntos con check se editan en «Puntos de
+        Legacy+». Se ven en cuanto se guardan; vacío = el texto de siempre (en gris en la tabla).
+    </p>
+
     <p class="ayuda" *ngIf="pantalla === 'lso'">
         El título y el texto del encabezado y del banner principal de la pantalla LSO · Escuela de
         la app. Se ven en cuanto se guardan, sin actualizar la aplicación. Lo que se deje vacío se
@@ -39,8 +45,8 @@
             <th mat-header-cell *matHeaderCellDef> {{ campos.titulo ? 'Título y texto' : 'Texto' }} </th>
             <td mat-cell *matCellDef="let seccion">
                 <div class="textos-tarjeta">
-                    <span *ngIf="campos.titulo" class="titulo" [class.por-defecto]="!seccion.titulo">{{ tituloDe(seccion) }}</span>
-                    <span class="texto" [class.por-defecto]="!seccion.texto">{{ textoDe(seccion) }}</span>
+                    <span *ngIf="camposDe(seccion).titulo" class="titulo" [class.por-defecto]="!seccion.titulo">{{ tituloDe(seccion) }}</span>
+                    <span *ngIf="camposDe(seccion).texto" class="texto" [class.por-defecto]="!seccion.texto">{{ textoDe(seccion) }}</span>
                 </div>
             </td>
         </ng-container>
@@ -70,6 +76,6 @@
 
     <p class="vacio" *ngIf="!cargando() && secciones().length === 0">
         No hay secciones configuradas. Si esto no es lo esperado, falta aplicar la migración
-        <code>{{ esInicio ? '20261012_secciones_inicio.sql' : '20261013_textos_lso.sql' }}</code> en el servidor.
+        <code>{{ esInicio ? '20261012_secciones_inicio.sql' : pantalla === 'lso' ? '20261013_textos_lso.sql' : '20261013_legacy_plus_contenido.sql' }}</code> en el servidor.
     </p>
 </div>

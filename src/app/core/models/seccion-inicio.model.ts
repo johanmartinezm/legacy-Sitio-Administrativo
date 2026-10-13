@@ -9,7 +9,7 @@ export interface SeccionInicio {
     slug: string;
     nombre: string;
     orden: number;
-    /** Pantalla de la app: tarjetas del Inicio o LSO · Escuela. */
+    /** Pantalla de la app: tarjetas del Inicio, LSO · Escuela o Legacy+. */
     pantalla: Pantalla;
     imagen_url: string;
     titulo: string;
@@ -17,7 +17,7 @@ export interface SeccionInicio {
     actualizada_en?: string;
 }
 
-export type Pantalla = 'inicio' | 'lso';
+export type Pantalla = 'inicio' | 'lso' | 'legacy-plus';
 
 /**
  * Qué se edita en cada pantalla. El Inicio lleva imagen, título y texto; LSO,
@@ -27,13 +27,32 @@ export type Pantalla = 'inicio' | 'lso';
  */
 export const CAMPOS_POR_PANTALLA: Record<Pantalla, { imagen: boolean; titulo: boolean; nombre: string }> = {
     inicio: { imagen: true, titulo: true, nombre: 'Tarjetas del Inicio' },
-    lso: { imagen: false, titulo: true, nombre: 'Textos de LSO' }
+    lso: { imagen: false, titulo: true, nombre: 'Textos de LSO' },
+    'legacy-plus': { imagen: false, titulo: true, nombre: 'Textos de Legacy+' }
 };
+
+/**
+ * Filas que no usan uno de los dos textos: en Legacy+, «Cómo accedo» es solo un
+ * párrafo y el subtítulo de beneficios solo un título.
+ */
+const SIN_TITULO = new Set(['lp-como-accedo']);
+const SIN_TEXTO = new Set(['lp-beneficios']);
+
+/** Qué campos se editan en una fila concreta. */
+export function camposDe(seccion: Pick<SeccionInicio, 'slug' | 'pantalla'>): { imagen: boolean; titulo: boolean; texto: boolean } {
+    const base = CAMPOS_POR_PANTALLA[pantallaDe(seccion.pantalla) ?? 'inicio'];
+    return {
+        imagen: base.imagen,
+        titulo: base.titulo && !SIN_TITULO.has(seccion.slug),
+        texto: !SIN_TEXTO.has(seccion.slug)
+    };
+}
 
 /** Pantalla de una fila; null si no corresponde a ninguna página del panel. */
 export function pantallaDe(valor: string | undefined | null): Pantalla | null {
     if (!valor || valor === 'inicio') return 'inicio';
-    return valor === 'lso' ? 'lso' : null;
+    if (valor === 'lso' || valor === 'legacy-plus') return valor;
+    return null;
 }
 
 /** Lo que admite el PUT: el campo que no se manda se queda como está. */
@@ -54,6 +73,10 @@ export const TEXTOS_POR_DEFECTO: Record<string, { titulo: string; texto: string 
         texto: 'Cambia según el perfil: «Esta semana: video de conversaciones difíciles, evento familiar...»'
     },
     'legacy-board': { titulo: 'Legacy Board', texto: 'Gobierno corporativo para familias empresarias' },
+    'diagnosticos': {
+        titulo: 'DIAGNÓSTICOS',
+        texto: 'Identifica riesgos críticos, que podrían comprometer la continuidad del negocio y del legado.'
+    },
     'legacy-knowledge': { titulo: 'Legacy Knowledge', texto: 'Artículos, podcast, videos y libros' },
     'eventos': { titulo: 'Eventos', texto: 'Masterclass virtual en vivo y Legacy Summit presencial' },
     'lso-escuela': { titulo: 'LSO · Escuela', texto: 'Programas de formación' },
@@ -73,6 +96,15 @@ export const TEXTOS_POR_DEFECTO: Record<string, { titulo: string; texto: string 
         titulo: 'Descubra las trampas de su familia empresaria',
         texto: 'Conteste gratis el diagnóstico del Modelo DINASTÍA. ¿Quiere profundizar? Conozca los niveles del Legacy Test.'
     },
+    'lp-banner': {
+        titulo: 'LEGACY+',
+        texto: 'Servicios y beneficios plus para los clientes de Legacy Network o Alumni LSO'
+    },
+    'lp-como-accedo': {
+        titulo: '',
+        texto: 'Cómo accedo: debes ser cliente de alguna unidad de negocio o ser alumni de LSO. Tiene acceso a:'
+    },
+    'lp-beneficios': { titulo: 'BENEFICIOS', texto: '' },
     'lso-encabezado': {
         titulo: 'LSO · Legacy School of Ownership',
         texto: 'La escuela del propietario en LATAM'

@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { CAMPOS_POR_PANTALLA, Pantalla, SeccionInicio, TEXTOS_POR_DEFECTO, pantallaDe } from '../../../../core/models/seccion-inicio.model';
+import { CAMPOS_POR_PANTALLA, Pantalla, SeccionInicio, TEXTOS_POR_DEFECTO, camposDe, pantallaDe } from '../../../../core/models/seccion-inicio.model';
 import { SeccionInicioAdminService } from '../../../../core/services/seccion_inicio_admin.service';
 import { SeccionInicioDialogComponent } from '../seccion-inicio-dialog/seccion-inicio-dialog.component';
 
@@ -25,10 +25,10 @@ import { SeccionInicioDialogComponent } from '../seccion-inicio-dialog/seccion-i
     styleUrls: ['./seccion-inicio-list.component.scss']
 })
 /**
- * Sirve a dos páginas del panel, según `data.pantalla` de la ruta: «Tarjetas
- * del Inicio» (admin/inicio) y «Textos de LSO» (admin/lso). Las dos editan
- * filas de core.secciones_inicio; qué campos lleva cada una lo dice
- * CAMPOS_POR_PANTALLA.
+ * Sirve a tres páginas del panel, según `data.pantalla` de la ruta: «Tarjetas
+ * del Inicio» (admin/inicio), «Textos de LSO» (admin/lso) y «Textos de
+ * Legacy+» (admin/legacy-plus/textos). Todas editan filas de
+ * core.secciones_inicio; qué campos lleva cada fila lo dice camposDe.
  */
 export class SeccionInicioListComponent implements OnInit {
     private todas = signal<SeccionInicio[]>([]);
@@ -45,12 +45,18 @@ export class SeccionInicioListComponent implements OnInit {
         'nuevo-cada-semana': 'Destacado, arriba del todo',
         'beneficios': 'Sección Legacy+, tercera fila (la tarjeta de Explore libremente se retiró el 2026-10-13)',
         'legacy-plus': 'Ya no se muestra: retirada del Inicio el 2026-10-13',
+        'legacy-board': 'Ya no se muestra: su lugar lo ocupa Diagnósticos desde el 2026-10-13',
         'miembros': 'Sección Legacy+, segunda fila, con el título «Legacy Board»',
         'chats-sinergia': 'Sección Legacy+, primera fila',
         'legacy-test': 'Ya no se muestra: banner retirado del Inicio el 2026-10-13',
         'lso-encabezado': 'Arriba de la pantalla, junto al botón de volver',
-        'lso-banner': 'Primer recuadro, antes de los programas'
+        'lso-banner': 'Primer recuadro, antes de los programas',
+        'lp-banner': 'Recuadro de arriba',
+        'lp-como-accedo': 'Debajo del recuadro, antes de los puntos «Tiene acceso a»',
+        'lp-beneficios': 'Subtítulo sobre los puntos de beneficios'
     };
+
+    camposDe = camposDe;
 
     constructor(
         private seccionService: SeccionInicioAdminService,

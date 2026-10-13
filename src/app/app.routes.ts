@@ -24,6 +24,9 @@ export const routes: Routes = [
       { path: 'admin/paginas', loadComponent: () => import('./features/admin/paginas/pagina-list/pagina-list.component').then(m => m.PaginaListComponent) },
       { path: 'admin/inicio', data: { pantalla: 'inicio' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
       { path: 'admin/asesoria/unidades', loadComponent: () => import('./features/admin/asesoria/unidad-list/unidad-list.component').then(m => m.UnidadListComponent) },
+      // Legacy+: textos fijos (mismo componente que admin/inicio) y puntos con check.
+      { path: 'admin/legacy-plus/textos', data: { pantalla: 'legacy-plus' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
+      { path: 'admin/legacy-plus/puntos', loadComponent: () => import('./features/admin/legacy-plus/item-list/item-list.component').then(m => m.ItemListComponent) },
       // Mismo componente que admin/inicio, filtrado a las filas de LSO · Escuela.
       { path: 'admin/lso', data: { pantalla: 'lso' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
       { path: 'admin/statistics', loadComponent: () => import('./features/admin/statistics/statistics.component').then(m => m.StatisticsComponent) },
