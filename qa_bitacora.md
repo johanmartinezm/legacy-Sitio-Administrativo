@@ -2,6 +2,14 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: Tarjetas del Inicio: «Dónde se ve» de Beneficios y Legacy+
+- **Alcance:** `features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component.ts`. La app
+  retiró de la cuadrícula las tarjetas Beneficios y Legacy+: Beneficios ya solo se ve en Servicios
+  Legacy, y Legacy+ en ningún sitio del Inicio. El listado lo dice así.
+- **Criterios de QA:**
+  1. Tarjetas del Inicio → Beneficios: «Dónde se ve» indica solo Servicios Legacy.
+  2. Legacy+: «Ya no se muestra».
+
 ### [2026-10-13]: Módulo «Unidades de Asesoría»
 - **Alcance:** `features/admin/asesoria/` (listado con orden, icono, título y descripción,
   necesidad y estado; diálogo con título, descripción, icono de una lista con vista, necesidad que
