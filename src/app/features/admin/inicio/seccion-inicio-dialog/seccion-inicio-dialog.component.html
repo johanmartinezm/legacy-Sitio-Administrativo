@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Imagen de «{{ data.nombre }}»</h2>
+
+<mat-dialog-content>
+    <app-image-upload [formControl]="imagen" label="Imagen de la tarjeta"></app-image-upload>
+
+    <!-- Vista aproximada de cómo la pinta la app: la foto de fondo con la capa
+         oscura abajo y el título encima. -->
+    <div class="vista-previa" *ngIf="imagen.value">
+        <img [src]="imagen.value" alt="">
+        <div class="capa"></div>
+        <span class="titulo">{{ data.nombre }}</span>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close [disabled]="guardando">Cancelar</button>
+    <button mat-button color="warn" (click)="quitar()" [disabled]="guardando || !data.imagen_url">
+        Quitar imagen
+    </button>
+    <button mat-flat-button color="primary" (click)="guardar()" [disabled]="guardando">
+        Guardar
+    </button>
+</mat-dialog-actions>
