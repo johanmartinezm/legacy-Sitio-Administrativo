@@ -24,6 +24,10 @@ export const routes: Routes = [
       { path: 'admin/paginas', loadComponent: () => import('./features/admin/paginas/pagina-list/pagina-list.component').then(m => m.PaginaListComponent) },
       { path: 'admin/inicio', data: { pantalla: 'inicio' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
       { path: 'admin/asesoria/unidades', loadComponent: () => import('./features/admin/asesoria/unidad-list/unidad-list.component').then(m => m.UnidadListComponent) },
+      // Sección Beneficios de la app: beneficios y alianzas, en páginas separadas
+      // sobre el mismo componente (data.tipo).
+      { path: 'admin/beneficios', data: { tipo: 'beneficio' }, loadComponent: () => import('./features/admin/beneficios/beneficio-list/beneficio-list.component').then(m => m.BeneficioListComponent) },
+      { path: 'admin/alianzas', data: { tipo: 'alianza' }, loadComponent: () => import('./features/admin/beneficios/beneficio-list/beneficio-list.component').then(m => m.BeneficioListComponent) },
       // Legacy+: textos fijos (mismo componente que admin/inicio) y puntos con check.
       { path: 'admin/legacy-plus/textos', data: { pantalla: 'legacy-plus' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
       { path: 'admin/legacy-plus/puntos', loadComponent: () => import('./features/admin/legacy-plus/item-list/item-list.component').then(m => m.ItemListComponent) },

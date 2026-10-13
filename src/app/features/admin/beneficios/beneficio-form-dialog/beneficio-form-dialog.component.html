@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>{{ editando ? 'Editar ' + textos.singular : textos.nuevo }}</h2>
+
+<mat-dialog-content [formGroup]="form">
+    <mat-form-field appearance="outline" class="campo">
+        <mat-label>Título</mat-label>
+        <input matInput formControlName="titulo" [maxlength]="maxTitulo">
+        <mat-hint align="end">{{ form.value.titulo?.length || 0 }}/{{ maxTitulo }}</mat-hint>
+        <mat-error>El título es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="campo">
+        <mat-label>Texto</mat-label>
+        <textarea matInput rows="4" formControlName="descripcion" [maxlength]="maxDescripcion"></textarea>
+        <mat-hint align="end">{{ form.value.descripcion?.length || 0 }}/{{ maxDescripcion }}</mat-hint>
+    </mat-form-field>
+
+    <app-image-upload formControlName="imagen_url" label="Imagen o logo"></app-image-upload>
+
+    <mat-form-field appearance="outline" class="campo enlace">
+        <mat-label>Enlace (opcional)</mat-label>
+        <input matInput formControlName="enlace_url" placeholder="https://...">
+        <mat-hint>Si se llena, la tarjeta lleva un botón que abre esta página</mat-hint>
+        <mat-error>Debe empezar por https:// o http://</mat-error>
+    </mat-form-field>
+
+    <div class="fila">
+        <mat-form-field appearance="outline">
+            <mat-label>Orden</mat-label>
+            <input matInput type="number" formControlName="orden">
+            <mat-hint>Menor va primero</mat-hint>
+        </mat-form-field>
+        <mat-slide-toggle formControlName="activo">Visible en la app</mat-slide-toggle>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close [disabled]="guardando">Cancelar</button>
+    <button mat-flat-button color="primary" (click)="guardar()" [disabled]="guardando">Guardar</button>
+</mat-dialog-actions>

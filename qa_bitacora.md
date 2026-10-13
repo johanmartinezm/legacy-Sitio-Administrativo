@@ -2,6 +2,19 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: Módulos «Beneficios» y «Alianzas»
+- **Alcance:** `features/admin/beneficios/` (listado con orden, imagen, título y texto, enlace y
+  estado; diálogo con título, texto, imagen o logo subida, enlace opcional, orden y visible),
+  `core/models/beneficio.model.ts`, `core/services/beneficio_admin.service.ts` (+ spec), rutas
+  `admin/beneficios` y `admin/alianzas` sobre el mismo componente (`data.tipo`) y dos entradas en el
+  menú: van separadas para no confundir al administrador. «Puntos de Legacy+» aclara que son solo
+  lo informativo de la pantalla Legacy+. Requiere el backend con `20261013_beneficios.sql`.
+- **Criterios de QA:**
+  1. Menú App Móvil → Beneficios y → Alianzas: dos listados, vacíos al empezar.
+  2. Crear un beneficio con imagen y enlace: aparece solo en Beneficios; una alianza, solo en
+     Alianzas.
+  3. Un enlace sin https:// no deja guardar.
+
 ### [2026-10-13]: Usuarios Legacy+
 - **Alcance:** fase 2 de `reports/20261013_plan_usuario_plus.md` (repositorio raíz).
   `core/models/user.model.ts` (`esPlus`), `core/services/user.service.ts` (lee `es_plus`;

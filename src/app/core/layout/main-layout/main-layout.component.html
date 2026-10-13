@@ -110,6 +110,16 @@
                         <mat-icon matListItemIcon>checklist</mat-icon>
                         <span matListItemTitle>Puntos de Legacy+</span>
                     </a>
+                    <a mat-list-item routerLink="/admin/beneficios" routerLinkActive="active-link"
+                        (click)="isAboutVisible = false">
+                        <mat-icon matListItemIcon>card_giftcard</mat-icon>
+                        <span matListItemTitle>Beneficios</span>
+                    </a>
+                    <a mat-list-item routerLink="/admin/alianzas" routerLinkActive="active-link"
+                        (click)="isAboutVisible = false">
+                        <mat-icon matListItemIcon>handshake</mat-icon>
+                        <span matListItemTitle>Alianzas</span>
+                    </a>
                     <a mat-list-item routerLink="/admin/statistics" routerLinkActive="active-link"
                         (click)="isAboutVisible = false">
                         <mat-icon matListItemIcon>bar_chart</mat-icon>

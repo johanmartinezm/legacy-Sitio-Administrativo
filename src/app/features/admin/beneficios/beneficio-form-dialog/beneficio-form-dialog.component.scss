@@ -1,0 +1,18 @@
+.campo {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.enlace {
+    margin-top: 16px;
+}
+
+.fila {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    mat-form-field {
+        flex: 1;
+    }
+}
