@@ -47,7 +47,7 @@ export class SeccionInicioListComponent implements OnInit {
         'legacy-plus': 'Ya no se muestra: retirada del Inicio el 2026-10-13',
         'miembros': 'Sección Legacy+, segunda fila, con el título «Legacy Board»',
         'chats-sinergia': 'Sección Legacy+, primera fila',
-        'legacy-test': 'Bloque final del Inicio',
+        'legacy-test': 'Ya no se muestra: banner retirado del Inicio el 2026-10-13',
         'lso-encabezado': 'Arriba de la pantalla, junto al botón de volver',
         'lso-banner': 'Primer recuadro, antes de los programas'
     };

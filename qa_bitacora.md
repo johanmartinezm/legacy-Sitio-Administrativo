@@ -2,6 +2,12 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: Tarjetas del Inicio: Legacy Test ya no se muestra
+- **Alcance:** `features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component.ts`. La app
+  retiró el banner de Legacy Test; «Dónde se ve» lo indica.
+- **Criterios de QA:**
+  1. Tarjetas del Inicio → Legacy Test: «Ya no se muestra».
+
 ### [2026-10-13]: Tarjetas del Inicio: textos de siempre de la sección Legacy+
 - **Alcance:** `core/models/seccion-inicio.model.ts` y el listado («Dónde se ve»). Recogen los
   textos nuevos de la app para Chats de sinergia, Beneficios y la fila `miembros`, que en la app se
