@@ -9,7 +9,7 @@ Entrada de trabajo para validación de Panel Administrativo.
   `TEXTOS_POR_DEFECTO`, copia de los textos de la app), `core/services/seccion_inicio_admin.service.ts`
   (`actualizar` sustituye a `cambiarImagen`, + spec) y el menú, que pasa de «Imágenes del Inicio» a
   «Tarjetas del Inicio». «Quitar imagen» manda solo la imagen y no toca los textos. Requiere el
-  backend con la migración `20261013_secciones_inicio_textos.sql`.
+  backend con la migración `20261013_secciones_inicio_textos.sql`. Desplegado el 2026-10-13.
 - **Criterios de QA:**
   1. Menú App Móvil → Tarjetas del Inicio: columna «Título y texto» con los de la app en gris.
   2. Editar «Eventos», escribir título y texto: la vista previa los muestra; guardar y el listado
