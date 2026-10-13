@@ -1,13 +1,14 @@
 <div class="inicio-container">
     <div class="header">
-        <h1>Imágenes del Inicio</h1>
+        <h1>Tarjetas del Inicio</h1>
     </div>
 
     <p class="ayuda">
-        La imagen de cada tarjeta del Inicio de la app. Se ve en cuanto se guarda, sin actualizar
-        la aplicación. La app pone encima una capa oscura para que el título se siga leyendo, así
-        que conviene una foto sin texto. Una tarjeta sin imagen se muestra como siempre, con su
-        icono.
+        La imagen, el título y el texto de cada tarjeta del Inicio de la app. Se ven en cuanto se
+        guardan, sin actualizar la aplicación. La app pone encima de la imagen una capa oscura para
+        que el título se siga leyendo, así que conviene una foto sin texto. Lo que se deje vacío se
+        muestra como siempre: sin imagen, con su icono; sin título o texto, con los de la app
+        (en gris en la tabla).
     </p>
 
     <table mat-table [dataSource]="secciones()" class="mat-elevation-z8">
@@ -28,6 +29,16 @@
             <td mat-cell *matCellDef="let seccion"><strong>{{ seccion.nombre }}</strong></td>
         </ng-container>
 
+        <ng-container matColumnDef="textos">
+            <th mat-header-cell *matHeaderCellDef> Título y texto </th>
+            <td mat-cell *matCellDef="let seccion">
+                <div class="textos-tarjeta">
+                    <span class="titulo" [class.por-defecto]="!seccion.titulo">{{ tituloDe(seccion) }}</span>
+                    <span class="texto" [class.por-defecto]="!seccion.texto">{{ textoDe(seccion) }}</span>
+                </div>
+            </td>
+        </ng-container>
+
         <ng-container matColumnDef="donde">
             <th mat-header-cell *matHeaderCellDef> Dónde se ve </th>
             <td mat-cell *matCellDef="let seccion"> {{ ubicacionDe(seccion) }} </td>
@@ -41,7 +52,7 @@
         <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef> Acciones </th>
             <td mat-cell *matCellDef="let seccion">
-                <button mat-icon-button color="accent" (click)="editar(seccion)" aria-label="Cambiar imagen">
+                <button mat-icon-button color="accent" (click)="editar(seccion)" aria-label="Editar tarjeta">
                     <mat-icon>edit</mat-icon>
                 </button>
             </td>

@@ -3,8 +3,9 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { SeccionInicioAdminService } from './seccion_inicio_admin.service';
 
 /**
- * El panel solo cambia la imagen de cada tarjeta del Inicio: el PUT lleva
- * únicamente `imagen_url`, y quitarla es mandarla vacía.
+ * El panel cambia imagen, título y texto de cada tarjeta del Inicio. El PUT
+ * lleva solo los campos que se cambian: quitar la imagen es mandarla vacía sin
+ * tocar los textos.
  */
 describe('SeccionInicioAdminService', () => {
     let service: SeccionInicioAdminService;
@@ -32,20 +33,28 @@ describe('SeccionInicioAdminService', () => {
 
         const req = httpMock.expectOne(apiUrl);
         expect(req.request.method).toBe('GET');
-        req.flush([{ slug: 'eventos', nombre: 'Eventos', orden: 40, imagen_url: '' }]);
+        req.flush([{ slug: 'eventos', nombre: 'Eventos', orden: 40, imagen_url: '', titulo: '', texto: '' }]);
     });
 
-    it('cambiar la imagen manda solo la URL a la sección de la ruta', () => {
-        service.cambiarImagen('eventos', 'https://app.legacynetworkco.com/api/images/a.jpg').subscribe();
+    it('guardar manda imagen, título y texto a la sección de la ruta', () => {
+        service.actualizar('eventos', {
+            imagen_url: 'https://app.legacynetworkco.com/api/images/a.jpg',
+            titulo: 'Agenda 2026',
+            texto: ''
+        }).subscribe();
 
         const req = httpMock.expectOne(`${apiUrl}/eventos`);
         expect(req.request.method).toBe('PUT');
-        expect(req.request.body).toEqual({ imagen_url: 'https://app.legacynetworkco.com/api/images/a.jpg' });
+        expect(req.request.body).toEqual({
+            imagen_url: 'https://app.legacynetworkco.com/api/images/a.jpg',
+            titulo: 'Agenda 2026',
+            texto: ''
+        });
         req.flush({});
     });
 
-    it('quitar la imagen la manda vacía', () => {
-        service.cambiarImagen('beneficios', '').subscribe();
+    it('quitar la imagen la manda vacía y no toca los textos', () => {
+        service.actualizar('beneficios', { imagen_url: '' }).subscribe();
 
         const req = httpMock.expectOne(`${apiUrl}/beneficios`);
         expect(req.request.body).toEqual({ imagen_url: '' });

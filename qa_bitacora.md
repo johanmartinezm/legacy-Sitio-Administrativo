@@ -2,6 +2,22 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: «Tarjetas del Inicio»: también título y texto
+- **Alcance:** `features/admin/inicio/` (diálogo con campos Título y Texto, contador de caracteres,
+  vista previa con los dos textos; columna «Título y texto» en el listado, en gris lo que es el de
+  siempre de la app), `core/models/seccion-inicio.model.ts` (campos nuevos, límites y
+  `TEXTOS_POR_DEFECTO`, copia de los textos de la app), `core/services/seccion_inicio_admin.service.ts`
+  (`actualizar` sustituye a `cambiarImagen`, + spec) y el menú, que pasa de «Imágenes del Inicio» a
+  «Tarjetas del Inicio». «Quitar imagen» manda solo la imagen y no toca los textos. Requiere el
+  backend con la migración `20261013_secciones_inicio_textos.sql`.
+- **Criterios de QA:**
+  1. Menú App Móvil → Tarjetas del Inicio: columna «Título y texto» con los de la app en gris.
+  2. Editar «Eventos», escribir título y texto: la vista previa los muestra; guardar y el listado
+     los enseña en negro.
+  3. Borrar los dos campos y guardar: vuelven a salir en gris los de la app.
+  4. Un título de más de 60 caracteres no se puede escribir.
+  5. «Quitar imagen» en una tarjeta con textos propios: la imagen se va, los textos se quedan.
+
 ### [2026-10-12]: Módulo «Imágenes del Inicio»
 - **Alcance:** `features/admin/inicio/` (listado con miniatura y diálogo con `app-image-upload`,
   vista previa con la capa oscura que pone la app y botón «Quitar imagen»),

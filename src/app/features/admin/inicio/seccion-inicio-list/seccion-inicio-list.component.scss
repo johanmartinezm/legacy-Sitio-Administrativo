@@ -31,6 +31,27 @@
         font-size: 13px;
     }
 
+    .textos-tarjeta {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        max-width: 320px;
+
+        .titulo {
+            font-weight: 600;
+        }
+
+        .texto {
+            font-size: 12px;
+        }
+
+        // Lo que no se ha cambiado: es el de la app, no algo guardado aquí.
+        .por-defecto {
+            color: #94a3b8;
+            font-style: italic;
+        }
+    }
+
     table {
         width: 100%;
         border-radius: 8px;

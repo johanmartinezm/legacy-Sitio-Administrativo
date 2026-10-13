@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { SeccionInicio } from '../../../../core/models/seccion-inicio.model';
+import { SeccionInicio, TEXTOS_POR_DEFECTO } from '../../../../core/models/seccion-inicio.model';
 import { SeccionInicioAdminService } from '../../../../core/services/seccion_inicio_admin.service';
 import { SeccionInicioDialogComponent } from '../seccion-inicio-dialog/seccion-inicio-dialog.component';
 
@@ -26,7 +26,7 @@ import { SeccionInicioDialogComponent } from '../seccion-inicio-dialog/seccion-i
 export class SeccionInicioListComponent implements OnInit {
     secciones = signal<SeccionInicio[]>([]);
     cargando = signal(true);
-    displayedColumns: string[] = ['imagen', 'nombre', 'donde', 'actualizada', 'acciones'];
+    displayedColumns: string[] = ['imagen', 'nombre', 'textos', 'donde', 'actualizada', 'acciones'];
 
     /**
      * Dónde está cada tarjeta en el Inicio. Vive aquí y no en la base porque lo
@@ -63,6 +63,15 @@ export class SeccionInicioListComponent implements OnInit {
         });
     }
 
+    /** Lo que se ve en la app: lo del panel o, si está vacío, lo de siempre. */
+    tituloDe(seccion: SeccionInicio): string {
+        return seccion.titulo || TEXTOS_POR_DEFECTO[seccion.slug]?.titulo || seccion.nombre;
+    }
+
+    textoDe(seccion: SeccionInicio): string {
+        return seccion.texto || TEXTOS_POR_DEFECTO[seccion.slug]?.texto || '';
+    }
+
     ubicacionDe(seccion: SeccionInicio): string {
         return this.ubicaciones[seccion.slug] ?? 'Explore libremente';
     }
@@ -75,7 +84,7 @@ export class SeccionInicioListComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(guardada => {
             if (guardada) {
-                this.snackBar.open('Imagen guardada', 'Cerrar', { duration: 3000 });
+                this.snackBar.open('Tarjeta guardada', 'Cerrar', { duration: 3000 });
                 this.cargarSecciones();
             }
         });

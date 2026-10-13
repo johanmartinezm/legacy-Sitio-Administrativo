@@ -1,10 +1,18 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { SeccionInicio } from '../../../../core/models/seccion-inicio.model';
+import {
+    CambiosSeccionInicio,
+    MAX_TEXTO_SECCION,
+    MAX_TITULO_SECCION,
+    SeccionInicio,
+    TEXTOS_POR_DEFECTO
+} from '../../../../core/models/seccion-inicio.model';
 import { SeccionInicioAdminService } from '../../../../core/services/seccion_inicio_admin.service';
 import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
 
@@ -16,13 +24,22 @@ import { ImageUploadComponent } from '../../../../core/components/image-upload/i
         ReactiveFormsModule,
         MatDialogModule,
         MatButtonModule,
+        MatFormFieldModule,
+        MatInputModule,
         ImageUploadComponent
     ],
     templateUrl: './seccion-inicio-dialog.component.html',
     styleUrls: ['./seccion-inicio-dialog.component.scss']
 })
 export class SeccionInicioDialogComponent {
+    readonly maxTitulo = MAX_TITULO_SECCION;
+    readonly maxTexto = MAX_TEXTO_SECCION;
+
     imagen: FormControl<string>;
+    titulo: FormControl<string>;
+    texto: FormControl<string>;
+    /** Lo que muestra la app si el campo se deja vacío. */
+    porDefecto: { titulo: string; texto: string };
     guardando = false;
 
     constructor(
@@ -32,21 +49,49 @@ export class SeccionInicioDialogComponent {
         @Inject(MAT_DIALOG_DATA) public data: SeccionInicio
     ) {
         this.imagen = new FormControl(data.imagen_url || '', { nonNullable: true });
+        this.titulo = new FormControl(data.titulo || '', {
+            nonNullable: true,
+            validators: [Validators.maxLength(MAX_TITULO_SECCION)]
+        });
+        this.texto = new FormControl(data.texto || '', {
+            nonNullable: true,
+            validators: [Validators.maxLength(MAX_TEXTO_SECCION)]
+        });
+        this.porDefecto = TEXTOS_POR_DEFECTO[data.slug] ?? { titulo: data.nombre, texto: '' };
+    }
+
+    /** Lo que se verá en la app: lo escrito o, si está vacío, lo de siempre. */
+    get tituloVisible(): string {
+        return this.titulo.value.trim() || this.porDefecto.titulo;
+    }
+
+    get textoVisible(): string {
+        return this.texto.value.trim() || this.porDefecto.texto;
+    }
+
+    get valido(): boolean {
+        return this.titulo.valid && this.texto.valid;
     }
 
     guardar(): void {
-        this.enviar(this.imagen.value.trim());
+        if (!this.valido) return;
+        this.enviar({
+            imagen_url: this.imagen.value.trim(),
+            titulo: this.titulo.value.trim(),
+            texto: this.texto.value.trim()
+        });
     }
 
-    quitar(): void {
-        this.enviar('');
+    /** Solo la imagen: el título y el texto guardados no se tocan. */
+    quitarImagen(): void {
+        this.enviar({ imagen_url: '' });
     }
 
-    private enviar(imagenUrl: string): void {
+    private enviar(cambios: CambiosSeccionInicio): void {
         if (this.guardando) return;
         this.guardando = true;
 
-        this.seccionService.cambiarImagen(this.data.slug, imagenUrl).subscribe({
+        this.seccionService.actualizar(this.data.slug, cambios).subscribe({
             next: () => this.dialogRef.close(true),
             error: (err) => {
                 this.guardando = false;
@@ -54,7 +99,7 @@ export class SeccionInicioDialogComponent {
                 // cual para que diga qué corregir.
                 const detalle = typeof err?.error === 'string' && err.error.trim()
                     ? err.error.trim()
-                    : 'No se pudo guardar la imagen';
+                    : 'No se pudo guardar la tarjeta';
                 this.snackBar.open(detalle, 'Cerrar', { duration: 5000 });
             }
         });
