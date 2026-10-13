@@ -11,7 +11,7 @@ Entrada de trabajo para validación de Panel Administrativo.
   filtrar solo la página visible diría «no hay» de quien está en otra). El interruptor va en el
   listado y no en el formulario de edición porque el plus tiene su propio endpoint y se guarda
   aparte. «Puntos de Legacy+» avisa de que los beneficios solo los ven los usuarios Legacy+.
-  Requiere el backend con `20261013_usuario_plus.sql`.
+  Requiere el backend con `20261013_usuario_plus.sql`. Desplegado el 2026-10-13.
 - **Criterios de QA:**
   1. Usuarios: columna Legacy+ con interruptores apagados (nadie es plus al empezar).
   2. Encender uno: aviso «… ahora es Legacy+», insignia junto al nombre; al recargar, sigue.
