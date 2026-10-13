@@ -1,0 +1,29 @@
+.campo {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.fila {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 8px;
+
+    mat-form-field {
+        flex: 1;
+    }
+
+    .toggle {
+        flex: 1;
+    }
+}
+
+.opcion-icono {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+        color: #5a93c4;
+    }
+}

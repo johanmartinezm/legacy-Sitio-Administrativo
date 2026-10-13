@@ -1,0 +1,71 @@
+<div class="unidades-container">
+    <div class="header">
+        <h1>Unidades de Asesoría</h1>
+        <button mat-flat-button color="primary" (click)="abrir()">
+            <mat-icon>add</mat-icon>
+            Nueva unidad
+        </button>
+    </div>
+
+    <p class="ayuda">
+        Las tarjetas que la app muestra en Asesoría, bajo «NUESTRAS UNIDADES», en este orden. Al
+        tocar una se abre el formulario de solicitud con su necesidad ya marcada. Los cambios se
+        ven al volver a entrar a la pantalla, sin actualizar la aplicación. Una unidad inactiva no
+        se muestra pero se conserva.
+    </p>
+
+    <table mat-table [dataSource]="unidades()" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="orden">
+            <th mat-header-cell *matHeaderCellDef> Orden </th>
+            <td mat-cell *matCellDef="let u"> {{ u.orden }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="icono">
+            <th mat-header-cell *matHeaderCellDef> Icono </th>
+            <td mat-cell *matCellDef="let u"><mat-icon class="icono">{{ iconoMaterial(u.icono) }}</mat-icon></td>
+        </ng-container>
+
+        <ng-container matColumnDef="titulo">
+            <th mat-header-cell *matHeaderCellDef> Unidad </th>
+            <td mat-cell *matCellDef="let u">
+                <div class="textos">
+                    <strong>{{ u.titulo }}</strong>
+                    <span>{{ u.subtitulo }}</span>
+                </div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="necesidad">
+            <th mat-header-cell *matHeaderCellDef> Necesidad </th>
+            <td mat-cell *matCellDef="let u"> {{ u.necesidad }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef> Estado </th>
+            <td mat-cell *matCellDef="let u">
+                <span class="estado" [class.inactiva]="!u.activa">{{ u.activa ? 'Visible' : 'Oculta' }}</span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef> Acciones </th>
+            <td mat-cell *matCellDef="let u">
+                <button mat-icon-button color="accent" (click)="abrir(u)" aria-label="Editar unidad">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="borrar(u)" aria-label="Eliminar unidad">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.fila-inactiva]="!row.activa"></tr>
+    </table>
+
+    <p class="vacio" *ngIf="!cargando() && unidades().length === 0">
+        No hay unidades. La app mostrará las cinco de siempre hasta que haya al menos una activa. Si
+        esto no es lo esperado, falta aplicar la migración <code>20261013_asesoria_unidades.sql</code>.
+    </p>
+</div>

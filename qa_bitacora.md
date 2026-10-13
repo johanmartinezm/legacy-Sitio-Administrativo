@@ -2,6 +2,29 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: Módulo «Unidades de Asesoría»
+- **Alcance:** `features/admin/asesoria/` (listado con orden, icono, título y descripción,
+  necesidad y estado; diálogo con título, descripción, icono de una lista con vista, necesidad que
+  marca el formulario, orden y «Visible en la app»; borrar con confirmación),
+  `core/models/asesoria-unidad.model.ts`, `core/services/asesoria_unidad_admin.service.ts` (+ spec),
+  ruta `admin/asesoria/unidades` y entrada en el menú App Móvil. Una unidad nueva propone el orden
+  siguiente a la última. Requiere el backend con `20261013_asesoria_unidades.sql`.
+- **Criterios de QA:**
+  1. Menú App Móvil → Unidades de Asesoría: las cinco unidades de la app, en su orden.
+  2. «Nueva unidad»: crearla y verla al final del listado y de la app.
+  3. Editar el título de una: cambia en la app al volver a entrar.
+  4. Desactivar «Visible en la app»: la fila queda atenuada y la unidad desaparece de la app.
+  5. Eliminar pide confirmación y la quita de los dos sitios.
+
+### [2026-10-13]: Se retira el módulo «Texto de Asesoría»
+- **Alcance:** ruta `admin/asesoria`, su entrada en el menú y la pantalla `asesoria` de
+  `seccion-inicio.model.ts`. La app quitó el recuadro que ese módulo editaba, así que quedaba
+  editando algo que no se ve. La fila `asesoria-banner` sigue en la base, sin ninguna página que la
+  liste.
+- **Criterios de QA:**
+  1. El menú App Móvil ya no muestra «Texto de Asesoría»; «Tarjetas del Inicio» y «Textos de LSO»
+     siguen igual.
+
 ### [2026-10-13]: Módulo «Texto de Asesoría»
 - **Alcance:** ruta `admin/asesoria` y entrada en el menú App Móvil, sobre el mismo listado y diálogo
   de `features/admin/inicio/`. `CAMPOS_POR_PANTALLA` en `seccion-inicio.model.ts` decide qué se

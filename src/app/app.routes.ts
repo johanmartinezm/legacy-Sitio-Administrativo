@@ -23,8 +23,8 @@ export const routes: Routes = [
       { path: 'admin/content', loadComponent: () => import('./features/admin/custom-content/content-list/content-list.component').then(m => m.ContentListComponent) },
       { path: 'admin/paginas', loadComponent: () => import('./features/admin/paginas/pagina-list/pagina-list.component').then(m => m.PaginaListComponent) },
       { path: 'admin/inicio', data: { pantalla: 'inicio' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
+      { path: 'admin/asesoria/unidades', loadComponent: () => import('./features/admin/asesoria/unidad-list/unidad-list.component').then(m => m.UnidadListComponent) },
       // Mismo componente que admin/inicio, filtrado a las filas de LSO · Escuela.
-      { path: 'admin/asesoria', data: { pantalla: 'asesoria' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
       { path: 'admin/lso', data: { pantalla: 'lso' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
       { path: 'admin/statistics', loadComponent: () => import('./features/admin/statistics/statistics.component').then(m => m.StatisticsComponent) },
       { path: 'admin/notifications', loadComponent: () => import('./features/admin/push-notifications/push-notifications.component').then(m => m.PushNotificationsComponent) },
