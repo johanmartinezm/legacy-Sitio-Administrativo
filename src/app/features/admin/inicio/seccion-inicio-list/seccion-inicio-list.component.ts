@@ -43,10 +43,10 @@ export class SeccionInicioListComponent implements OnInit {
      */
     private readonly ubicaciones: Record<string, string> = {
         'nuevo-cada-semana': 'Destacado, arriba del todo',
-        'beneficios': 'Sección Legacy+ (la tarjeta de Explore libremente se retiró el 2026-10-13)',
+        'beneficios': 'Sección Legacy+, tercera fila (la tarjeta de Explore libremente se retiró el 2026-10-13)',
         'legacy-plus': 'Ya no se muestra: retirada del Inicio el 2026-10-13',
-        'miembros': 'Sección Legacy+',
-        'chats-sinergia': 'Sección Legacy+, debajo de Miembros',
+        'miembros': 'Sección Legacy+, segunda fila, con el título «Legacy Board»',
+        'chats-sinergia': 'Sección Legacy+, primera fila',
         'legacy-test': 'Bloque final del Inicio',
         'lso-encabezado': 'Arriba de la pantalla, junto al botón de volver',
         'lso-banner': 'Primer recuadro, antes de los programas'

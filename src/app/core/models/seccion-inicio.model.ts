@@ -58,11 +58,17 @@ export const TEXTOS_POR_DEFECTO: Record<string, { titulo: string; texto: string 
     'eventos': { titulo: 'Eventos', texto: 'Masterclass virtual en vivo y Legacy Summit presencial' },
     'lso-escuela': { titulo: 'LSO · Escuela', texto: 'Programas de formación' },
     'asesorias': { titulo: 'Asesorías', texto: 'L&M · Aurum · Legacy Legal' },
-    'beneficios': { titulo: 'Beneficios', texto: 'Próximamente' },
+    'beneficios': { titulo: 'Beneficios', texto: 'Son descuentos y servicios especiales de aliados o de Legacy Network.' },
     'legacy-plus': { titulo: 'Legacy+', texto: 'Cómo accedo' },
     'contactenos': { titulo: 'Contáctenos', texto: 'Escríbenos si necesitas ayuda' },
-    'miembros': { titulo: 'Miembros', texto: 'Comunidad del ecosistema Legacy' },
-    'chats-sinergia': { titulo: 'Chats de sinergia', texto: 'Debates anónimos y confidenciales entre miembros' },
+    'miembros': {
+        titulo: 'Legacy Board',
+        texto: 'Red de gobierno corporativo que conecta a familias empresarias y empresas que necesitan crear o fortalecer sus órganos de gobierno (juntas directivas, consejos de familia, directorios, advisory boards y comités) con profesionales que quieren servir en ellos.'
+    },
+    'chats-sinergia': {
+        titulo: 'Chats de sinergia',
+        texto: 'Chats de sinergia entre pares: hay 4 chats para hablar de temas de Empresa, Patrimonio, Familia y otros entre miembros de otras familias empresarias.'
+    },
     'legacy-test': {
         titulo: 'Descubra las trampas de su familia empresaria',
         texto: 'Conteste gratis el diagnóstico del Modelo DINASTÍA. ¿Quiere profundizar? Conozca los niveles del Legacy Test.'

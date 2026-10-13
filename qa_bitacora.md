@@ -2,6 +2,14 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: Tarjetas del Inicio: textos de siempre de la sección Legacy+
+- **Alcance:** `core/models/seccion-inicio.model.ts` y el listado («Dónde se ve»). Recogen los
+  textos nuevos de la app para Chats de sinergia, Beneficios y la fila `miembros`, que en la app se
+  titula ahora «Legacy Board».
+- **Criterios de QA:**
+  1. Tarjetas del Inicio: «Miembros» muestra en gris «Legacy Board» y su texto nuevo, y «Dónde se
+     ve» lo aclara.
+
 ### [2026-10-13]: Tarjetas del Inicio: fila «Chats de sinergia»
 - **Alcance:** `core/models/seccion-inicio.model.ts` (textos de siempre) y el listado («Dónde se
   ve»). La fila la crea la migración `20261013_tarjeta_chats_sinergia.sql`.
