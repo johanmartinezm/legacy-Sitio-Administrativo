@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { UserService } from '../../../../core/services/user.service';
 import { User } from '../../../../core/models/user.model';
 import { UserFormDialogComponent } from '../user-form-dialog/user-form-dialog.component';
@@ -14,13 +15,20 @@ import { ImportarUsuariosDialogComponent } from '../../importaciones/importar-us
 @Component({
     selector: 'app-users-list',
     standalone: true,
-    imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatSnackBarModule, MatPaginatorModule],
+    imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule, MatSnackBarModule, MatPaginatorModule, MatSlideToggleModule],
     templateUrl: './users-list.component.html',
     styleUrls: ['./users-list.component.scss']
 })
 export class UsersListComponent implements OnInit {
-    displayedColumns: string[] = ['name', 'email', 'identification', 'status', 'role', 'company', 'actions'];
+    displayedColumns: string[] = ['name', 'email', 'identification', 'status', 'role', 'plus', 'company', 'actions'];
     users = signal<User[]>([]);
+
+    /**
+     * «Solo Legacy+». No se puede filtrar la página visible —diría «no hay»
+     * de quien está en otra página—, así que con el filtro puesto se traen
+     * todas las cuentas (getUsers) y se filtra aquí, sin paginador.
+     */
+    soloPlus = signal(false);
 
     /**
      * La tabla pide una página al servidor, no la tabla entera.
@@ -58,6 +66,14 @@ export class UsersListComponent implements OnInit {
     }
 
     loadUsers() {
+        if (this.soloPlus()) {
+            this.userService.getUsers().subscribe(todos => {
+                const plus = todos.filter(u => u.esPlus);
+                this.users.set(plus);
+                this.total.set(plus.length);
+            });
+            return;
+        }
         this.userService.getUsersPage(this.tamanoDePagina, this.paginaActual * this.tamanoDePagina)
             .subscribe(pagina => {
                 this.users.set(pagina.items);
@@ -72,6 +88,32 @@ export class UsersListComponent implements OnInit {
                     this.loadUsers();
                 }
             });
+    }
+
+    alternarSoloPlus() {
+        this.soloPlus.update(v => !v);
+        this.paginaActual = 0;
+        this.loadUsers();
+    }
+
+    /**
+     * Guarda al momento, aparte del formulario de edición: el plus tiene su
+     * propio endpoint. Si falla, la fila vuelve a como estaba.
+     */
+    cambiarPlus(user: User, esPlus: boolean) {
+        this.userService.cambiarPlus(user.id, esPlus).subscribe({
+            next: () => {
+                this.users.update(lista => lista.map(u => u.id === user.id ? { ...u, esPlus } : u));
+                this.snackBar.open(
+                    esPlus ? `${user.firstName} ahora es Legacy+` : `${user.firstName} ya no es Legacy+`,
+                    'Cerrar', { duration: 3000 });
+                if (this.soloPlus() && !esPlus) this.loadUsers();
+            },
+            error: () => {
+                this.users.update(lista => [...lista]);
+                this.snackBar.open('No se pudo cambiar el Legacy+. Inténtalo de nuevo.', 'Cerrar', { duration: 5000 });
+            }
+        });
     }
 
     cambiarPagina(evento: PageEvent) {

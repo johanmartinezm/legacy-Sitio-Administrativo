@@ -26,6 +26,11 @@ export interface User {
     identificationType?: string;
     identificationNumber?: string;
     customerStatus?: string;
+    /**
+     * Usuario Legacy+ (es_plus): abre los foros y Beneficios en la app. Solo se
+     * cambia con UserService.cambiarPlus; el PUT general del usuario lo ignora.
+     */
+    esPlus?: boolean;
 
     // Settings
     isPublicProfile?: boolean;

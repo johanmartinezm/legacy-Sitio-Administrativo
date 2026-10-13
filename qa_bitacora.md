@@ -2,6 +2,22 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: Usuarios Legacy+
+- **Alcance:** fase 2 de `reports/20261013_plan_usuario_plus.md` (repositorio raíz).
+  `core/models/user.model.ts` (`esPlus`), `core/services/user.service.ts` (lee `es_plus`;
+  `cambiarPlus` contra `PUT /api/admin/users/{id}/plus`, + spec) y
+  `features/admin/users/users-list/` (columna «Legacy+» con interruptor que guarda al momento,
+  insignia «Legacy+» junto al nombre y botón «Solo Legacy+», que trae todas las cuentas y filtra:
+  filtrar solo la página visible diría «no hay» de quien está en otra). El interruptor va en el
+  listado y no en el formulario de edición porque el plus tiene su propio endpoint y se guarda
+  aparte. «Puntos de Legacy+» avisa de que los beneficios solo los ven los usuarios Legacy+.
+  Requiere el backend con `20261013_usuario_plus.sql`.
+- **Criterios de QA:**
+  1. Usuarios: columna Legacy+ con interruptores apagados (nadie es plus al empezar).
+  2. Encender uno: aviso «… ahora es Legacy+», insignia junto al nombre; al recargar, sigue.
+  3. «Solo Legacy+»: muestra solo los marcados, sin paginador; apagarlo vuelve a la tabla paginada.
+  4. Editar un usuario y guardar no le cambia el Legacy+.
+
 ### [2026-10-13]: «Textos de Legacy+», «Puntos de Legacy+» y la tarjeta Diagnósticos
 - **Alcance:** `features/admin/legacy-plus/` (listado y diálogo de puntos: grupo, orden, título,
   texto, visible), `core/models/legacy-plus-item.model.ts`,

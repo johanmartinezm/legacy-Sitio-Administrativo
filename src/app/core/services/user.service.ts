@@ -121,6 +121,18 @@ export class UserService {
         );
     }
 
+    /**
+     * Marca o desmarca a un usuario como Legacy+. Endpoint propio y no el PUT
+     * general: el backend solo deja cambiar es_plus por aquí.
+     */
+    cambiarPlus(id: string, esPlus: boolean): Observable<void> {
+        return this.http.put(`${this.config.apiUrl}/api/admin/users/${id}/plus`, { es_plus: esPlus }).pipe(
+            map(() => undefined),
+            tap(() => this.usersSignal.update((users: User[]) =>
+                users.map(u => u.id === id ? { ...u, esPlus } : u)))
+        );
+    }
+
     // DELETE
     deleteUser(id: string): Observable<boolean> {
         return this.http.delete(`${this.apiUrl}/${id}`).pipe(
@@ -154,6 +166,7 @@ export class UserService {
             identificationType: dto.identification_type,
             identificationNumber: dto.identification_number,
             customerStatus: dto.customer_status,
+            esPlus: dto.es_plus === true,
             generation: dto.generation,
             isPublicProfile: dto.is_public_profile,
             allowMessagesFromStrangers: dto.allow_messages_from_strangers,

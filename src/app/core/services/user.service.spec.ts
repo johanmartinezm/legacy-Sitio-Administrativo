@@ -67,4 +67,23 @@ describe('UserService', () => {
 
         req.flush({ ...changes, id: '1' });
     });
+
+    it('cambiarPlus usa su propio endpoint y no el PUT general', () => {
+        service.cambiarPlus('1', true).subscribe();
+
+        const req = httpMock.expectOne('http://localhost:8080/api/admin/users/1/plus');
+        expect(req.request.method).toBe('PUT');
+        expect(req.request.body).toEqual({ es_plus: true });
+        req.flush({ id: '1', es_plus: true });
+    });
+
+    it('lee es_plus del backend', () => {
+        service.getUsersPage(50, 0).subscribe(p => {
+            expect(p.items[0].esPlus).toBeTrue();
+            expect(p.items[1].esPlus).toBeFalse();
+        });
+
+        const req = httpMock.expectOne(r => r.url === 'http://localhost:8080/api/users');
+        req.flush([{ id: '1', es_plus: true }, { id: '2' }]);
+    });
 });
