@@ -6,7 +6,8 @@ Entrada de trabajo para validación de Panel Administrativo.
 - **Alcance:** ruta `admin/asesoria` y entrada en el menú App Móvil, sobre el mismo listado y diálogo
   de `features/admin/inicio/`. `CAMPOS_POR_PANTALLA` en `seccion-inicio.model.ts` decide qué se
   edita en cada página: Inicio (imagen, título y texto), LSO (título y texto) y Asesoría (solo
-  texto). Requiere el backend con `20261013_texto_asesoria.sql`.
+  texto). Requiere el backend con `20261013_texto_asesoria.sql`. Desplegado el 2026-10-13, junto con
+  «Textos de LSO».
 - **Criterios de QA:**
   1. Menú App Móvil → Texto de Asesoría: una fila, «Texto de bienvenida», con el texto de la app
      en gris y sin título.
