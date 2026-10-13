@@ -9,7 +9,7 @@ export interface SeccionInicio {
     slug: string;
     nombre: string;
     orden: number;
-    /** Pantalla de la app: tarjetas del Inicio, LSO · Escuela o Asesoría. */
+    /** Pantalla de la app: tarjetas del Inicio o LSO · Escuela. */
     pantalla: Pantalla;
     imagen_url: string;
     titulo: string;
@@ -17,21 +17,23 @@ export interface SeccionInicio {
     actualizada_en?: string;
 }
 
-export type Pantalla = 'inicio' | 'lso' | 'asesoria';
+export type Pantalla = 'inicio' | 'lso';
 
 /**
  * Qué se edita en cada pantalla. El Inicio lleva imagen, título y texto; LSO,
- * título y texto; Asesoría, solo el texto (el título se retiró de la app el
- * 2026-10-13).
+ * título y texto. Asesoría tuvo su propia página el 2026-10-13, retirada ese
+ * mismo día al quitarse de la app el recuadro que editaba; la fila
+ * `asesoria-banner` sigue en la base pero ninguna página la lista.
  */
 export const CAMPOS_POR_PANTALLA: Record<Pantalla, { imagen: boolean; titulo: boolean; nombre: string }> = {
     inicio: { imagen: true, titulo: true, nombre: 'Tarjetas del Inicio' },
-    lso: { imagen: false, titulo: true, nombre: 'Textos de LSO' },
-    asesoria: { imagen: false, titulo: false, nombre: 'Texto de Asesoría' }
+    lso: { imagen: false, titulo: true, nombre: 'Textos de LSO' }
 };
 
-export function pantallaDe(valor: string | undefined | null): Pantalla {
-    return valor === 'lso' || valor === 'asesoria' ? valor : 'inicio';
+/** Pantalla de una fila; null si no corresponde a ninguna página del panel. */
+export function pantallaDe(valor: string | undefined | null): Pantalla | null {
+    if (!valor || valor === 'inicio') return 'inicio';
+    return valor === 'lso' ? 'lso' : null;
 }
 
 /** Lo que admite el PUT: el campo que no se manda se queda como está. */
@@ -67,10 +69,6 @@ export const TEXTOS_POR_DEFECTO: Record<string, { titulo: string; texto: string 
     'lso-encabezado': {
         titulo: 'LSO · Legacy School of Ownership',
         texto: 'La escuela del propietario en LATAM'
-    },
-    'asesoria-banner': {
-        titulo: '',
-        texto: 'No necesita ser cliente para empezar. Solicite una propuesta y conozca cómo nuestras cinco unidades pueden acompañarle.'
     },
     'lso-banner': {
         titulo: 'Formación que los MBA no dan',

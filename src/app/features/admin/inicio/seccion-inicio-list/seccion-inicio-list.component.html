@@ -3,12 +3,6 @@
         <h1>{{ campos.nombre }}</h1>
     </div>
 
-    <p class="ayuda" *ngIf="pantalla === 'asesoria'">
-        El texto del primer recuadro de la pantalla Asesoría de la app. Se ve en cuanto se guarda,
-        sin actualizar la aplicación. Si se deja vacío, se muestra el texto de siempre (en gris en la
-        tabla).
-    </p>
-
     <p class="ayuda" *ngIf="pantalla === 'lso'">
         El título y el texto del encabezado y del banner principal de la pantalla LSO · Escuela de
         la app. Se ven en cuanto se guardan, sin actualizar la aplicación. Lo que se deje vacío se
@@ -76,6 +70,6 @@
 
     <p class="vacio" *ngIf="!cargando() && secciones().length === 0">
         No hay secciones configuradas. Si esto no es lo esperado, falta aplicar la migración
-        <code>{{ esInicio ? '20261012_secciones_inicio.sql' : pantalla === 'lso' ? '20261013_textos_lso.sql' : '20261013_texto_asesoria.sql' }}</code> en el servidor.
+        <code>{{ esInicio ? '20261012_secciones_inicio.sql' : '20261013_textos_lso.sql' }}</code> en el servidor.
     </p>
 </div>

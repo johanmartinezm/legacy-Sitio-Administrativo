@@ -64,11 +64,11 @@ export class SeccionInicioDialogComponent {
 
     /** Qué campos lleva la fila según su pantalla (CAMPOS_POR_PANTALLA). */
     get conImagen(): boolean {
-        return CAMPOS_POR_PANTALLA[pantallaDe(this.data.pantalla)].imagen;
+        return CAMPOS_POR_PANTALLA[pantallaDe(this.data.pantalla) ?? 'inicio'].imagen;
     }
 
     get conTitulo(): boolean {
-        return CAMPOS_POR_PANTALLA[pantallaDe(this.data.pantalla)].titulo;
+        return CAMPOS_POR_PANTALLA[pantallaDe(this.data.pantalla) ?? 'inicio'].titulo;
     }
 
     /** Lo que se verá en la app: lo escrito o, si está vacío, lo de siempre. */

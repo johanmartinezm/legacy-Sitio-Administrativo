@@ -25,10 +25,10 @@ import { SeccionInicioDialogComponent } from '../seccion-inicio-dialog/seccion-i
     styleUrls: ['./seccion-inicio-list.component.scss']
 })
 /**
- * Sirve a tres páginas del panel, según `data.pantalla` de la ruta: «Tarjetas
- * del Inicio» (admin/inicio), «Textos de LSO» (admin/lso) y «Texto de
- * Asesoría» (admin/asesoria). Todas editan filas de core.secciones_inicio; qué
- * campos lleva cada una lo dice CAMPOS_POR_PANTALLA.
+ * Sirve a dos páginas del panel, según `data.pantalla` de la ruta: «Tarjetas
+ * del Inicio» (admin/inicio) y «Textos de LSO» (admin/lso). Las dos editan
+ * filas de core.secciones_inicio; qué campos lleva cada una lo dice
+ * CAMPOS_POR_PANTALLA.
  */
 export class SeccionInicioListComponent implements OnInit {
     private todas = signal<SeccionInicio[]>([]);
@@ -47,8 +47,7 @@ export class SeccionInicioListComponent implements OnInit {
         'miembros': 'Servicios Legacy',
         'legacy-test': 'Bloque final del Inicio',
         'lso-encabezado': 'Arriba de la pantalla, junto al botón de volver',
-        'lso-banner': 'Primer recuadro, antes de los programas',
-        'asesoria-banner': 'Primer recuadro, antes de las unidades'
+        'lso-banner': 'Primer recuadro, antes de los programas'
     };
 
     constructor(
@@ -57,7 +56,7 @@ export class SeccionInicioListComponent implements OnInit {
         private snackBar: MatSnackBar,
         route: ActivatedRoute
     ) {
-        this.pantalla = pantallaDe(route.snapshot.data['pantalla']);
+        this.pantalla = pantallaDe(route.snapshot.data['pantalla']) ?? 'inicio';
         this.displayedColumns = this.campos.imagen
             ? ['imagen', 'nombre', 'textos', 'donde', 'actualizada', 'acciones']
             : ['nombre', 'textos', 'donde', 'actualizada', 'acciones'];
