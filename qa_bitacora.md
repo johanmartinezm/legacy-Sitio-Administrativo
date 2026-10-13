@@ -2,6 +2,19 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-12]: Módulo «Imágenes del Inicio»
+- **Alcance:** `features/admin/inicio/` (listado con miniatura y diálogo con `app-image-upload`,
+  vista previa con la capa oscura que pone la app y botón «Quitar imagen»),
+  `core/services/seccion_inicio_admin.service.ts` (+ spec), `core/models/seccion-inicio.model.ts`,
+  ruta `admin/inicio` en `app.routes.ts` y entrada en el menú «App Móvil». Desplegado.
+- **Criterios de QA:**
+  1. Menú App Móvil → Imágenes del Inicio: se listan las 11 tarjetas, sin imagen.
+  2. Subir una imagen a «Eventos» y guardar: la miniatura aparece en el listado.
+  3. Abrir la app (o volver a Inicio): la tarjeta Eventos muestra la foto con su título encima.
+  4. «Quitar imagen»: la tarjeta vuelve a su icono.
+  5. Una imagen en «Beneficios» aparece en sus dos tarjetas del Inicio.
+- **Rollback:** `dist.bak.20261012_1928` en `/docker/legacy_frontend`.
+
 ### [2026-10-12]: Formulario de eventos: campo «Modelo (opcional)»
 - **Alcance:** `core/models/event.model.ts`, `core/services/event.service.ts` (lee y envía `model`;
   vacío viaja como `null`), `features/admin/event-form-dialog/` (campo debajo de «Que incluye») y dos
