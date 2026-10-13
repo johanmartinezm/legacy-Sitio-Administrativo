@@ -62,6 +62,7 @@ export const TEXTOS_POR_DEFECTO: Record<string, { titulo: string; texto: string 
     'legacy-plus': { titulo: 'Legacy+', texto: 'Cómo accedo' },
     'contactenos': { titulo: 'Contáctenos', texto: 'Escríbenos si necesitas ayuda' },
     'miembros': { titulo: 'Miembros', texto: 'Comunidad del ecosistema Legacy' },
+    'chats-sinergia': { titulo: 'Chats de sinergia', texto: 'Debates anónimos y confidenciales entre miembros' },
     'legacy-test': {
         titulo: 'Descubra las trampas de su familia empresaria',
         texto: 'Conteste gratis el diagnóstico del Modelo DINASTÍA. ¿Quiere profundizar? Conozca los niveles del Legacy Test.'

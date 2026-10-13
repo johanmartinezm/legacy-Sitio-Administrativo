@@ -2,6 +2,13 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-13]: Tarjetas del Inicio: fila «Chats de sinergia»
+- **Alcance:** `core/models/seccion-inicio.model.ts` (textos de siempre) y el listado («Dónde se
+  ve»). La fila la crea la migración `20261013_tarjeta_chats_sinergia.sql`.
+- **Criterios de QA:**
+  1. Tarjetas del Inicio muestra «Chats de sinergia» con sus textos en gris; editarla cambia el ítem
+     en la app.
+
 ### [2026-10-13]: Tarjetas del Inicio: «Dónde se ve» de Beneficios y Legacy+
 - **Alcance:** `features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component.ts`. La app
   retiró de la cuadrícula las tarjetas Beneficios y Legacy+: Beneficios ya solo se ve en Servicios
