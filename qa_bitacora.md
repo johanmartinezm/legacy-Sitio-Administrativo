@@ -8,7 +8,8 @@ Entrada de trabajo para validación de Panel Administrativo.
   marca el formulario, orden y «Visible en la app»; borrar con confirmación),
   `core/models/asesoria-unidad.model.ts`, `core/services/asesoria_unidad_admin.service.ts` (+ spec),
   ruta `admin/asesoria/unidades` y entrada en el menú App Móvil. Una unidad nueva propone el orden
-  siguiente a la última. Requiere el backend con `20261013_asesoria_unidades.sql`.
+  siguiente a la última. Requiere el backend con `20261013_asesoria_unidades.sql`. Desplegado el
+  2026-10-13, junto con la retirada de «Texto de Asesoría».
 - **Criterios de QA:**
   1. Menú App Móvil → Unidades de Asesoría: las cinco unidades de la app, en su orden.
   2. «Nueva unidad»: crearla y verla al final del listado y de la app.
