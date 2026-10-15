@@ -8,14 +8,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ImageUploadComponent } from '../../../core/components/image-upload/image-upload.component';
 import { ForumAdminService } from '../../../core/services/forum-admin.service';
 import { Forum } from '../../../core/models/forum.model';
 
 @Component({
   selector: 'app-forums',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatTooltipModule, ImageUploadComponent],
+  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatTooltipModule],
   templateUrl: './forums.component.html',
   styleUrls: ['./forums.component.scss']
 })
@@ -26,7 +25,7 @@ export class ForumsComponent implements OnInit {
   guardando = false;
   // null: el formulario crea; con id: edita ese foro.
   editandoId: string | null = null;
-  nuevo = { title: '', description: '', cover_url: '' };
+  nuevo = { title: '', description: '' };
 
   constructor(private forumAdminService: ForumAdminService) {}
 
@@ -43,20 +42,20 @@ export class ForumsComponent implements OnInit {
 
   abrirFormulario() {
     this.editandoId = null;
-    this.nuevo = { title: '', description: '', cover_url: '' };
+    this.nuevo = { title: '', description: '' };
     this.creando = true;
   }
 
   editarForo(forum: Forum) {
     this.editandoId = forum.id;
-    this.nuevo = { title: forum.title, description: forum.description || '', cover_url: forum.cover_url || '' };
+    this.nuevo = { title: forum.title, description: forum.description || '' };
     this.creando = true;
   }
 
   guardarForo() {
     const title = this.nuevo.title.trim();
     if (!title) return;
-    const datos = { title, description: this.nuevo.description.trim(), cover_url: this.nuevo.cover_url.trim() };
+    const datos = { title, description: this.nuevo.description.trim() };
     // El PUT conserva estado y portada cuando no se envían.
     const peticion: Observable<unknown> = this.editandoId
       ? this.forumAdminService.updateForum(this.editandoId, datos)
