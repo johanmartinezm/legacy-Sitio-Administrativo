@@ -2,6 +2,17 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-15]: Foros: editar título y descripción
+- **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. Botón de lápiz en cada fila
+  que abre el mismo formulario de «Agregar foro» con los datos del foro y guarda con el
+  `PUT /api/admin/forums/{id}` que ya existía. El estado (activo o solo lectura) y la portada no se
+  tocan.
+- **Criterios de QA:**
+  1. El lápiz de un foro abre «Editar foro» con su título y su descripción.
+  2. Cambiar la descripción y «Guardar»: la tabla y la app muestran el texto nuevo.
+  3. Editar un foro bloqueado: sigue en «Solo Lectura».
+  4. «Cancelar» cierra sin cambiar nada; «Agregar foro» después abre el formulario vacío.
+
 ### [2026-10-15]: Foros: sin columna de autor y con «Agregar foro»
 - **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. Se quita la columna «Alias»
   (quién creó el foro: desde el 14-10 siempre es el panel) y se añade el botón «Agregar foro», con

@@ -9,7 +9,8 @@
       </button>
     </div>
 
-    <form class="nuevo-foro" *ngIf="creando" (ngSubmit)="crearForo()">
+    <form class="nuevo-foro" *ngIf="creando" (ngSubmit)="guardarForo()">
+      <h4>{{ editandoId ? 'Editar foro' : 'Nuevo foro' }}</h4>
       <mat-form-field appearance="outline">
         <mat-label>Título</mat-label>
         <input matInput name="title" [(ngModel)]="nuevo.title" required maxlength="120">
@@ -20,7 +21,7 @@
       </mat-form-field>
       <div class="acciones">
         <button mat-button type="button" (click)="creando = false" [disabled]="guardando">Cancelar</button>
-        <button mat-flat-button color="primary" type="submit" [disabled]="guardando || !nuevo.title.trim()">Crear</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="guardando || !nuevo.title.trim()">{{ editandoId ? 'Guardar' : 'Crear' }}</button>
       </div>
     </form>
 
@@ -45,6 +46,9 @@
           <td>{{ forum.post_count }}</td>
           <td>{{ forum.created_at | date }}</td>
           <td>
+            <button mat-icon-button (click)="editarForo(forum)" matTooltip="Editar Foro" color="primary">
+              <mat-icon>edit</mat-icon>
+            </button>
             <button mat-icon-button (click)="toggleLock(forum)" [matTooltip]="forum.status === 'locked' ? 'Desbloquear Foro' : 'Bloquear Foro'" [color]="forum.status === 'locked' ? 'warn' : 'primary'">
               <mat-icon>{{ forum.status === 'locked' ? 'lock' : 'lock_open' }}</mat-icon>
             </button>

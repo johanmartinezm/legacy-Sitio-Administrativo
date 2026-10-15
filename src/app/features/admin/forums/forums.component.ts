@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,6 +23,8 @@ export class ForumsComponent implements OnInit {
   // Desde el 2026-10-14 solo el panel crea foros: la app ya no puede.
   creando = false;
   guardando = false;
+  // null: el formulario crea; con id: edita ese foro.
+  editandoId: string | null = null;
   nuevo = { title: '', description: '' };
 
   constructor(private forumAdminService: ForumAdminService) {}
@@ -38,15 +41,27 @@ export class ForumsComponent implements OnInit {
   }
 
   abrirFormulario() {
+    this.editandoId = null;
     this.nuevo = { title: '', description: '' };
     this.creando = true;
   }
 
-  crearForo() {
+  editarForo(forum: Forum) {
+    this.editandoId = forum.id;
+    this.nuevo = { title: forum.title, description: forum.description || '' };
+    this.creando = true;
+  }
+
+  guardarForo() {
     const title = this.nuevo.title.trim();
     if (!title) return;
+    const datos = { title, description: this.nuevo.description.trim() };
+    // El PUT conserva estado y portada cuando no se envían.
+    const peticion: Observable<unknown> = this.editandoId
+      ? this.forumAdminService.updateForum(this.editandoId, datos)
+      : this.forumAdminService.createForum(datos);
     this.guardando = true;
-    this.forumAdminService.createForum({ title, description: this.nuevo.description.trim() }).subscribe({
+    peticion.subscribe({
       next: () => {
         this.guardando = false;
         this.creando = false;
@@ -54,7 +69,7 @@ export class ForumsComponent implements OnInit {
       },
       error: (err) => {
         this.guardando = false;
-        console.error('Error creating forum', err);
+        console.error('Error saving forum', err);
       }
     });
   }
