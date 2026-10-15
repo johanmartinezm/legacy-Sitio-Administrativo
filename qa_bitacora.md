@@ -2,6 +2,17 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-15]: Foros: icono o imagen por foro
+- **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. El formulario de crear y
+  editar lleva el campo de imagen común (`core/components/image-upload`: subir archivo o pegar URL)
+  sobre `cover_url`, que ya existía en `core.forums`; la tabla muestra la miniatura. La app la pinta
+  junto al título. Un PNG conserva la transparencia; un SVG no se puede subir.
+- **Criterios de QA:**
+  1. Editar un foro, subir una imagen y guardar: aparece la miniatura en la tabla.
+  2. En la app, Chats de sinergia muestra esa imagen a la izquierda del título.
+  3. Un foro sin imagen se ve en la tabla con un icono gris, y en la app como antes.
+  4. Crear un foro con imagen desde «Agregar foro»: sale con su imagen.
+
 ### [2026-10-15]: Foros: editar título y descripción
 - **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. Botón de lápiz en cada fila
   que abre el mismo formulario de «Agregar foro» con los datos del foro y guarda con el

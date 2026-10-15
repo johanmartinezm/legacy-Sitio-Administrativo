@@ -19,6 +19,7 @@
         <mat-label>Descripción</mat-label>
         <textarea matInput name="description" [(ngModel)]="nuevo.description" rows="2"></textarea>
       </mat-form-field>
+      <app-image-upload name="cover_url" [(ngModel)]="nuevo.cover_url" label="Icono o imagen (se ve en la app)"></app-image-upload>
       <div class="acciones">
         <button mat-button type="button" (click)="creando = false" [disabled]="guardando">Cancelar</button>
         <button mat-flat-button color="primary" type="submit" [disabled]="guardando || !nuevo.title.trim()">{{ editandoId ? 'Guardar' : 'Crear' }}</button>
@@ -28,6 +29,7 @@
     <table class="table" *ngIf="forums.length > 0">
       <thead>
         <tr>
+          <th></th>
           <th>Título</th>
           <th>Estado</th>
           <th>Posts</th>
@@ -37,6 +39,10 @@
       </thead>
       <tbody>
         <tr *ngFor="let forum of forums">
+          <td class="icono">
+            <img *ngIf="forum.cover_url; else sinIcono" [src]="forum.cover_url" alt="">
+            <ng-template #sinIcono><mat-icon>image</mat-icon></ng-template>
+          </td>
           <td>{{ forum.title }}</td>
           <td>
             <span class="badge" [ngClass]="{'bg-success': forum.status === 'active', 'bg-warning': forum.status === 'locked'}">
