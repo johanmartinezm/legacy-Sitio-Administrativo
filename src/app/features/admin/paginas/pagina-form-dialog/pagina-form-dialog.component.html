@@ -36,6 +36,34 @@
             </mat-error>
         </mat-form-field>
 
+        <fieldset class="botones" *ngIf="conBotones">
+            <legend>Botones al pie de la página</legend>
+            <p class="ayuda-botones">
+                Cada botón abre Contáctenos con su asunto ya escrito; aquí solo cambia el texto. Si
+                deja uno vacío, la app usa el de siempre.
+            </p>
+            <mat-form-field appearance="outline" class="campo-completo">
+                <mat-label>Pregunta</mat-label>
+                <input matInput formControlName="pregunta_acciones" [maxlength]="maxPregunta"
+                    placeholder="¿Cómo quiere participar?">
+                <mat-hint align="end">{{ paginaForm.value.pregunta_acciones?.length || 0 }}/{{ maxPregunta }}</mat-hint>
+            </mat-form-field>
+            <div class="form-row">
+                <mat-form-field appearance="outline">
+                    <mat-label>Botón principal</mat-label>
+                    <input matInput formControlName="boton_principal" [maxlength]="maxBoton"
+                        placeholder="Quiero ser parte">
+                    <mat-hint align="end">{{ paginaForm.value.boton_principal?.length || 0 }}/{{ maxBoton }}</mat-hint>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Botón secundario</mat-label>
+                    <input matInput formControlName="boton_secundario" [maxlength]="maxBoton"
+                        placeholder="Quiero buscar">
+                    <mat-hint align="end">{{ paginaForm.value.boton_secundario?.length || 0 }}/{{ maxBoton }}</mat-hint>
+                </mat-form-field>
+            </div>
+        </fieldset>
+
         <div class="toggle-container">
             <mat-slide-toggle formControlName="publicada">
                 Publicada en la app

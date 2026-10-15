@@ -16,4 +16,18 @@ export interface PaginaInformativa {
     /** Si se apaga, la app responde 404 y la pantalla muestra su aviso. */
     publicada: boolean;
     actualizada_en?: string;
+    /**
+     * Pregunta y textos de los dos botones del pie. Vacío es «el de siempre»:
+     * lo pone la app. Qué hace cada botón lo decide la app, no el panel.
+     */
+    pregunta_acciones?: string;
+    boton_principal?: string;
+    boton_secundario?: string;
 }
+
+/** Páginas que llevan botones al pie en la app: solo en ellas se editan. */
+export const PAGINAS_CON_BOTONES = ['legacy-board'];
+
+/** Límites del backend (pagina_service.go). */
+export const MAX_PREGUNTA_ACCIONES = 80;
+export const MAX_TEXTO_BOTON = 40;

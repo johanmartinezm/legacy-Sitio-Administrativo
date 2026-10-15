@@ -8,7 +8,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PaginaInformativa } from '../../../../core/models/pagina-informativa.model';
+import {
+    MAX_PREGUNTA_ACCIONES,
+    MAX_TEXTO_BOTON,
+    PAGINAS_CON_BOTONES,
+    PaginaInformativa
+} from '../../../../core/models/pagina-informativa.model';
 import { PaginaAdminService } from '../../../../core/services/pagina_admin.service';
 import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
 
@@ -32,6 +37,9 @@ import { ImageUploadComponent } from '../../../../core/components/image-upload/i
 export class PaginaFormDialogComponent {
     paginaForm: FormGroup;
     guardando = false;
+    readonly conBotones: boolean;
+    readonly maxPregunta = MAX_PREGUNTA_ACCIONES;
+    readonly maxBoton = MAX_TEXTO_BOTON;
 
     /** El mismo tope que aplica el backend, para avisar antes de enviar. */
     static readonly MAX_CUERPO = 20000;
@@ -48,8 +56,12 @@ export class PaginaFormDialogComponent {
             subtitulo: [data.subtitulo || ''],
             imagen_url: [data.imagen_url || ''],
             cuerpo: [data.cuerpo || '', [Validators.maxLength(PaginaFormDialogComponent.MAX_CUERPO)]],
-            publicada: [data.publicada]
+            publicada: [data.publicada],
+            pregunta_acciones: [data.pregunta_acciones || '', [Validators.maxLength(MAX_PREGUNTA_ACCIONES)]],
+            boton_principal: [data.boton_principal || '', [Validators.maxLength(MAX_TEXTO_BOTON)]],
+            boton_secundario: [data.boton_secundario || '', [Validators.maxLength(MAX_TEXTO_BOTON)]]
         });
+        this.conBotones = PAGINAS_CON_BOTONES.includes(data.slug);
     }
 
     get largoCuerpo(): number {

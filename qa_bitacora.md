@@ -2,6 +2,18 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-15]: Páginas: botones de Legacy Board editables
+- **Alcance:** `core/models/pagina-informativa.model.ts` (tres campos, `PAGINAS_CON_BOTONES` y
+  límites) y `features/admin/paginas/pagina-form-dialog/`: en Legacy Board aparece el bloque
+  «Botones al pie de la página» con la pregunta y los dos botones, con contador. Las demás páginas
+  no lo muestran. Requiere el backend con `20261015_paginas_botones.sql`.
+- **Criterios de QA:**
+  1. Páginas de la App → Legacy Board: el bloque trae «¿Cómo quiere participar?», «Quiero ser
+     parte» y «Quiero buscar».
+  2. Cambiar un texto y guardar: la app lo muestra al volver a entrar a Legacy Board.
+  3. Vaciar uno y guardar: la app vuelve a mostrar el de siempre.
+  4. El campo no deja escribir más de 40 caracteres por botón (80 la pregunta).
+
 ### [2026-10-15]: Foros: se retira el icono o imagen por foro
 - **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. Se deshace el campo de imagen
   y la miniatura de la entrada «Foros: icono o imagen por foro»: la imagen que pedía el cliente era
