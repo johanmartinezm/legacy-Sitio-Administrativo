@@ -2,6 +2,18 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-15]: Foros: sin columna de autor y con «Agregar foro»
+- **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. Se quita la columna «Alias»
+  (quién creó el foro: desde el 14-10 siempre es el panel) y se añade el botón «Agregar foro», con
+  título y descripción, sobre el `POST /api/admin/forums` que ya existía. Es el único sitio donde se
+  crean foros: la app ya no puede.
+- **Criterios de QA:**
+  1. Foros: la tabla ya no tiene columna «Alias».
+  2. «Agregar foro» abre el formulario; sin título, «Crear» queda deshabilitado.
+  3. Crear un foro: aparece activo en la tabla, después de Empresa, Patrimonio, Familia y Otros, y
+     en la app.
+  4. «Cancelar» cierra el formulario sin crear nada.
+
 ### [2026-10-13]: Módulos «Beneficios» y «Alianzas»
 - **Alcance:** `features/admin/beneficios/` (listado con orden, imagen, título y texto, enlace y
   estado; diálogo con título, texto, imagen o logo subida, enlace opcional, orden y visible),

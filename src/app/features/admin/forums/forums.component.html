@@ -2,12 +2,32 @@
   <h2>Foros Anónimos (Administración)</h2>
 
   <div class="section">
-    <h3>Todos los Foros</h3>
+    <div class="section-header">
+      <h3>Todos los Foros</h3>
+      <button mat-flat-button color="primary" *ngIf="!creando" (click)="abrirFormulario()">
+        <mat-icon>add</mat-icon> Agregar foro
+      </button>
+    </div>
+
+    <form class="nuevo-foro" *ngIf="creando" (ngSubmit)="crearForo()">
+      <mat-form-field appearance="outline">
+        <mat-label>Título</mat-label>
+        <input matInput name="title" [(ngModel)]="nuevo.title" required maxlength="120">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput name="description" [(ngModel)]="nuevo.description" rows="2"></textarea>
+      </mat-form-field>
+      <div class="acciones">
+        <button mat-button type="button" (click)="creando = false" [disabled]="guardando">Cancelar</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="guardando || !nuevo.title.trim()">Crear</button>
+      </div>
+    </form>
+
     <table class="table" *ngIf="forums.length > 0">
       <thead>
         <tr>
           <th>Título</th>
-          <th>Alias</th>
           <th>Estado</th>
           <th>Posts</th>
           <th>Fecha</th>
@@ -17,7 +37,6 @@
       <tbody>
         <tr *ngFor="let forum of forums">
           <td>{{ forum.title }}</td>
-          <td>{{ forum.author_alias || 'Admin' }}</td>
           <td>
             <span class="badge" [ngClass]="{'bg-success': forum.status === 'active', 'bg-warning': forum.status === 'locked'}">
               {{ forum.status === 'active' ? 'Activo' : (forum.status === 'locked' ? 'Solo Lectura' : forum.status) }}

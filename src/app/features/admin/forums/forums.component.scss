@@ -28,6 +28,35 @@
   }
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f3f4f6;
+
+  h3 {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+}
+
+.nuevo-foro {
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  margin-bottom: 24px;
+
+  .acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+}
+
 .table {
   width: 100%;
   border-collapse: separate;
