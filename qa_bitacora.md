@@ -2,7 +2,14 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
-<<<<<<< HEAD
+### [2026-10-15]: Foros: se retira el icono o imagen por foro
+- **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. Se deshace el campo de imagen
+  y la miniatura de la entrada «Foros: icono o imagen por foro»: la imagen que pedía el cliente era
+  la de las Unidades de Asesoría. Crear y editar foros siguen igual.
+- **Criterios de QA:**
+  1. Foros: el formulario solo pide título y descripción, y la tabla no tiene miniatura.
+  2. Crear y editar un foro siguen funcionando.
+
 ### [2026-10-15]: Unidades de Asesoría: icono o imagen propia
 - **Alcance:** `core/models/asesoria-unidad.model.ts` (`imagen_url`),
   `features/admin/asesoria/unidad-form-dialog/` (campo de imagen común: subir o pegar URL) y
@@ -25,8 +32,6 @@ Entrada de trabajo para validación de Panel Administrativo.
   3. Un foro sin imagen se ve en la tabla con un icono gris, y en la app como antes.
   4. Crear un foro con imagen desde «Agregar foro»: sale con su imagen.
 
-=======
->>>>>>> parent of 4a6a717 (Foros: icono o imagen por foro)
 ### [2026-10-15]: Foros: editar título y descripción
 - **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. Botón de lápiz en cada fila
   que abre el mismo formulario de «Agregar foro» con los datos del foro y guarda con el
