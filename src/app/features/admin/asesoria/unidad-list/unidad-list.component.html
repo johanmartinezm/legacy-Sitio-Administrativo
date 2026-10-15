@@ -23,7 +23,10 @@
 
         <ng-container matColumnDef="icono">
             <th mat-header-cell *matHeaderCellDef> Icono </th>
-            <td mat-cell *matCellDef="let u"><mat-icon class="icono">{{ iconoMaterial(u.icono) }}</mat-icon></td>
+            <td mat-cell *matCellDef="let u">
+                <img *ngIf="u.imagen_url; else iconoLista" class="imagen" [src]="u.imagen_url" alt="">
+                <ng-template #iconoLista><mat-icon class="icono">{{ iconoMaterial(u.icono) }}</mat-icon></ng-template>
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="titulo">

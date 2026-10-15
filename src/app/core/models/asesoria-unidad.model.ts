@@ -8,6 +8,8 @@ export interface AsesoriaUnidad {
     subtitulo: string;
     /** Clave de ICONOS_ASESORIA; la app la traduce a un icono. */
     icono: string;
+    /** Icono o imagen subido; si está, la app lo pinta en lugar de `icono`. */
+    imagen_url?: string;
     /** Opción de «¿Qué necesita?» que el formulario marca al entrar por esta unidad. */
     necesidad: string;
     orden: number;

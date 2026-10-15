@@ -17,6 +17,7 @@ import {
     NECESIDADES_ASESORIA,
     iconoMaterial
 } from '../../../../core/models/asesoria-unidad.model';
+import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
 import { AsesoriaUnidadAdminService } from '../../../../core/services/asesoria_unidad_admin.service';
 
 /** Datos del diálogo: la unidad a editar, o el orden que le toca a una nueva. */
@@ -34,7 +35,8 @@ export type DatosUnidadDialog = AsesoriaUnidad | { siguienteOrden: number };
         MatInputModule,
         MatSelectModule,
         MatSlideToggleModule,
-        MatIconModule
+        MatIconModule,
+        ImageUploadComponent
     ],
     templateUrl: './unidad-form-dialog.component.html',
     styleUrls: ['./unidad-form-dialog.component.scss']
@@ -63,6 +65,7 @@ export class UnidadFormDialogComponent {
             titulo: [base?.titulo ?? '', [Validators.required, Validators.maxLength(MAX_TITULO_UNIDAD)]],
             subtitulo: [base?.subtitulo ?? '', [Validators.maxLength(MAX_SUBTITULO_UNIDAD)]],
             icono: [base?.icono ?? 'negocio', Validators.required],
+            imagen_url: [base?.imagen_url ?? ''],
             necesidad: [base?.necesidad ?? 'Gobierno', Validators.required],
             orden: [base?.orden ?? ('siguienteOrden' in data ? data.siguienteOrden : 10), Validators.required],
             activa: [base?.activa ?? true]
@@ -80,6 +83,7 @@ export class UnidadFormDialogComponent {
             ...valor,
             titulo: valor.titulo.trim(),
             subtitulo: valor.subtitulo.trim(),
+            imagen_url: (valor.imagen_url ?? '').trim(),
             orden: Number(valor.orden) || 0
         };
         const peticion = this.editando?.id

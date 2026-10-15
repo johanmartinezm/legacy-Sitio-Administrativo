@@ -15,9 +15,15 @@
         <mat-hint align="end">{{ form.value.subtitulo?.length || 0 }}/{{ maxSubtitulo }}</mat-hint>
     </mat-form-field>
 
+    <app-image-upload formControlName="imagen_url" label="Icono o imagen propia (opcional)"></app-image-upload>
+    <p class="ayuda-imagen">
+        Si sube una imagen, la app la muestra en lugar del icono de la lista. Mejor cuadrada, en PNG
+        o JPG.
+    </p>
+
     <div class="fila">
         <mat-form-field appearance="outline">
-            <mat-label>Icono</mat-label>
+            <mat-label>{{ form.value.imagen_url ? 'Icono si la imagen no carga' : 'Icono' }}</mat-label>
             <mat-select formControlName="icono">
                 <mat-select-trigger>
                     <span class="opcion-icono">

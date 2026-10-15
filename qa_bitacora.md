@@ -2,6 +2,17 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-15]: Unidades de Asesoría: icono o imagen propia
+- **Alcance:** `core/models/asesoria-unidad.model.ts` (`imagen_url`),
+  `features/admin/asesoria/unidad-form-dialog/` (campo de imagen común: subir o pegar URL) y
+  `unidad-list/` (la columna Icono muestra la imagen si la hay). El icono de la lista se conserva
+  como respaldo si la imagen no carga. Requiere el backend con `20261015_asesoria_unidades_imagen.sql`.
+- **Criterios de QA:**
+  1. Editar una unidad y subir una imagen: la tabla la muestra en la columna Icono.
+  2. La app la muestra en Asesoría → Nuestras unidades, en lugar del icono.
+  3. Quitar la imagen y guardar: vuelve el icono de la lista, en el panel y en la app.
+  4. Una unidad sin imagen se ve igual que antes.
+
 ### [2026-10-15]: Foros: icono o imagen por foro
 - **Alcance:** `features/admin/forums/forums.component.{html,ts,scss}`. El formulario de crear y
   editar lleva el campo de imagen común (`core/components/image-upload`: subir archivo o pegar URL)
