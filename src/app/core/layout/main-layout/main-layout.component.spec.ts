@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { Router, provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 
 import { MainLayoutComponent } from './main-layout.component';
@@ -29,6 +30,8 @@ describe('MainLayoutComponent', () => {
                 // Las de mentira: en una prueba no interesa esperar a que
                 // termine ninguna transición, solo que el componente las declare.
                 provideNoopAnimations(),
+                // AuthService, por «Salir».
+                provideHttpClient(),
             ],
         }).compileComponents();
 
@@ -39,5 +42,15 @@ describe('MainLayoutComponent', () => {
 
     it('se construye y pinta su plantilla', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('«Salir» borra el token, no solo navega al login', () => {
+        localStorage.setItem('adminAuthToken', 'token-de-prueba');
+        const navegar = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+
+        component.logout();
+
+        expect(localStorage.getItem('adminAuthToken')).toBeNull();
+        expect(navegar).toHaveBeenCalledWith(['/login'], {});
     });
 });

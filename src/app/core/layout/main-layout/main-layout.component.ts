@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,13 +30,15 @@ import { MatExpansionModule } from '@angular/material/expansion';
 export class MainLayoutComponent {
   isAboutVisible = false;
 
-  constructor(private router: Router) { }
+  constructor(private authService: AuthService) { }
 
   toggleAbout() {
     this.isAboutVisible = !this.isAboutVisible;
   }
 
+  // Antes solo navegaba al login y dejaba el token en localStorage: «Salir»
+  // no cerraba la sesión.
   logout() {
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 }

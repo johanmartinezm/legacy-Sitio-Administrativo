@@ -12,6 +12,8 @@ export const authGuard: CanActivateFn = () => {
     if (auth.sesionVigente()) {
         return true;
     }
-    auth.logout(true);
+    // El aviso de sesión vencida solo si había un token: a quien nunca entró
+    // no se le dice que su sesión venció.
+    auth.logout(auth.getToken() !== null);
     return false;
 };

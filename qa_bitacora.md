@@ -2,6 +2,17 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-21]: «Salir» cierra la sesión; el aviso de sesión vencida solo si la había
+- **Alcance:** `core/layout/main-layout/main-layout.component.ts` (+ spec) y
+  `core/guards/auth.guard.ts` (+ spec nuevo). «Salir» solo navegaba al login y dejaba el token en
+  `localStorage`; ahora pasa por `AuthService.logout()`. El guard de la entrada anterior mostraba
+  «Tu sesión venció» también a quien nunca había iniciado sesión.
+- **Criterios de QA:**
+  1. Iniciar sesión y pulsar «Salir»: va al login, sin el aviso.
+  2. Tras «Salir», abrir `/admin/users` directamente: vuelve al login, sin el aviso.
+  3. En una ventana privada, abrir `/home`: va al login sin el aviso.
+  4. Con un token vencido o alterado en `adminAuthToken`, abrir `/home`: va al login **con** el aviso.
+
 ### [2026-10-21]: Sesión vencida: el panel vuelve al login en vez de quedarse vacío
 - **Alcance:** `core/utils/sesion.ts` (+ spec), `core/guards/auth.guard.ts` (nuevo, en el layout
   principal de `app.routes.ts`), `core/interceptors/auth.interceptor.ts`, `core/services/auth.service.ts`
