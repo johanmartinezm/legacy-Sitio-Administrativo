@@ -2,6 +2,17 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-21]: index.html sin caché: tras un despliegue se ve la versión nueva
+- **Alcance:** `nginx.conf` (`location = /index.html` con `Cache-Control: no-cache`). Sin cabecera,
+  el navegador decidía cuánto guardar el `index.html` y, después de desplegar, seguía abriendo el
+  panel anterior un rato: el mismo día, «Salir» no borró la sesión en la primera prueba porque
+  corría el código viejo. Los `.js` siguen con caché de 6 meses: llevan hash en el nombre. Probado
+  con nginx local sobre el build: `/`, `/home`, `/admin/users` → `no-cache`; `main-*.js` → 6 meses.
+  **El `nginx.conf` va dentro de la imagen:** hay que subirlo y reconstruir.
+- **Criterios de QA:**
+  1. `curl -sI https://app.legacynetworkco.com/home` muestra `Cache-Control: no-cache`.
+  2. Desplegar un cambio cualquiera y recargar el panel una vez: ya se ve el cambio, sin Ctrl+F5.
+
 ### [2026-10-21]: «Salir» cierra la sesión; el aviso de sesión vencida solo si la había
 - **Alcance:** `core/layout/main-layout/main-layout.component.ts` (+ spec) y
   `core/guards/auth.guard.ts` (+ spec nuevo). «Salir» solo navegaba al login y dejaba el token en
