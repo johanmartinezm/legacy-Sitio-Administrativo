@@ -6,6 +6,7 @@
             </div>
         </mat-card-header>
         <mat-card-content>
+            <p *ngIf="sesionVencida" class="aviso-sesion">Tu sesión venció. Vuelve a ingresar.</p>
             <form (submit)="login()">
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Usuario / Correo</mat-label>

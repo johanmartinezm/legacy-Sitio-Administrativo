@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,8 +28,11 @@ import { AuthService } from '../../../core/services/auth.service';
 export class LoginComponent {
   email = '';
   password = '';
+  sesionVencida = false;
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(private router: Router, private route: ActivatedRoute, private authService: AuthService) {
+    this.sesionVencida = this.route.snapshot.queryParamMap.get('sesion') === 'vencida';
+  }
 
   login() {
     this.authService.login({ email: this.email, password: this.password }).subscribe({

@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { ConfigService } from './config.service';
+import { tokenVigente } from '../utils/sesion';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
     private tokenKey = 'adminAuthToken';
-    isLoggedIn = signal<boolean>(!!localStorage.getItem(this.tokenKey));
+    isLoggedIn = signal<boolean>(tokenVigente(localStorage.getItem(this.tokenKey)));
 
     constructor(
         private http: HttpClient,
@@ -32,10 +33,16 @@ export class AuthService {
         );
     }
 
-    logout() {
+    /** `vencida` muestra en el login el aviso de que la sesión caducó. */
+    logout(vencida = false) {
         localStorage.removeItem(this.tokenKey);
         this.isLoggedIn.set(false);
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login'], vencida ? { queryParams: { sesion: 'vencida' } } : {});
+    }
+
+    /** Hay token y no ha pasado su `exp` (el backend lo firma por 24 horas). */
+    sesionVigente(): boolean {
+        return tokenVigente(localStorage.getItem(this.tokenKey));
     }
 
     getToken(): string | null {
