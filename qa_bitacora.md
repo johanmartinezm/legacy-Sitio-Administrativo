@@ -2,6 +2,22 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-21]: Sesión vencida: el panel vuelve al login en vez de quedarse vacío
+- **Alcance:** `core/utils/sesion.ts` (+ spec), `core/guards/auth.guard.ts` (nuevo, en el layout
+  principal de `app.routes.ts`), `core/interceptors/auth.interceptor.ts`, `core/services/auth.service.ts`
+  y `features/auth/login/`. El token de administrador dura 24 horas; pasado ese plazo el panel seguía
+  abierto, las rutas de administración respondían 401 y Usuarios aparecía vacío (reportado con la
+  cuenta de paola.alfonso@ el 21-10; en el log, 401 hasta que volvió a iniciar sesión). Ahora un 401
+  con token o un token vencido cierran la sesión y llevan al login con el aviso «Tu sesión venció».
+  Además, hasta hoy no había guard: `/admin/...` se abría sin haber iniciado sesión.
+- **Criterios de QA:**
+  1. Iniciar sesión y abrir Usuarios: la lista carga.
+  2. En las herramientas del navegador, cambiar `adminAuthToken` en `localStorage` por un valor
+     cualquiera y recargar Usuarios: lleva al login con el aviso «Tu sesión venció».
+  3. Borrar `adminAuthToken` y abrir `/admin/users` directamente: lleva al login.
+  4. Escribir mal la contraseña en el login: sale el error de credenciales y no el aviso de sesión.
+  5. Volver a iniciar sesión: entra a Inicio y todo carga.
+
 ### [2026-10-15]: Páginas: botones de Legacy Board editables
 - **Alcance:** `core/models/pagina-informativa.model.ts` (tres campos, `PAGINAS_CON_BOTONES` y
   límites) y `features/admin/paginas/pagina-form-dialog/`: en Legacy Board aparece el bloque
