@@ -36,7 +36,7 @@ describe('AdminService · nombres', () => {
 
         const req = httpMock.expectOne(`${apiUrl}/users`);
         req.flush([{
-            id: '1', email: 'oscar.garcia@intelyclick.com',
+            id: '1', email: 'oscar.garcia@example.com',
             first_name: 'Oscar', last_name: 'García', role: 'admin'
         }]);
     });
