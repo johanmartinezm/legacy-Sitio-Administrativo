@@ -16,7 +16,8 @@
         <mat-hint align="end">{{ texto.value.length }}/{{ maxTexto }}</mat-hint>
     </mat-form-field>
 
-    <app-image-upload *ngIf="conImagen" [formControl]="imagen" label="Imagen de la tarjeta"></app-image-upload>
+    <app-image-upload *ngIf="conImagen" [formControl]="imagen" label="Imagen de la tarjeta"
+        [recomendacion]="recomendacionImagen"></app-image-upload>
 
     <!-- LSO: sin imagen, la vista previa es el recuadro tal como lo pinta la app. -->
     <div class="vista-previa-texto" *ngIf="!conImagen">

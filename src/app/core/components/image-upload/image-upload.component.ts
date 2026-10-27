@@ -43,6 +43,13 @@ import { ImageUploadService } from '../../services/image-upload.service';
 export class ImageUploadComponent implements ControlValueAccessor {
     @Input() label = 'Imagen';
 
+    /**
+     * Tamaño y proporción con que la app pinta esta imagen, para quien la sube.
+     * Cada formulario pone la suya: un banner apaisado y una foto de perfil
+     * circular no se recortan igual.
+     */
+    @Input() recomendacion = '';
+
     valor = '';
     subiendo = false;
     error: string | null = null;

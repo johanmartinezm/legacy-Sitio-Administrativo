@@ -33,6 +33,25 @@
     }
 }
 
+.recomendacion {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, .04);
+    font-size: 12px;
+    color: rgba(0, 0, 0, .75);
+
+    mat-icon {
+        flex: none;
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+    }
+}
+
 .nota {
     margin: 0;
     font-size: 12px;

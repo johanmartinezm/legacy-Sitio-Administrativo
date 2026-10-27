@@ -15,7 +15,8 @@
         <mat-hint align="end">{{ form.value.subtitulo?.length || 0 }}/{{ maxSubtitulo }}</mat-hint>
     </mat-form-field>
 
-    <app-image-upload formControlName="imagen_url" label="Icono o imagen propia (opcional)"></app-image-upload>
+    <app-image-upload formControlName="imagen_url" label="Icono o imagen propia (opcional)"
+        recomendacion="Cuadrada, al menos 200 × 200 px. Se ve pequeña (46 × 46) junto al título: mejor un icono o logo simple, sin texto."></app-image-upload>
     <p class="ayuda-imagen">
         Si sube una imagen, la app la muestra en lugar del icono de la lista. Mejor cuadrada, en PNG
         o JPG.

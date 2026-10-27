@@ -2,6 +2,22 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-27]: Recomendación de tamaño en cada campo de imagen
+- **Alcance:** `core/components/image-upload/` (nueva entrada `recomendacion`, se pinta sobre la
+  nota de 10 MB / 600 px) y los nueve formularios que lo usan: banners, foto de perfil, unidades de
+  asesoría, beneficios, evento, taller, tarjetas del Inicio, contenido personalizado y páginas. Cada
+  texto sale de cómo pinta la app esa imagen (altura, recorte `cover`, círculo, texto encima). El
+  backend reduce todo a 600 px de ancho, así que las medidas se dan a ese ancho. En las tarjetas del
+  Inicio depende de la fila: las seis de la cuadrícula son casi cuadradas y el resto, franjas de 3:1.
+  La imagen del taller la app no la muestra hoy, y la nota lo dice.
+- **Criterios de QA:**
+  1. Abrir crear/editar banner: bajo «Imagen del banner» aparece «Horizontal, 600 × 340 px (16:9)…».
+  2. Repetir en usuario, unidad de asesoría, beneficio, evento (imagen del evento y de un taller),
+     contenido y página: cada campo muestra su recomendación propia.
+  3. Inicio → editar «Eventos»: recomienda cuadrada 600 × 600. Editar «Nuevo cada semana»:
+     recomienda 600 × 200 (3:1).
+  4. Las secciones de LSO y Legacy+ siguen sin campo de imagen.
+
 ### [2026-10-21]: index.html sin caché: tras un despliegue se ve la versión nueva
 - **Alcance:** `nginx.conf` (`location = /index.html` con `Cache-Control: no-cache`). Sin cabecera,
   el navegador decidía cuánto guardar el `index.html` y, después de desplegar, seguía abriendo el

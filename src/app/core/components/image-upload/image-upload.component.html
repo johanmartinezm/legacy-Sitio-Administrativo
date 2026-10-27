@@ -41,5 +41,10 @@
         <img [src]="valor" [alt]="label">
     </div>
 
+    <p class="recomendacion" *ngIf="recomendacion">
+        <mat-icon>aspect_ratio</mat-icon>
+        <span>{{ recomendacion }}</span>
+    </p>
+
     <p class="nota">Se admiten imágenes de hasta 10 MB. Se reducen a 600 px de ancho.</p>
 </div>

@@ -42,7 +42,8 @@
             <mat-error *ngIf="contentForm.get('excerpt')?.hasError('required')">El extracto es requerido</mat-error>
         </mat-form-field>
 
-        <app-image-upload formControlName="thumbnail_url" label="Imagen de portada"></app-image-upload>
+        <app-image-upload formControlName="thumbnail_url" label="Imagen de portada"
+            recomendacion="Horizontal, 600 × 340 px (16:9). Se usa en miniatura en los listados y como cabecera del artículo, y en favoritos se recorta a un cuadrado: deja lo importante en el centro."></app-image-upload>
 
         <!-- Contextual fields: Text -->
         <div *ngIf="contentForm.get('type')?.value === 'text'" class="dynamic-field-section">

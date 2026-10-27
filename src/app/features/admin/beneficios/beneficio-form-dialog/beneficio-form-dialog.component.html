@@ -14,7 +14,8 @@
         <mat-hint align="end">{{ form.value.descripcion?.length || 0 }}/{{ maxDescripcion }}</mat-hint>
     </mat-form-field>
 
-    <app-image-upload formControlName="imagen_url" label="Imagen o logo"></app-image-upload>
+    <app-image-upload formControlName="imagen_url" label="Imagen o logo"
+        recomendacion="Horizontal, 600 × 280 px (2,15:1). Llena la cabecera de la tarjeta y se recorta: un logo cuadrado pierde los bordes, así que ponlo centrado sobre un fondo apaisado con margen."></app-image-upload>
 
     <mat-form-field appearance="outline" class="campo enlace">
         <mat-label>Enlace (opcional)</mat-label>

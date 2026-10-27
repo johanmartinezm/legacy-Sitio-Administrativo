@@ -17,6 +17,11 @@ import {
 import { SeccionInicioAdminService } from '../../../../core/services/seccion_inicio_admin.service';
 import { ImageUploadComponent } from '../../../../core/components/image-upload/image-upload.component';
 
+/** Tarjetas del Inicio que la app pinta en la cuadrícula de dos columnas. */
+const TARJETAS_EN_CUADRICULA = new Set([
+    'legacy-knowledge', 'eventos', 'lso-escuela', 'asesorias', 'diagnosticos', 'contactenos'
+]);
+
 @Component({
     selector: 'app-seccion-inicio-dialog',
     standalone: true,
@@ -64,6 +69,17 @@ export class SeccionInicioDialogComponent {
     /** Qué campos lleva la fila según su pantalla (CAMPOS_POR_PANTALLA). */
     get conImagen(): boolean {
         return camposDe(this.data).imagen;
+    }
+
+    /**
+     * La imagen es fondo oscurecido bajo el texto. Las tarjetas de la cuadrícula
+     * son casi cuadradas; el resto son filas de ancho completo y poca altura
+     * (home_content_screen.dart).
+     */
+    get recomendacionImagen(): string {
+        return TARJETAS_EN_CUADRICULA.has(this.data.slug)
+            ? 'Cuadrada, 600 × 600 px. Va de fondo, oscurecida, con el título y el texto encima en la parte de abajo: sin texto en la imagen.'
+            : 'Horizontal, 600 × 200 px (3:1). Va de fondo en una fila de poca altura, oscurecida y con el texto encima: deja el motivo en el centro y sin texto.';
     }
 
     get conTitulo(): boolean {
