@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, of, switchMap } from 'rxjs';
-import { Event, Category } from '../models/event.model';
+import { Event, Category, Workshop } from '../models/event.model';
 import { WorkshopRating } from '../models/rating.model';
 import { EventSurveySummary } from '../models/survey.model';
 import { EventRegistrant } from '../models/registrant.model';
@@ -19,6 +19,10 @@ export class EventService {
 
     private get apiUrl(): string {
         return `${this.config.apiUrl}/api/events`;
+    }
+
+    private get workshopsUrl(): string {
+        return `${this.config.apiUrl}/api/workshops`;
     }
 
     private get categoriesUrl(): string {
@@ -70,6 +74,27 @@ export class EventService {
 
     deleteEvent(id: string): Observable<any> {
         return this.http.delete(`${this.apiUrl}/${id}`);
+    }
+
+    /**
+     * Talleres, uno por uno, desde su propia pantalla. Editar conserva el id
+     * del taller, y con él la agenda de los usuarios, las inscripciones a ese
+     * taller y sus calificaciones. Borrar se las lleva en cascada.
+     */
+    createWorkshop(eventId: string, workshop: Workshop): Observable<Workshop> {
+        return this.http.post<any>(`${this.apiUrl}/${eventId}/workshops`, this.mapWorkshopToDto(workshop)).pipe(
+            map(w => this.mapDtoToWorkshop(w))
+        );
+    }
+
+    updateWorkshop(workshop: Workshop): Observable<Workshop> {
+        return this.http.put<any>(`${this.workshopsUrl}/${workshop.id}`, this.mapWorkshopToDto(workshop)).pipe(
+            map(w => this.mapDtoToWorkshop(w))
+        );
+    }
+
+    deleteWorkshop(id: string): Observable<any> {
+        return this.http.delete(`${this.workshopsUrl}/${id}`);
     }
 
     getEventFeedback(eventId: string): Observable<WorkshopRating[]> {
@@ -218,16 +243,7 @@ export class EventService {
             includes: dto.includes || '',
             model: dto.model || '',
             status: dto.status || 'active',
-            workshops: dto.workshops ? dto.workshops.map((w: any) => ({
-                id: w.id,
-                name: w.name,
-                description: w.description,
-                room: w.room,
-                speaker: w.speaker,
-                imageUrl: w.imageUrl,
-                startDateTime: new Date(w.startDateTime),
-                endDateTime: new Date(w.endDateTime)
-            })) : []
+            workshops: dto.workshops ? dto.workshops.map((w: any) => this.mapDtoToWorkshop(w)) : []
         };
     }
 
@@ -261,15 +277,36 @@ export class EventService {
             // modelo» y la app no pinta una fila en blanco. El PUT escribe la
             // columna siempre, así que omitirlo la borraría en cada guardado.
             model: event.model?.trim() || null,
-            workshops: event.workshops.map(w => ({
-                name: w.name,
-                description: w.description,
-                room: w.room,
-                speaker: w.speaker,
-                imageUrl: w.imageUrl,
-                startDateTime: w.startDateTime.toISOString(),
-                endDateTime: w.endDateTime.toISOString()
-            }))
+            // Sin `workshops`: los talleres van por createWorkshop,
+            // updateWorkshop y deleteWorkshop. Hasta el 2026-10-28 viajaban
+            // aquí sin id y el backend los recreaba en cada guardado, con lo
+            // que se perdían la agenda, las inscripciones a cada taller y las
+            // calificaciones.
+        };
+    }
+
+    private mapWorkshopToDto(w: Workshop): any {
+        return {
+            name: w.name,
+            description: w.description || '',
+            room: w.room,
+            speaker: w.speaker,
+            imageUrl: w.imageUrl || '',
+            startDateTime: w.startDateTime.toISOString(),
+            endDateTime: w.endDateTime.toISOString()
+        };
+    }
+
+    private mapDtoToWorkshop(w: any): Workshop {
+        return {
+            id: w.id,
+            name: w.name,
+            description: w.description,
+            room: w.room,
+            speaker: w.speaker,
+            imageUrl: w.imageUrl,
+            startDateTime: new Date(w.startDateTime),
+            endDateTime: new Date(w.endDateTime)
         };
     }
 }

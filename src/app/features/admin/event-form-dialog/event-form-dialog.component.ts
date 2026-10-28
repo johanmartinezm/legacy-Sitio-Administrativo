@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { Event, Workshop, Category } from '../../../core/models/event.model';
+import { Event, Category } from '../../../core/models/event.model';
 import { EventService } from '../../../core/services/event.service';
 import { ImageUploadComponent } from '../../../core/components/image-upload/image-upload.component';
 
@@ -70,8 +70,7 @@ export class EventFormDialogComponent implements OnInit {
       actionStatus: ['register'],
       buttonText: ['Registrarme Agora'],
       includes: [''],
-      model: [''],
-      workshops: this.fb.array([])
+      model: ['']
     });
   }
 
@@ -81,9 +80,6 @@ export class EventFormDialogComponent implements OnInit {
     if (this.data && this.data.event) {
       this.isEditMode = true;
       this.patchForm(this.data.event);
-    } else {
-      // Add one empty workshop by default for convenience
-      this.addWorkshop();
     }
   }
 
@@ -116,33 +112,6 @@ export class EventFormDialogComponent implements OnInit {
     });
   }
 
-  get workshops(): FormArray {
-    return this.eventForm.get('workshops') as FormArray;
-  }
-
-  newWorkshop(): FormGroup {
-    return this.fb.group({
-      id: [Math.random().toString(36).substring(7)], // Temp ID
-      name: ['', Validators.required],
-      description: [''], // Added description
-      room: ['', Validators.required],
-      speaker: ['', Validators.required],
-      imageUrl: [''], // Added Image URL
-      startDateTime: [new Date(), Validators.required], // Simplified for demo
-      startTime: ['09:00', Validators.required], // Helper control for time
-      endDateTime: [new Date(), Validators.required],
-      endTime: ['10:00', Validators.required]
-    });
-  }
-
-  addWorkshop() {
-    this.workshops.push(this.newWorkshop());
-  }
-
-  removeWorkshop(index: number) {
-    this.workshops.removeAt(index);
-  }
-
   patchForm(event: Event) {
     this.eventForm.patchValue({
       id: event.id,
@@ -165,38 +134,6 @@ export class EventFormDialogComponent implements OnInit {
       includes: event.includes || '',
       model: event.model || ''
     });
-
-    // Clear existing workshops first
-    while (this.workshops.length !== 0) {
-      this.workshops.removeAt(0);
-    }
-
-    if (event.workshops && Array.isArray(event.workshops)) {
-      event.workshops.forEach(workshop => {
-        const workshopGroup = this.newWorkshop();
-
-        // Extract time string from Date for the helper control
-        const start = workshop.startDateTime ? new Date(workshop.startDateTime) : new Date();
-        const end = workshop.endDateTime ? new Date(workshop.endDateTime) : new Date();
-
-        const startTimeStr = !isNaN(start.getTime()) ? start.toTimeString().substring(0, 5) : '09:00';
-        const endTimeStr = !isNaN(end.getTime()) ? end.toTimeString().substring(0, 5) : '10:00';
-
-        workshopGroup.patchValue({
-          id: workshop.id,
-          name: workshop.name,
-          description: workshop.description,
-          room: workshop.room,
-          speaker: workshop.speaker,
-          imageUrl: workshop.imageUrl,
-          startDateTime: !isNaN(start.getTime()) ? start : new Date(),
-          startTime: startTimeStr,
-          endDateTime: !isNaN(end.getTime()) ? end : new Date(),
-          endTime: endTimeStr
-        });
-        this.workshops.push(workshopGroup);
-      });
-    }
   }
 
   onCategoryChange(categoryId: string) {
@@ -206,29 +143,9 @@ export class EventFormDialogComponent implements OnInit {
     }
   }
 
-  combineDateAndTime(date: Date, time: string): Date {
-    const d = new Date(date);
-    const [hours, minutes] = time.split(':').map(Number);
-    d.setHours(hours);
-    d.setMinutes(minutes);
-    return d;
-  }
-
   save() {
     if (this.eventForm.valid) {
       const formValue = this.eventForm.value;
-
-      // Process workshops content to merge date + time
-      const processedWorkshops: Workshop[] = formValue.workshops.map((w: any) => ({
-        id: w.id,
-        name: w.name,
-        description: w.description || '',
-        room: w.room,
-        speaker: w.speaker,
-        imageUrl: w.imageUrl,
-        startDateTime: this.combineDateAndTime(w.startDateTime, w.startTime),
-        endDateTime: this.combineDateAndTime(w.endDateTime, w.endTime)
-      }));
 
       const eventData: Event = {
         id: formValue.id,
@@ -252,7 +169,10 @@ export class EventFormDialogComponent implements OnInit {
         buttonText: formValue.buttonText || (formValue.isFree ? 'Registrarme Gratis' : 'Comprar Ticket'),
         includes: formValue.includes || '',
         model: formValue.model || '',
-        workshops: processedWorkshops
+        // Los talleres no se editan aquí sino en su propia pantalla, y el PUT
+        // del evento ya no los toca. Se conservan solo para que el modelo
+        // siga completo.
+        workshops: this.data?.event?.workshops ?? []
       };
 
       this.dialogRef.close(eventData);

@@ -127,6 +127,16 @@ export class ManageEventsComponent implements OnInit {
   }
 
   /**
+   * Los talleres, igual que los inscritos, van a pantalla propia: un evento
+   * como el Summit tiene muchos y en el formulario del evento quedaban
+   * apretados. Al crear un evento se vuelve aquí, al listado, y se entra a sus
+   * talleres por este icono.
+   */
+  viewWorkshops(event: Event) {
+    this.router.navigate(['/admin/events', event.id, 'workshops']);
+  }
+
+  /**
    * Oculta un evento de la app o lo vuelve a mostrar.
    *
    * Hasta el 2026-08-26 esto no se podia hacer desde ninguna pantalla: la

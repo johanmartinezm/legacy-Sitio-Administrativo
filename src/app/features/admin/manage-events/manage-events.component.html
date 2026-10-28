@@ -77,6 +77,12 @@
                                         matTooltip="Ver Inscritos">
                                         <mat-icon style="color: #1e88e5;">group</mat-icon>
                                     </button>
+                                    <!-- Los talleres se gestionan en su propia pantalla desde
+                                         el 2026-10-28; el formulario del evento ya no los lleva. -->
+                                    <button mat-icon-button (click)="viewWorkshops(element)"
+                                        matTooltip="Talleres">
+                                        <mat-icon style="color: #8e24aa;">view_agenda</mat-icon>
+                                    </button>
                                     <button mat-icon-button color="primary" (click)="editEvent(element)"
                                         matTooltip="Editar">
                                         <mat-icon>edit</mat-icon>

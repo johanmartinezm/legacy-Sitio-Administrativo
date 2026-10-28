@@ -1,0 +1,84 @@
+<div class="workshops-container">
+    <div class="header">
+        <div class="title-block">
+            <button mat-icon-button routerLink="/admin/events" matTooltip="Volver a eventos">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div>
+                <h1>Talleres</h1>
+                <p class="event-title" *ngIf="evento() as e">
+                    {{ e.title }}
+                    <span *ngIf="e.startDate"> · {{ e.startDate | date:'d MMM y' }}</span>
+                    <span *ngIf="e.endDate"> – {{ e.endDate | date:'d MMM y' }}</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="acciones" *ngIf="!isLoading() && !errorMessage()">
+            <button mat-flat-button color="primary" (click)="agregar()">
+                <mat-icon>add</mat-icon> Agregar taller
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="isLoading()" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando talleres...</p>
+    </div>
+
+    <div *ngIf="!isLoading() && errorMessage()" class="state-message error">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ errorMessage() }}</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading() && !errorMessage()">
+        <div *ngIf="workshops().length === 0" class="state-message">
+            <mat-icon>view_agenda</mat-icon>
+            <p>Este evento todavía no tiene talleres.</p>
+        </div>
+
+        <div class="table-container mat-elevation-z2" *ngIf="workshops().length > 0">
+            <table mat-table [dataSource]="workshops()">
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef> Taller </th>
+                    <td mat-cell *matCellDef="let w">
+                        <div class="nombre">{{ w.name }}</div>
+                        <div class="descripcion" *ngIf="w.description">{{ w.description }}</div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="speaker">
+                    <th mat-header-cell *matHeaderCellDef> Expositor </th>
+                    <td mat-cell *matCellDef="let w"> {{ w.speaker }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="room">
+                    <th mat-header-cell *matHeaderCellDef> Sala </th>
+                    <td mat-cell *matCellDef="let w"> {{ w.room }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="schedule">
+                    <th mat-header-cell *matHeaderCellDef> Horario </th>
+                    <td mat-cell *matCellDef="let w">
+                        {{ w.startDateTime | date:'d MMM y, HH:mm' }} – {{ w.endDateTime | date:'HH:mm' }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Acciones </th>
+                    <td mat-cell *matCellDef="let w">
+                        <button mat-icon-button color="primary" (click)="editar(w)" matTooltip="Editar taller">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" (click)="eliminar(w)" matTooltip="Eliminar taller">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+    </ng-container>
+</div>

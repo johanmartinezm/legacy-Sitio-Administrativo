@@ -1,0 +1,51 @@
+.form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    @media (max-width: 600px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.time-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 1fr; // Fecha Hora Fecha Hora
+    gap: 1rem;
+    background-color: #f9fbfd;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px dashed #e0e0e0;
+
+    @media (max-width: 800px) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.error-horario {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: #c62828;
+    font-size: 0.9rem;
+}
+
+mat-dialog-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
