@@ -2,6 +2,25 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-28]: Talleres en su propia pantalla, fuera del formulario del evento
+- **Alcance:** `event-form-dialog/` (sin la sección de talleres), `event.service.ts` (el evento ya no
+  manda `workshops`; nuevos `createWorkshop`, `updateWorkshop`, `deleteWorkshop`), `manage-events/`
+  (icono «Talleres» en Acciones), nueva pantalla `event-workshops/` en `/admin/events/:id/workshops` y
+  nuevo diálogo `workshop-form-dialog/`. Al crear un evento se vuelve al listado. Borrar un taller solo
+  advierte, no lo impide (decisión del 2026-10-28). Requiere el backend de la misma rama desplegado
+  antes. Rama `feature/talleres-aparte`, sin desplegar.
+- **Criterios de QA:**
+  1. «Crear Evento» y «Editar» muestran solo los datos del evento, sin sección de talleres.
+  2. Crear un evento: al guardar se vuelve al listado y la columna Talleres marca 0.
+  3. En Acciones, el icono morado «Talleres» abre la pantalla del evento con su título y fechas.
+  4. «Agregar taller» abre el diálogo; guardar lo añade a la tabla y el listado suma uno.
+  5. Con el fin antes del inicio, el diálogo avisa en rojo y no deja guardar.
+  6. Editar un taller cambia sus datos en la tabla. Editar después el evento no hace desaparecer
+     ningún taller.
+  7. Eliminar un taller pide confirmación avisando que se pierden agenda, inscripciones a ese taller
+     y calificaciones; al aceptar desaparece.
+  8. La flecha de volver lleva al listado de eventos.
+
 ### [2026-10-27]: Recomendación de tamaño en cada campo de imagen
 - **Alcance:** `core/components/image-upload/` (nueva entrada `recomendacion`, se pinta sobre la
   nota de 10 MB / 600 px) y los nueve formularios que lo usan: banners, foto de perfil, unidades de
