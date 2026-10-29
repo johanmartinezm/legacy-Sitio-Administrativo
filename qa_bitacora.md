@@ -2,6 +2,16 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-10-28]: Promedio por taller en el feedback del evento
+- **Alcance:** `feedback-dialog/` (tabla «Por taller» bajo el promedio del evento: nombre, estrellas,
+  promedio y cantidad, de mejor a peor; agrupa por id de taller) y «1 valoración» en singular.
+  Prueba en `resumir-por-taller.spec.ts`. Solo panel. Rama `feature/talleres-aparte`, sin desplegar.
+- **Criterios de QA:**
+  1. Eventos → estrella amarilla de un evento con calificaciones: bajo el promedio aparece «Por
+     taller» con una fila por taller calificado.
+  2. Con dos talleres de promedios distintos, el mejor calificado va primero.
+  3. Con una sola calificación dice «Basado en 1 valoración».
+
 ### [2026-10-28]: Talleres en su propia pantalla, fuera del formulario del evento
 - **Alcance:** `event-form-dialog/` (sin la sección de talleres), `event.service.ts` (el evento ya no
   manda `workshops`; nuevos `createWorkshop`, `updateWorkshop`, `deleteWorkshop`), `manage-events/`

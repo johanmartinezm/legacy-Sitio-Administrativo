@@ -18,7 +18,24 @@
                 <mat-icon *ngFor="let s of getStars(averageRating)">star</mat-icon>
                 <mat-icon *ngFor="let s of getEmptyStars(averageRating)">star_border</mat-icon>
             </div>
-            <div class="rating-count">Basado en {{ ratings.length }} valoraciones</div>
+            <div class="rating-count">
+                Basado en {{ ratings.length }} {{ ratings.length === 1 ? 'valoración' : 'valoraciones' }}
+            </div>
+        </div>
+
+        <!-- Promedio de cada taller: con varios talleres, el del evento solo no
+             dice cuál gustó y cuál no. -->
+        <div class="por-taller">
+            <div class="por-taller-titulo">Por taller</div>
+            <div class="por-taller-fila" *ngFor="let t of porTaller">
+                <span class="por-taller-nombre">{{ t.nombre }}</span>
+                <span class="por-taller-estrellas">
+                    <mat-icon *ngFor="let s of getStars(t.promedio)" class="star-small">star</mat-icon>
+                    <mat-icon *ngFor="let s of getEmptyStars(t.promedio)" class="star-small vacia">star_border</mat-icon>
+                </span>
+                <span class="por-taller-promedio">{{ t.promedio | number:'1.1-1' }}</span>
+                <span class="por-taller-cantidad">({{ t.cantidad }})</span>
+            </div>
         </div>
 
         <mat-divider></mat-divider>

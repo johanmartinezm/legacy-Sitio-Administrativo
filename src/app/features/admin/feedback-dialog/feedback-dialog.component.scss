@@ -108,3 +108,50 @@
         margin: 0;
     }
 }
+.por-taller {
+    margin-bottom: 1rem;
+
+    .por-taller-titulo {
+        font-weight: 600;
+        color: var(--color-blue-1);
+        margin-bottom: 0.5rem;
+    }
+
+    .por-taller-fila {
+        display: grid;
+        grid-template-columns: 1fr auto 2.5rem 2.5rem;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .por-taller-nombre {
+        font-size: 0.9rem;
+    }
+
+    .por-taller-estrellas {
+        display: flex;
+        color: #ffb300;
+
+        mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+        }
+
+        .vacia {
+            color: #ccc;
+        }
+    }
+
+    .por-taller-promedio {
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .por-taller-cantidad {
+        color: #888;
+        font-size: 0.85rem;
+    }
+}
