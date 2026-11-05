@@ -2,6 +2,24 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-05]: Elegidos por workshop, workshops de cada inscrito y «workshop» en todo el panel
+- **Alcance:** `event-workshops/` (columna «Elegido por» con `GET …/workshops/resumen`, y aviso con
+  `confirm()` al agregar un workshop o cambiarle el horario si el evento ya tiene inscritos; no
+  impide guardar), `event-registrants/` (columna «Workshops elegidos»), `event.service.ts`
+  (`getResumenWorkshops`), `registrant.model.ts` (`workshops`). «Taller(es)» pasa a «workshop(s)» en
+  todos los textos visibles del panel (31 líneas en 11 archivos; clases CSS, variables y comentarios
+  sin tocar). Spec en `event-workshops.component.spec.ts`. Exige el backend de la misma rama. Rama
+  `feature/talleres-aparte`, **solo en local**.
+- **Criterios de QA** (comprobados en local con `qa-admin` y «[PRUEBA] Workshops por franja»):
+  1. Con `qa-app` inscrito, la pantalla de workshops se titula «Workshops» y la columna «Elegido por»
+     marca 1 en los tres que eligió y 0 en el resto.
+  2. «Inscritos» muestra la columna «Workshops elegidos» con los tres nombres, uno por línea; quien no
+     eligió ninguno, «—».
+  3. Con inscritos, «Agregar workshop» y guardar → pregunta «Este evento ya tiene 1 inscrito…»;
+     cancelar no guarda. Editar solo el nombre no pregunta; cambiar el horario, sí.
+  4. Sin inscritos, agregar un workshop no pregunta.
+  5. Ningún texto visible del panel dice «taller».
+
 ### [2026-10-28]: Promedio por taller en el feedback del evento
 - **Alcance:** `feedback-dialog/` (tabla «Por taller» bajo el promedio del evento: nombre, estrellas,
   promedio y cantidad, de mejor a peor; agrupa por id de taller) y «1 valoración» en singular.

@@ -28,4 +28,10 @@ export interface EventRegistrant {
      * en la tabla el que se entera es quien está en la puerta el día del evento.
      */
     tieneCredencial: boolean;
+    /**
+     * Nombres de los talleres que eligió al inscribirse desde la app, por hora
+     * de inicio (§10 del plan de workshops). Vacío si no eligió ninguno: las
+     * inscripciones de antes del 2026-11-05, las manuales y las de carga masiva.
+     */
+    workshops?: string[];
 }

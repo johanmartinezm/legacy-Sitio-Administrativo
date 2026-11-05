@@ -10,9 +10,9 @@ import { Workshop } from '../../../../../core/models/event.model';
     imports: [CommonModule, MatCheckboxModule, FormsModule],
     template: `
     <div class="workshop-list">
-      <h3>Talleres Disponibles</h3>
+      <h3>Workshops disponibles</h3>
       <div *ngIf="workshops.length === 0" class="no-workshops">
-        No hay talleres disponibles para este evento.
+        No hay workshops disponibles para este evento.
       </div>
       <div *ngFor="let shop of workshops" class="workshop-item">
         <mat-checkbox 

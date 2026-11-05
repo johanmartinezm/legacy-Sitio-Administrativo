@@ -70,6 +70,6 @@ export class CalendarViewComponent implements OnChanges {
 
   handleEventClick(arg: any) {
     const props = arg.event.extendedProps;
-    alert(`Taller: ${arg.event.title}\nEvento: ${props.eventTitle}\nExpositor: ${props.speaker}`);
+    alert(`Workshop: ${arg.event.title}\nEvento: ${props.eventTitle}\nExpositor: ${props.speaker}`);
   }
 }

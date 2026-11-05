@@ -17,7 +17,7 @@
     </mat-step>
 
     <!-- Step 2: Select Event & Workshops -->
-    <mat-step [completed]="!!selectedEvent" label="Evento y Talleres">
+    <mat-step [completed]="!!selectedEvent" label="Evento y Workshops">
         <div class="step-content">
             <h2>Selecciona el Evento</h2>
             <app-event-selector (eventSelected)="onEventSelected($event)"></app-event-selector>
@@ -51,7 +51,7 @@
                         <span>{{selectedEvent.price | currency}}</span>
                     </div>
                     <div class="line-item" *ngFor="let shop of selectedWorkshops">
-                        <span>Taller: {{shop.name}}</span>
+                        <span>Workshop: {{shop.name}}</span>
                         <span>Inluido</span>
                     </div>
                     <div class="total-row">

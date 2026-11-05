@@ -8,6 +8,12 @@ import { EventRegistrant } from '../models/registrant.model';
 import { ConfigService } from './config.service';
 import { Pagina, LIMITE_MAXIMO_DE_PAGINA } from '../models/pagina';
 
+/** Inscritos del evento y, por id de taller, cuántos lo eligieron. */
+export interface ResumenWorkshops {
+    inscritos: number;
+    elegidos: Record<string, number>;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -95,6 +101,15 @@ export class EventService {
 
     deleteWorkshop(id: string): Observable<any> {
         return this.http.delete(`${this.workshopsUrl}/${id}`);
+    }
+
+    /**
+     * Cuántos inscritos tiene el evento y cuántos eligieron cada taller (§10 del
+     * plan de workshops). Ruta AdminOnly: el evento se lee por la pública, y
+     * estos números no son para cualquiera.
+     */
+    getResumenWorkshops(eventId: string): Observable<ResumenWorkshops> {
+        return this.http.get<ResumenWorkshops>(`${this.apiUrl}/${eventId}/workshops/resumen`);
     }
 
     getEventFeedback(eventId: string): Observable<WorkshopRating[]> {

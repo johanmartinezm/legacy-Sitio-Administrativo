@@ -5,7 +5,7 @@
                 <mat-icon>arrow_back</mat-icon>
             </button>
             <div>
-                <h1>Talleres</h1>
+                <h1>Workshops</h1>
                 <p class="event-title" *ngIf="evento() as e">
                     {{ e.title }}
                     <span *ngIf="e.startDate"> · {{ e.startDate | date:'d MMM y' }}</span>
@@ -16,14 +16,14 @@
 
         <div class="acciones" *ngIf="!isLoading() && !errorMessage()">
             <button mat-flat-button color="primary" (click)="agregar()">
-                <mat-icon>add</mat-icon> Agregar taller
+                <mat-icon>add</mat-icon> Agregar workshop
             </button>
         </div>
     </div>
 
     <div *ngIf="isLoading()" class="loading-container">
         <mat-spinner diameter="40"></mat-spinner>
-        <p>Cargando talleres...</p>
+        <p>Cargando workshops...</p>
     </div>
 
     <div *ngIf="!isLoading() && errorMessage()" class="state-message error">
@@ -34,13 +34,13 @@
     <ng-container *ngIf="!isLoading() && !errorMessage()">
         <div *ngIf="workshops().length === 0" class="state-message">
             <mat-icon>view_agenda</mat-icon>
-            <p>Este evento todavía no tiene talleres.</p>
+            <p>Este evento todavía no tiene workshops.</p>
         </div>
 
         <div class="table-container mat-elevation-z2" *ngIf="workshops().length > 0">
             <table mat-table [dataSource]="workshops()">
                 <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef> Taller </th>
+                    <th mat-header-cell *matHeaderCellDef> Workshop </th>
                     <td mat-cell *matCellDef="let w">
                         <div class="nombre">{{ w.name }}</div>
                         <div class="descripcion" *ngIf="w.description">{{ w.description }}</div>
@@ -64,13 +64,24 @@
                     </td>
                 </ng-container>
 
+                <ng-container matColumnDef="elegidos">
+                    <th mat-header-cell *matHeaderCellDef> Elegido por </th>
+                    <td mat-cell *matCellDef="let w">
+                        <span *ngIf="resumen() as r"
+                            matTooltip="Inscritos que eligieron este workshop en la app, de {{ r.inscritos }} en el evento">
+                            {{ elegidosDe(w) }}
+                        </span>
+                        <span *ngIf="!resumen()">—</span>
+                    </td>
+                </ng-container>
+
                 <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef> Acciones </th>
                     <td mat-cell *matCellDef="let w">
-                        <button mat-icon-button color="primary" (click)="editar(w)" matTooltip="Editar taller">
+                        <button mat-icon-button color="primary" (click)="editar(w)" matTooltip="Editar workshop">
                             <mat-icon>edit</mat-icon>
                         </button>
-                        <button mat-icon-button color="warn" (click)="eliminar(w)" matTooltip="Eliminar taller">
+                        <button mat-icon-button color="warn" (click)="eliminar(w)" matTooltip="Eliminar workshop">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </td>

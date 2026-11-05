@@ -1,15 +1,15 @@
-<h2 mat-dialog-title>{{ isEditMode ? 'Editar taller' : 'Agregar taller' }}</h2>
+<h2 mat-dialog-title>{{ isEditMode ? 'Editar workshop' : 'Agregar workshop' }}</h2>
 
 <mat-dialog-content class="form-content">
     <form [formGroup]="form">
         <div class="field-grid">
             <mat-form-field appearance="outline">
-                <mat-label>Nombre del taller</mat-label>
+                <mat-label>Nombre del workshop</mat-label>
                 <input matInput formControlName="name">
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-                <mat-label>Descripción del taller</mat-label>
+                <mat-label>Descripción del workshop</mat-label>
                 <textarea matInput formControlName="description" rows="1"></textarea>
             </mat-form-field>
         </div>
@@ -28,8 +28,8 @@
             </mat-form-field>
         </div>
 
-        <app-image-upload formControlName="imageUrl" label="Imagen del taller"
-            recomendacion="Horizontal, 600 × 350 px (12:7), igual que la del evento. La app la muestra arriba de la tarjeta del taller, en el cronograma."></app-image-upload>
+        <app-image-upload formControlName="imageUrl" label="Imagen del workshop"
+            recomendacion="Horizontal, 600 × 350 px (12:7), igual que la del evento. La app la muestra arriba de la tarjeta del workshop, en el cronograma."></app-image-upload>
 
         <div class="time-grid">
             <mat-form-field appearance="outline">
@@ -58,7 +58,7 @@
         </div>
 
         <p class="error-horario" *ngIf="form.hasError('finAntesDelInicio')">
-            <mat-icon>error_outline</mat-icon> El fin del taller no puede ser anterior a su inicio.
+            <mat-icon>error_outline</mat-icon> El fin del workshop no puede ser anterior a su inicio.
         </p>
     </form>
 </mat-dialog-content>
@@ -66,6 +66,6 @@
 <mat-dialog-actions align="end">
     <button mat-button (click)="close()">Cancelar</button>
     <button mat-flat-button color="primary" (click)="save()" [disabled]="form.invalid">
-        <mat-icon>save</mat-icon> Guardar taller
+        <mat-icon>save</mat-icon> Guardar workshop
     </button>
 </mat-dialog-actions>

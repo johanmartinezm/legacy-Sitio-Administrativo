@@ -49,7 +49,7 @@ import {
     styleUrls: ['./event-registrants.component.scss']
 })
 export class EventRegistrantsComponent implements OnInit {
-    displayedColumns = ['name', 'contact', 'payment', 'status', 'credencial', 'attendance', 'date'];
+    displayedColumns = ['name', 'contact', 'payment', 'status', 'credencial', 'workshops', 'attendance', 'date'];
 
     eventId = '';
     eventTitle = signal('');

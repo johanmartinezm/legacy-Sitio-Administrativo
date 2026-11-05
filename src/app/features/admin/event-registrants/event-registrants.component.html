@@ -164,6 +164,15 @@
                     </td>
                 </ng-container>
 
+                <ng-container matColumnDef="workshops">
+                    <th mat-header-cell *matHeaderCellDef> Workshops elegidos </th>
+                    <td mat-cell *matCellDef="let r">
+                        <div class="taller-elegido" *ngFor="let t of r.workshops">{{ t }}</div>
+                        <span class="not-attended" *ngIf="!r.workshops?.length"
+                            matTooltip="Se inscribió sin elegir: antes de esta función, desde el panel o por carga masiva">—</span>
+                    </td>
+                </ng-container>
+
                 <ng-container matColumnDef="attendance">
                     <th mat-header-cell *matHeaderCellDef> Asistencia </th>
                     <td mat-cell *matCellDef="let r">

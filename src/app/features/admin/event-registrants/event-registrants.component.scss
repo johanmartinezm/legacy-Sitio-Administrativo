@@ -201,3 +201,11 @@ button.generar-una {
         margin-right: 2px;
     }
 }
+
+// Uno por línea: con tres o cuatro talleres, separados por comas no se leía qué
+// eligió cada quien.
+.taller-elegido {
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: nowrap;
+}

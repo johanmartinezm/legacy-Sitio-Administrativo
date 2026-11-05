@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EventService } from '../../../core/services/event.service';
+import { EventService, ResumenWorkshops } from '../../../core/services/event.service';
 import { Event, Workshop } from '../../../core/models/event.model';
 import {
     DatosDelTaller,
@@ -40,13 +40,18 @@ import {
     styleUrls: ['./event-workshops.component.scss']
 })
 export class EventWorkshopsComponent implements OnInit {
-    displayedColumns = ['name', 'speaker', 'room', 'schedule', 'actions'];
+    displayedColumns = ['name', 'speaker', 'room', 'schedule', 'elegidos', 'actions'];
 
     eventId = '';
     evento = signal<Event | null>(null);
     workshops = signal<Workshop[]>([]);
     isLoading = signal(true);
     errorMessage = signal<string | null>(null);
+    /**
+     * Inscritos y elegidos por taller. Si no llega, la tabla sale igual, sin la
+     * columna de elegidos y sin el aviso al guardar.
+     */
+    resumen = signal<ResumenWorkshops | null>(null);
 
     constructor(
         private route: ActivatedRoute,
@@ -74,6 +79,42 @@ export class EventWorkshopsComponent implements OnInit {
                 this.isLoading.set(false);
             }
         });
+        this.eventService.getResumenWorkshops(this.eventId).subscribe({
+            next: resumen => this.resumen.set(resumen),
+            error: () => this.resumen.set(null)
+        });
+    }
+
+    elegidosDe(workshop: Workshop): number {
+        return this.resumen()?.elegidos?.[workshop.id] ?? 0;
+    }
+
+    /**
+     * Agregar un taller o cambiarle el horario puede formar un horario nuevo en
+     * la app (§10.6, punto 5 del plan de workshops). Quien ya se inscribió solo
+     * puede ajustar su elección hasta el día anterior al evento. Solo avisa, no
+     * impide.
+     */
+    private confirmaCambioDeHorario(nuevo: Workshop, anterior?: Workshop): boolean {
+        const inscritos = this.resumen()?.inscritos ?? 0;
+        if (inscritos === 0) return true;
+
+        const mismoHorario = (a: Date | string, b: Date | string) =>
+            new Date(a).getTime() === new Date(b).getTime();
+        if (anterior &&
+            mismoHorario(nuevo.startDateTime, anterior.startDateTime) &&
+            mismoHorario(nuevo.endDateTime, anterior.endDateTime)) {
+            return true;
+        }
+
+        const accion = anterior ? 'Cambiar el horario de este workshop' : 'Agregar este workshop';
+        const personas = inscritos === 1 ? '1 inscrito' : `${inscritos} inscritos`;
+        return confirm(
+            `Este evento ya tiene ${personas}.\n\n` +
+            `${accion} puede crear un horario nuevo en la app. Quienes ya se inscribieron pueden ` +
+            'ajustar su elección hasta el día anterior al evento; los que no lo hagan quedarán sin ' +
+            'workshop en ese horario.\n\n¿Guardar igual?'
+        );
     }
 
     agregar(): void {
@@ -95,20 +136,21 @@ export class EventWorkshopsComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((taller?: Workshop) => {
             if (!taller) return;
+            if (!this.confirmaCambioDeHorario(taller, data.workshop)) return;
             const guardar = data.workshop
                 ? this.eventService.updateWorkshop(taller)
                 : this.eventService.createWorkshop(this.eventId, taller);
 
             guardar.subscribe({
                 next: () => {
-                    this.snackBar.open(data.workshop ? 'Taller actualizado.' : 'Taller agregado.', 'Cerrar', { duration: 3000 });
+                    this.snackBar.open(data.workshop ? 'Workshop actualizado.' : 'Workshop agregado.', 'Cerrar', { duration: 3000 });
                     this.cargar();
                 },
                 error: err => {
                     // El backend explica en español por qué rechaza un taller
                     // (sin nombre, horario al revés); se muestra tal cual.
                     const motivo = typeof err?.error === 'string' && err.status === 400 ? err.error.trim() : null;
-                    this.snackBar.open(motivo ?? 'No se pudo guardar el taller. Inténtalo de nuevo.', 'Cerrar', { duration: 5000 });
+                    this.snackBar.open(motivo ?? 'No se pudo guardar el workshop. Inténtalo de nuevo.', 'Cerrar', { duration: 5000 });
                 }
             });
         });
@@ -120,18 +162,18 @@ export class EventWorkshopsComponent implements OnInit {
      * que saber qué se lleva por delante el ON DELETE CASCADE.
      */
     eliminar(workshop: Workshop): void {
-        const pregunta = `¿Eliminar el taller "${workshop.name}"?\n\n` +
+        const pregunta = `¿Eliminar el workshop "${workshop.name}"?\n\n` +
             'También se borrarán, sin posibilidad de recuperarlos: la agenda de quienes lo guardaron, ' +
-            'la elección de este taller en las inscripciones y sus calificaciones.';
+            'la elección de este workshop en las inscripciones y sus calificaciones.';
         if (!confirm(pregunta)) return;
 
         this.eventService.deleteWorkshop(workshop.id).subscribe({
             next: () => {
-                this.snackBar.open('Taller eliminado.', 'Cerrar', { duration: 3000 });
+                this.snackBar.open('Workshop eliminado.', 'Cerrar', { duration: 3000 });
                 this.cargar();
             },
             error: () => {
-                this.snackBar.open('No se pudo eliminar el taller. Inténtalo de nuevo.', 'Cerrar', { duration: 5000 });
+                this.snackBar.open('No se pudo eliminar el workshop. Inténtalo de nuevo.', 'Cerrar', { duration: 5000 });
             }
         });
     }

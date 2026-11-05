@@ -44,7 +44,7 @@
 
                             <!-- Workshops Count Column -->
                             <ng-container matColumnDef="workshops">
-                                <th mat-header-cell *matHeaderCellDef> Talleres </th>
+                                <th mat-header-cell *matHeaderCellDef> Workshops </th>
                                 <td mat-cell *matCellDef="let element"> {{element.workshops?.length || 0}} </td>
                             </ng-container>
 
@@ -80,7 +80,7 @@
                                     <!-- Los talleres se gestionan en su propia pantalla desde
                                          el 2026-10-28; el formulario del evento ya no los lleva. -->
                                     <button mat-icon-button (click)="viewWorkshops(element)"
-                                        matTooltip="Talleres">
+                                        matTooltip="Workshops">
                                         <mat-icon style="color: #8e24aa;">view_agenda</mat-icon>
                                     </button>
                                     <button mat-icon-button color="primary" (click)="editEvent(element)"
