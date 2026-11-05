@@ -2,6 +2,23 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-05]: Link de pago y aprobar o rechazar el pago (parte B)
+- **Alcance:** `event-form-dialog/` (campo «Link de pago», visible y obligatorio con `https://` solo
+  si el evento no es gratuito), `event-registrants/` (columna «Aprobar pago» con aprobar y rechazar
+  en las pendientes, con confirmación; estado y contador «Rechazadas»; una rechazada no cuenta como
+  inscrita ni recibe credencial, y en «Credencial» se dice «Sin pagar» o «Rechazada» en vez del
+  icono, porque el QR existe desde que se reservó), `event.service.ts` (`paymentUrl`,
+  `aprobarInscripcion`, `rechazarInscripcion`). Specs en `decision-de-pago.spec.ts` y en el del
+  formulario. Exige el backend de la misma rama. Rama `feature/talleres-aparte`, **solo en local**.
+- **Criterios de QA** (comprobados en local con «[PRUEBA] Masterclass de pago por link»):
+  1. En el formulario de un evento de pago aparece «Link de pago»; vacío o con `http://` no deja
+     guardar. Al marcar «gratuito» desaparece.
+  2. En «Inscritos», una pendiente muestra «Pendiente de pago», «Sin pagar» en credencial y los botones
+     de aprobar (verde) y rechazar (rojo).
+  3. Aprobar o rechazar pregunta antes; cancelar no cambia nada. Al aceptar, la lista se recarga.
+  4. Una rechazada sale en rojo, sin botones, y suma en «Rechazadas», no en «Inscritos». Aunque todas
+     las inscripciones estén rechazadas, la tabla sigue a la vista.
+
 ### [2026-11-05]: Material de cada workshop desde el panel (parte A)
 - **Alcance:** `material-workshop-dialog/` (nuevo: imagen con `app-image-upload`, archivo con subida a
   `/api/documents/upload` y enlace de YouTube o Vimeo validado igual que el servidor; recuerda subir

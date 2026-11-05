@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -49,7 +50,10 @@ import {
     styleUrls: ['./event-registrants.component.scss']
 })
 export class EventRegistrantsComponent implements OnInit {
-    displayedColumns = ['name', 'contact', 'payment', 'status', 'credencial', 'workshops', 'attendance', 'date'];
+    displayedColumns = ['name', 'contact', 'payment', 'status', 'decision', 'credencial', 'workshops', 'attendance', 'date'];
+
+    /** Inscripción sobre la que se está aprobando o rechazando, para no repetir el clic. */
+    decidiendo = signal<string | null>(null);
 
     eventId = '';
     eventTitle = signal('');
@@ -86,7 +90,9 @@ export class EventRegistrantsComponent implements OnInit {
         );
     });
 
-    total = computed(() => this.registrants().length);
+    // Una rechazada no está inscrita: no ocupa cupo ni cuenta en el total.
+    total = computed(() => this.registrants().filter(r => r.registrationStatus !== 'rejected').length);
+    rechazadas = computed(() => this.registrants().filter(r => r.registrationStatus === 'rejected').length);
     confirmados = computed(() => this.registrants().filter(r => r.registrationStatus === 'confirmed').length);
     pendientes = computed(() => this.registrants().filter(r => r.registrationStatus === 'pending_payment').length);
     asistieron = computed(() => this.registrants().filter(r => r.attendanceConfirmed).length);
@@ -104,7 +110,7 @@ export class EventRegistrantsComponent implements OnInit {
         this.eventIsVirtual()
             ? 0
             : this.registrants().filter(r =>
-                !r.tieneCredencial && r.registrationStatus !== 'pending_payment'
+                !r.tieneCredencial && !this.sinAcceso(r)
             ).length
     );
 
@@ -217,7 +223,52 @@ export class EventRegistrantsComponent implements OnInit {
 
     /** Etiqueta legible del estado de la inscripcion. */
     estadoTexto(r: EventRegistrant): string {
-        return r.registrationStatus === 'pending_payment' ? 'Pendiente de pago' : 'Confirmada';
+        switch (r.registrationStatus) {
+            case 'pending_payment': return 'Pendiente de pago';
+            case 'rejected': return 'Rechazada';
+            default: return 'Confirmada';
+        }
+    }
+
+    /** Pendiente o rechazada: no tiene acceso ni recibe credencial. */
+    sinAcceso(r: EventRegistrant): boolean {
+        return r.registrationStatus === 'pending_payment' || r.registrationStatus === 'rejected';
+    }
+
+    /**
+     * Aprobar el pago (parte B del plan de workshops): el cruce con el pago se
+     * hace por fuera del sistema (§7.5, decisión 5), así que se pregunta antes.
+     */
+    aprobar(r: EventRegistrant): void {
+        if (!confirm(`¿Confirmas el pago de ${r.fullName || 'esta persona'}?\n\n` +
+            'Su inscripción quedará confirmada, recibirá su credencial y un aviso en la app.')) return;
+        this.decidir(r, this.eventService.aprobarInscripcion(r.registrationId), 'Pago aprobado.');
+    }
+
+    rechazar(r: EventRegistrant): void {
+        if (!confirm(`¿Rechazar la inscripción de ${r.fullName || 'esta persona'}?\n\n` +
+            'Libera su cupo y recibe un aviso en la app. Podrá volver a reservar.')) return;
+        this.decidir(r, this.eventService.rechazarInscripcion(r.registrationId), 'Inscripción rechazada.');
+    }
+
+    private decidir(r: EventRegistrant, accion: Observable<unknown>, hecho: string): void {
+        this.decidiendo.set(r.registrationId);
+        accion.subscribe({
+            next: () => {
+                this.decidiendo.set(null);
+                this.snackBar.open(hecho, 'Cerrar', { duration: 3000 });
+                this.cargarInscritos();
+            },
+            error: err => {
+                this.decidiendo.set(null);
+                // 409: otro administrador ya la decidió. Se recarga para verla como quedó.
+                const motivo = typeof err?.error === 'string' && err.error.trim()
+                    ? err.error.trim().charAt(0).toUpperCase() + err.error.trim().slice(1)
+                    : 'No se pudo completar. Inténtalo de nuevo.';
+                this.snackBar.open(motivo, 'Cerrar', { duration: 5000 });
+                if (err?.status === 409) this.cargarInscritos();
+            }
+        });
     }
 
     pagoTexto(r: EventRegistrant): string {
@@ -233,7 +284,7 @@ export class EventRegistrantsComponent implements OnInit {
     puedeGenerar(r: EventRegistrant): boolean {
         return !this.eventIsVirtual()
             && !r.tieneCredencial
-            && r.registrationStatus !== 'pending_payment'
+            && !this.sinAcceso(r)
             && !this.generando();
     }
 

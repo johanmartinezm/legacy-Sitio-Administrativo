@@ -209,3 +209,13 @@ button.generar-una {
     line-height: 1.4;
     white-space: nowrap;
 }
+
+// Parte B: una inscripción rechazada (pago no confirmado), y aprobar el pago.
+.status-badge.rejected {
+    background: #fdecea;
+    color: #b71c1c;
+}
+
+.aprobar {
+    color: #2e7d32;
+}

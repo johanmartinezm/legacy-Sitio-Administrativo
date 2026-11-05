@@ -50,6 +50,12 @@ export interface Event {
     isVirtual?: boolean;
     /** Enlace de la sesión, solo en los virtuales. */
     accessUrl?: string | null;
+    /**
+     * Link de pago externo (parte B del plan de workshops). Obligatorio, https,
+     * en todo evento que no sea gratuito: quien se inscribe queda pendiente,
+     * paga por ahí, y se aprueba desde «Inscritos».
+     */
+    paymentUrl?: string | null;
     speaker?: string;
     price: number;
     isFree: boolean;

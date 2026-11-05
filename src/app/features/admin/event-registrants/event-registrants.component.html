@@ -46,6 +46,10 @@
                 <span class="counter-value">{{ pendientes() }}</span>
                 <span class="counter-label">Pendientes de pago</span>
             </div>
+            <div class="counter" *ngIf="rechazadas() > 0">
+                <span class="counter-value">{{ rechazadas() }}</span>
+                <span class="counter-label">Rechazadas</span>
+            </div>
             <div class="counter">
                 <span class="counter-value">{{ asistieron() }}</span>
                 <span class="counter-label">Asistieron</span>
@@ -72,7 +76,7 @@
             </button>
         </div>
 
-        <div *ngIf="total() === 0" class="state-message">
+        <div *ngIf="registrants().length === 0" class="state-message">
             <mat-icon>group_off</mat-icon>
             <p>
                 Todavia nadie se ha inscrito en este evento.
@@ -80,7 +84,7 @@
             </p>
         </div>
 
-        <ng-container *ngIf="total() > 0">
+        <ng-container *ngIf="registrants().length > 0">
             <mat-form-field appearance="outline" class="search-field">
                 <mat-label>Buscar por nombre, correo o telefono</mat-label>
                 <input matInput [ngModel]="filtro()" (ngModelChange)="filtro.set($event)" />
@@ -88,7 +92,7 @@
             </mat-form-field>
 
             <p class="filter-summary" *ngIf="filtro()">
-                {{ filtrados().length }} de {{ total() }}
+                {{ filtrados().length }} de {{ registrants().length }}
             </p>
 
             <div *ngIf="filtrados().length === 0" class="state-message">
@@ -126,9 +130,27 @@
                     <th mat-header-cell *matHeaderCellDef> Inscripcion </th>
                     <td mat-cell *matCellDef="let r">
                         <span class="status-badge"
-                            [ngClass]="r.registrationStatus === 'pending_payment' ? 'pending' : 'confirmed'">
+                            [ngClass]="r.registrationStatus === 'pending_payment' ? 'pending' : (r.registrationStatus === 'rejected' ? 'rejected' : 'confirmed')">
                             {{ estadoTexto(r) }}
                         </span>
+                    </td>
+                </ng-container>
+
+                <!-- Aprobar o rechazar el pago (parte B del plan de workshops):
+                     solo en las pendientes. El pago se cruza por fuera. -->
+                <ng-container matColumnDef="decision">
+                    <th mat-header-cell *matHeaderCellDef> Aprobar pago </th>
+                    <td mat-cell *matCellDef="let r">
+                        <ng-container *ngIf="r.registrationStatus === 'pending_payment'">
+                            <button mat-icon-button class="aprobar" (click)="aprobar(r)"
+                                [disabled]="decidiendo() !== null" matTooltip="Aprobar pago">
+                                <mat-icon>check_circle</mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" (click)="rechazar(r)"
+                                [disabled]="decidiendo() !== null" matTooltip="Rechazar">
+                                <mat-icon>cancel</mat-icon>
+                            </button>
+                        </ng-container>
                     </td>
                 </ng-container>
 
@@ -145,16 +167,18 @@
                         </span>
 
                         <ng-container *ngIf="!eventIsVirtual()">
-                            <mat-icon class="con-credencial" *ngIf="r.tieneCredencial"
-                                matTooltip="Tiene codigo de acceso">badge</mat-icon>
+                            <!-- Pendiente o rechazada: el QR existe desde que se
+                                 reservó, pero no sirve para entrar. Se dice eso y no
+                                 «tiene credencial». -->
+                            <span class="sin-credencial" *ngIf="sinAcceso(r)"
+                                matTooltip="Sin un pago confirmado no da derecho a entrar">
+                                {{ r.registrationStatus === 'rejected' ? 'Rechazada' : 'Sin pagar' }}
+                            </span>
 
-                            <ng-container *ngIf="!r.tieneCredencial">
-                                <span class="sin-credencial" *ngIf="r.registrationStatus === 'pending_payment'"
-                                    matTooltip="Una inscripcion sin pagar no da derecho a entrar">
-                                    Sin pagar
-                                </span>
-                                <button mat-stroked-button class="generar-una"
-                                    *ngIf="r.registrationStatus !== 'pending_payment'"
+                            <ng-container *ngIf="!sinAcceso(r)">
+                                <mat-icon class="con-credencial" *ngIf="r.tieneCredencial"
+                                    matTooltip="Tiene codigo de acceso">badge</mat-icon>
+                                <button mat-stroked-button class="generar-una" *ngIf="!r.tieneCredencial"
                                     [disabled]="!puedeGenerar(r)" (click)="generarCredenciales(r)"
                                     matTooltip="Generar su codigo y enviarselo por correo">
                                     <mat-icon>qr_code_2</mat-icon> Generar

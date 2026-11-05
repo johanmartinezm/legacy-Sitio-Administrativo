@@ -14,7 +14,7 @@ export interface EventRegistrant {
     phone: string;
     /** 'paid' | 'pending' | 'free' */
     paymentStatus: string;
-    /** 'confirmed' | 'pending_payment' */
+    /** 'confirmed' | 'pending_payment' | 'rejected' (parte B: pago no confirmado) */
     registrationStatus: string;
     registrationDate: Date;
     totalPaid: number;

@@ -9,6 +9,13 @@ import { ConfigService } from './config.service';
 import { Pagina, LIMITE_MAXIMO_DE_PAGINA } from '../models/pagina';
 import { escribirFechaDeEvento, leerFechaDeEvento } from '../utils/fecha-de-evento';
 
+/** Cómo queda una inscripción al aprobarla o rechazarla. */
+export interface DecisionDePago {
+    registrationId: string;
+    registrationStatus: string;
+    paymentStatus: string;
+}
+
 /** Lo que responde el servidor al subir el archivo del material. */
 export interface DocumentoSubido {
     name: string;
@@ -120,6 +127,22 @@ export class EventService {
         const datos = new FormData();
         datos.append('file', archivo);
         return this.http.post<DocumentoSubido>(`${this.config.apiUrl}/api/documents/upload`, datos);
+    }
+
+    /**
+     * Aprueba una inscripción pendiente de pago tras confirmar el pago por fuera
+     * (parte B del plan de workshops): queda confirmada y con credencial, y la
+     * persona recibe un aviso. Aprobar una ya confirmada no repite nada.
+     */
+    aprobarInscripcion(registrationId: string): Observable<DecisionDePago> {
+        return this.http.post<DecisionDePago>(
+            `${this.config.apiUrl}/api/registrations/${registrationId}/aprobar`, {});
+    }
+
+    /** Rechaza una inscripción pendiente: libera el cupo y avisa a la persona. */
+    rechazarInscripcion(registrationId: string): Observable<DecisionDePago> {
+        return this.http.post<DecisionDePago>(
+            `${this.config.apiUrl}/api/registrations/${registrationId}/rechazar`, {});
     }
 
     /** Guarda el material del workshop con su propia ruta y lo devuelve como queda. */
@@ -279,6 +302,7 @@ export class EventService {
             // este mapeo y aqui no estaban.
             isVirtual: dto.isVirtual ?? false,
             accessUrl: dto.accessUrl ?? null,
+            paymentUrl: dto.paymentUrl ?? null,
             speaker: dto.speaker || '',
             startDate: leerFechaDeEvento(dto.date),
             endDate: leerFechaDeEvento(dto.end_date),
@@ -311,6 +335,8 @@ export class EventService {
             // accessUrl a null.
             isVirtual: !!event.isVirtual,
             accessUrl: event.accessUrl ?? null,
+            // Un gratuito no guarda link aunque haya quedado escrito.
+            paymentUrl: event.isFree ? null : (event.paymentUrl?.trim() || null),
             speaker: event.speaker,
             date: escribirFechaDeEvento(event.startDate),
             end_date: escribirFechaDeEvento(event.endDate),

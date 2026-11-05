@@ -64,6 +64,10 @@ export class EventFormDialogComponent implements OnInit {
       // pone y se quita al marcar la casilla, en ngOnInit.
       isVirtual: [false],
       accessUrl: [''],
+      // Link de pago: obligatorio y https cuando el evento no es gratuito
+      // (parte B del plan de workshops). El validador se pone y se quita al
+      // marcar «gratuito», en ngOnInit; el backend aplica la misma regla.
+      paymentUrl: [''],
       startDate: [new Date(), Validators.required],
       endDate: [null],
       attendeesLimit: [null],
@@ -77,6 +81,7 @@ export class EventFormDialogComponent implements OnInit {
   ngOnInit(): void {
     this.loadCategories();
     this.sincronizarEnlaceConModalidad();
+    this.sincronizarLinkDePago();
     if (this.data && this.data.event) {
       this.isEditMode = true;
       this.patchForm(this.data.event);
@@ -106,6 +111,22 @@ export class EventFormDialogComponent implements OnInit {
     virtual.valueChanges.subscribe(aplicar);
   }
 
+  /** Obligatorio y https solo en los eventos de pago. */
+  private sincronizarLinkDePago(): void {
+    const link = this.eventForm.get('paymentUrl');
+    const gratis = this.eventForm.get('isFree');
+    if (!link || !gratis) return;
+
+    const https = Validators.pattern(/^\s*https:\/\/[^\s/]+\.[^\s]+\s*$/i);
+    const aplicar = (esGratis: boolean) => {
+      link.setValidators(esGratis ? null : [Validators.required, https]);
+      link.updateValueAndValidity({ emitEvent: false });
+    };
+
+    aplicar(gratis.value);
+    gratis.valueChanges.subscribe(aplicar);
+  }
+
   loadCategories() {
     this.eventService.getCategories().subscribe(categories => {
       this.categories = categories;
@@ -126,6 +147,7 @@ export class EventFormDialogComponent implements OnInit {
       location: event.location,
       isVirtual: event.isVirtual ?? false,
       accessUrl: event.accessUrl ?? '',
+      paymentUrl: event.paymentUrl ?? '',
       startDate: event.startDate,
       endDate: event.endDate,
       attendeesLimit: event.attendeesLimit,
@@ -161,6 +183,7 @@ export class EventFormDialogComponent implements OnInit {
         // Un presencial no guarda enlace aunque haya quedado escrito al marcar
         // y desmarcar la casilla.
         accessUrl: formValue.isVirtual ? formValue.accessUrl : null,
+        paymentUrl: formValue.isFree ? null : (formValue.paymentUrl ?? '').trim(),
         startDate: formValue.startDate,
         endDate: formValue.endDate,
         attendeesLimit: formValue.attendeesLimit,

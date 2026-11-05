@@ -49,4 +49,34 @@ describe('EventFormDialogComponent', () => {
     it('se construye y pinta el formulario de un evento nuevo', () => {
         expect(component).toBeTruthy();
     });
+
+    // Parte B del plan de workshops: el link de pago, obligatorio y https en
+    // los eventos de pago; el backend aplica la misma regla.
+    describe('link de pago', () => {
+        const link = () => component.eventForm.get('paymentUrl')!;
+
+        it('un evento gratuito no lo pide', () => {
+            component.eventForm.patchValue({ isFree: true, paymentUrl: '' });
+            expect(link().valid).toBeTrue();
+        });
+
+        it('uno de pago lo exige, y con https', () => {
+            component.eventForm.patchValue({ isFree: false });
+            link().setValue('');
+            expect(link().hasError('required')).toBeTrue();
+            link().setValue('http://pagos.example.com');
+            expect(link().hasError('pattern')).toBeTrue();
+            link().setValue('https://pagos.example.com/masterclass');
+            expect(link().valid).toBeTrue();
+        });
+
+        it('el campo solo aparece en los eventos de pago', () => {
+            component.eventForm.patchValue({ isFree: true });
+            fixture.detectChanges();
+            expect(fixture.nativeElement.textContent).not.toContain('Link de pago');
+            component.eventForm.patchValue({ isFree: false });
+            fixture.detectChanges();
+            expect(fixture.nativeElement.textContent).toContain('Link de pago');
+        });
+    });
 });
