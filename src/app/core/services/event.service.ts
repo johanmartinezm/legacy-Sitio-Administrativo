@@ -1,13 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, of, switchMap } from 'rxjs';
-import { Event, Category, Workshop } from '../models/event.model';
+import { Event, Category, Workshop, MaterialDeWorkshop } from '../models/event.model';
 import { WorkshopRating } from '../models/rating.model';
 import { EventSurveySummary } from '../models/survey.model';
 import { EventRegistrant } from '../models/registrant.model';
 import { ConfigService } from './config.service';
 import { Pagina, LIMITE_MAXIMO_DE_PAGINA } from '../models/pagina';
 import { escribirFechaDeEvento, leerFechaDeEvento } from '../utils/fecha-de-evento';
+
+/** Lo que responde el servidor al subir el archivo del material. */
+export interface DocumentoSubido {
+    name: string;
+    originalName: string;
+    size: number;
+}
 
 /** Inscritos del evento y, por id de taller, cuántos lo eligieron. */
 export interface ResumenWorkshops {
@@ -102,6 +109,29 @@ export class EventService {
 
     deleteWorkshop(id: string): Observable<any> {
         return this.http.delete(`${this.workshopsUrl}/${id}`);
+    }
+
+    /**
+     * Sube el archivo del material de un workshop: PDF, Word, Excel, PowerPoint
+     * o ZIP, hasta 25 MB. El servidor comprueba el contenido, no solo la
+     * extensión, y responde en texto plano si lo rechaza.
+     */
+    subirDocumento(archivo: File): Observable<DocumentoSubido> {
+        const datos = new FormData();
+        datos.append('file', archivo);
+        return this.http.post<DocumentoSubido>(`${this.config.apiUrl}/api/documents/upload`, datos);
+    }
+
+    /** Guarda el material del workshop con su propia ruta y lo devuelve como queda. */
+    guardarMaterial(workshopId: string, material: MaterialDeWorkshop): Observable<Workshop> {
+        return this.http.put<any>(`${this.workshopsUrl}/${workshopId}/material`, material).pipe(
+            map(w => this.mapDtoToWorkshop(w))
+        );
+    }
+
+    /** Dirección de descarga del archivo del material. */
+    urlDeDocumento(fileName: string): string {
+        return `${this.config.apiUrl}/api/documents/${encodeURIComponent(fileName)}`;
     }
 
     /**
@@ -322,7 +352,8 @@ export class EventService {
             speaker: w.speaker,
             imageUrl: w.imageUrl,
             startDateTime: new Date(w.startDateTime),
-            endDateTime: new Date(w.endDateTime)
+            endDateTime: new Date(w.endDateTime),
+            material: w.material
         };
     }
 }

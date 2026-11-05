@@ -7,6 +7,24 @@ export interface Workshop {
     imageUrl?: string;
     startDateTime: Date;
     endDateTime: Date;
+    /** Material para después del workshop (parte A del plan de workshops). */
+    material?: MaterialDeWorkshop;
+}
+
+/**
+ * Una imagen, un archivo y un video por workshop. Vacío es «no hay». Se guarda
+ * con su propia ruta: el PUT del workshop no lo envía, y si lo enviara cada
+ * edición del workshop lo borraría.
+ */
+export interface MaterialDeWorkshop {
+    /** URL absoluta, como la imagen del workshop. Es otra imagen, distinta. */
+    imageUrl: string;
+    /** Nombre en el servidor («<uuid>_<nombre>»); se descarga por /api/documents. */
+    fileName: string;
+    fileOriginalName: string;
+    fileSize: number;
+    /** Enlace de YouTube o de Vimeo. */
+    videoUrl: string;
 }
 
 export interface Category {

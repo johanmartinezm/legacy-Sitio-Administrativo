@@ -14,6 +14,8 @@ import {
     DatosDelTaller,
     WorkshopFormDialogComponent
 } from '../workshop-form-dialog/workshop-form-dialog.component';
+import { MaterialWorkshopDialogComponent } from '../material-workshop-dialog/material-workshop-dialog.component';
+import { MaterialDeWorkshop } from '../../../core/models/event.model';
 
 /**
  * Talleres de un evento. Se llega desde el icono de "Administrar Eventos".
@@ -151,6 +153,42 @@ export class EventWorkshopsComponent implements OnInit {
                     // (sin nombre, horario al revés); se muestra tal cual.
                     const motivo = typeof err?.error === 'string' && err.status === 400 ? err.error.trim() : null;
                     this.snackBar.open(motivo ?? 'No se pudo guardar el workshop. Inténtalo de nuevo.', 'Cerrar', { duration: 5000 });
+                }
+            });
+        });
+    }
+
+    /** Si el workshop tiene algo de material: imagen, archivo o video. */
+    tieneMaterial(w: Workshop): boolean {
+        const m = w.material;
+        return !!(m && (m.imageUrl || m.fileName || m.videoUrl));
+    }
+
+    /**
+     * Material del workshop (parte A del plan de workshops). Ruta propia: el PUT
+     * del workshop no lo lleva, y así editar el workshop no lo borra.
+     */
+    material(workshop: Workshop): void {
+        const dialogRef = this.dialog.open(MaterialWorkshopDialogComponent, {
+            width: '95vw',
+            maxWidth: '640px',
+            maxHeight: '90vh',
+            disableClose: true,
+            data: workshop
+        });
+
+        dialogRef.afterClosed().subscribe((material?: MaterialDeWorkshop) => {
+            if (!material) return;
+            this.eventService.guardarMaterial(workshop.id, material).subscribe({
+                next: () => {
+                    this.snackBar.open('Material guardado.', 'Cerrar', { duration: 3000 });
+                    this.cargar();
+                },
+                error: err => {
+                    const motivo = typeof err?.error === 'string' && err.status === 400 ? err.error.trim() : null;
+                    this.snackBar.open(
+                        motivo ? motivo.charAt(0).toUpperCase() + motivo.slice(1) : 'No se pudo guardar el material. Inténtalo de nuevo.',
+                        'Cerrar', { duration: 5000 });
                 }
             });
         });

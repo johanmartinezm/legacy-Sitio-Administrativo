@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>Material del workshop</h2>
+
+<mat-dialog-content>
+    <p class="subtitulo">
+        <strong>{{ workshop.name }}</strong><br>
+        La app lo muestra a todos los usuarios cuando el workshop termina. Puedes cargarlo en cualquier momento.
+    </p>
+
+    <form [formGroup]="form">
+        <section>
+            <h3>Imagen</h3>
+            <app-image-upload formControlName="imageUrl" label="Imagen del material"
+                recomendacion="Es otra imagen, distinta de la del workshop. Horizontal, 600 × 350 px (12:7). En la app se amplía al tocarla.">
+            </app-image-upload>
+        </section>
+
+        <section>
+            <h3>Archivo descargable</h3>
+            <p class="ayuda">PDF, Word, Excel, PowerPoint o ZIP, hasta 25 MB.</p>
+
+            <div class="archivo" *ngIf="archivo as a">
+                <mat-icon>description</mat-icon>
+                <a [href]="urlDelArchivo()" target="_blank" rel="noopener">{{ a.fileOriginalName }}</a>
+                <span class="tamano">{{ tamano(a.fileSize) }}</span>
+                <button mat-icon-button type="button" (click)="quitarArchivo()" aria-label="Quitar archivo">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+
+            <button mat-stroked-button type="button" (click)="selector.click()" [disabled]="subiendo">
+                <mat-icon>upload_file</mat-icon> {{ archivo ? 'Cambiar archivo' : 'Subir archivo' }}
+            </button>
+            <input #selector type="file" hidden [accept]="extensiones" (change)="elegirArchivo($event)">
+            <mat-progress-bar *ngIf="subiendo" mode="indeterminate"></mat-progress-bar>
+            <p class="error" *ngIf="errorArchivo">{{ errorArchivo }}</p>
+        </section>
+
+        <section>
+            <h3>Video</h3>
+            <mat-form-field appearance="outline" class="ancho">
+                <mat-label>Enlace de YouTube o de Vimeo</mat-label>
+                <input matInput formControlName="videoUrl" placeholder="https://www.youtube.com/watch?v=…">
+                <mat-error *ngIf="form.get('videoUrl')?.errors?.['video'] as motivo">{{ motivo }}</mat-error>
+            </mat-form-field>
+            <p class="ayuda">
+                YouTube se reproduce dentro de la app; Vimeo se abre fuera, en el navegador o en la app de Vimeo.
+            </p>
+            <p class="aviso" *ngIf="esVimeo">
+                <mat-icon>info</mat-icon>
+                Sube el video a Vimeo como <strong>«no listado»</strong> y pega el enlace completo, con el código del
+                final (vimeo.com/123456789/<strong>abc123</strong>). Los videos privados o solo para insertar no se
+                pueden ver desde la app.
+            </p>
+        </section>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" (click)="guardar()"
+        [disabled]="form.invalid || subiendo">
+        <mat-icon>save</mat-icon> Guardar material
+    </button>
+</mat-dialog-actions>

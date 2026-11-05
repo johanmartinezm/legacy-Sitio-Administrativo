@@ -2,6 +2,26 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-05]: Material de cada workshop desde el panel (parte A)
+- **Alcance:** `material-workshop-dialog/` (nuevo: imagen con `app-image-upload`, archivo con subida a
+  `/api/documents/upload` y enlace de YouTube o Vimeo validado igual que el servidor; recuerda subir
+  los de Vimeo como «no listado» con su código), `event-workshops/` (icono «Material» en cada fila,
+  verde cuando ya tiene algo; guarda con `PUT /api/workshops/{id}/material`), `event.service.ts`
+  (`subirDocumento`, `guardarMaterial`, `urlDeDocumento`; el material se lee con cada workshop y **no**
+  viaja en el PUT del workshop), `event.model.ts` (`MaterialDeWorkshop`). Spec en
+  `material-workshop-dialog.component.spec.ts`. Exige el backend de la misma rama. Rama
+  `feature/talleres-aparte`, **solo en local**.
+- **Criterios de QA** (comprobados en local con el Summit de prueba):
+  1. En la pantalla de workshops, el icono de material sale verde en el workshop que ya tiene material
+     y gris en los demás.
+  2. Al abrirlo se ven el archivo cargado (con enlace de descarga y tamaño) y el enlace del video.
+  3. Un enlace de otro sitio (p. ej. Dailymotion) muestra «El video tiene que ser de YouTube o de Vimeo»
+     y apaga «Guardar material». Uno de Vimeo muestra el aviso de «no listado».
+  4. Subir un PNG o un archivo de más de 25 MB lo rechaza antes de enviarlo; un `.pdf` falso lo rechaza
+     el servidor y el diálogo muestra el motivo.
+  5. «Cancelar» no cambia nada; «Guardar material» → «Material guardado.» y el icono queda verde.
+  6. Editar el workshop (lápiz) y guardar **no borra** el material.
+
 ### [2026-11-05]: Las fechas del evento ya no salen un día antes
 - **Alcance:** `core/utils/fecha-de-evento.ts` (nuevo: lee `start_date`/`end_date` como día, sin
   pasar por la zona, y las escribe como medianoche UTC) y `event.service.ts` (lo usa al leer y al
