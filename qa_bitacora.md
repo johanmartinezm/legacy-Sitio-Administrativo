@@ -2,6 +2,19 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-05]: Las fechas del evento ya no salen un día antes
+- **Alcance:** `core/utils/fecha-de-evento.ts` (nuevo: lee `start_date`/`end_date` como día, sin
+  pasar por la zona, y las escribe como medianoche UTC) y `event.service.ts` (lo usa al leer y al
+  guardar). Spec en `fecha-de-evento.spec.ts`. Rama `feature/talleres-aparte`, solo en local.
+- **Antes:** `new Date('2026-12-10T00:00:00Z')` en Colombia es el 9 a las 19:00. El listado, la
+  cabecera de workshops, el selector de eventos y el formulario mostraban el día anterior, y un
+  workshop nuevo proponía ese día.
+- **Criterios de QA** (comprobados en local con «[PRUEBA] Workshops por franja», del 10 al 11 de dic.):
+  1. La cabecera de la pantalla de workshops dice «10 Dec 2026 – 11 Dec 2026».
+  2. «Editar» el evento muestra 12/10/2026 y 12/11/2026; «Guardar Cambios» sin tocar nada deja en la
+     base `start_date` 2026-12-10 y `end_date` 2026-12-11.
+  3. «Agregar workshop» propone el 10 de diciembre.
+
 ### [2026-11-05]: Elegidos por workshop, workshops de cada inscrito y «workshop» en todo el panel
 - **Alcance:** `event-workshops/` (columna «Elegido por» con `GET …/workshops/resumen`, y aviso con
   `confirm()` al agregar un workshop o cambiarle el horario si el evento ya tiene inscritos; no

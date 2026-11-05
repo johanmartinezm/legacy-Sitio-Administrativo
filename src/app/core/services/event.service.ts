@@ -7,6 +7,7 @@ import { EventSurveySummary } from '../models/survey.model';
 import { EventRegistrant } from '../models/registrant.model';
 import { ConfigService } from './config.service';
 import { Pagina, LIMITE_MAXIMO_DE_PAGINA } from '../models/pagina';
+import { escribirFechaDeEvento, leerFechaDeEvento } from '../utils/fecha-de-evento';
 
 /** Inscritos del evento y, por id de taller, cuántos lo eligieron. */
 export interface ResumenWorkshops {
@@ -249,8 +250,8 @@ export class EventService {
             isVirtual: dto.isVirtual ?? false,
             accessUrl: dto.accessUrl ?? null,
             speaker: dto.speaker || '',
-            startDate: dto.date ? new Date(dto.date) : undefined,
-            endDate: dto.end_date ? new Date(dto.end_date) : undefined,
+            startDate: leerFechaDeEvento(dto.date),
+            endDate: leerFechaDeEvento(dto.end_date),
             attendeesLimit: dto.attendees_limit,
             isFree: dto.isFree || false,
             actionStatus: dto.actionStatus || 'register',
@@ -281,8 +282,8 @@ export class EventService {
             isVirtual: !!event.isVirtual,
             accessUrl: event.accessUrl ?? null,
             speaker: event.speaker,
-            date: event.startDate?.toISOString(),
-            end_date: event.endDate?.toISOString(),
+            date: escribirFechaDeEvento(event.startDate),
+            end_date: escribirFechaDeEvento(event.endDate),
             isFree: event.isFree,
             attendees_limit: event.attendeesLimit,
             actionStatus: event.actionStatus,
