@@ -2,6 +2,20 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-06]: Las fechas del workshop quedan dentro de las del evento
+- **Alcance:** `workshop-form-dialog/` (los calendarios solo dejan elegir días del evento; si el
+  workshop queda fuera, aviso con las fechas del evento y no deja guardar), `event-workshops/` (pasa el
+  primer y el último día del evento al diálogo, también al editar). Spec nuevo
+  `workshop-form-dialog.component.spec.ts`. Exige el backend de la misma rama, que también lo
+  rechaza. Rama `feature/talleres-aparte`, **solo en local**.
+- **Criterios de QA:**
+  1. En «Workshops» del Summit local (18 al 20 de noviembre), «Agregar» propone el 18 y los calendarios
+     no dejan elegir días fuera del 18 al 20.
+  2. Escribir a mano una fecha fuera del evento muestra «El workshop tiene que estar dentro de las
+     fechas del evento: del 18/11/2026 al 20/11/2026» y «Guardar» no cierra el diálogo.
+  3. Editar un workshop que ya estaba fuera de fechas muestra el aviso hasta corregirlo.
+  4. En un evento sin fecha de fin, solo se puede elegir su único día.
+
 ### [2026-11-05]: Link de pago y aprobar o rechazar el pago (parte B)
 - **Alcance:** `event-form-dialog/` (campo «Link de pago», visible y obligatorio con `https://` solo
   si el evento no es gratuito), `event-registrants/` (columna «Aprobar pago» con aprobar y rechazar

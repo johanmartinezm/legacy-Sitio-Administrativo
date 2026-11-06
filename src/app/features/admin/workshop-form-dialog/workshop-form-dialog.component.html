@@ -34,7 +34,8 @@
         <div class="time-grid">
             <mat-form-field appearance="outline">
                 <mat-label>Fecha inicio</mat-label>
-                <input matInput [matDatepicker]="pickerStart" formControlName="startDate">
+                <input matInput [matDatepicker]="pickerStart" formControlName="startDate"
+                    [min]="minFecha" [max]="maxFecha">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
                 <mat-datepicker #pickerStart></mat-datepicker>
             </mat-form-field>
@@ -46,7 +47,8 @@
 
             <mat-form-field appearance="outline">
                 <mat-label>Fecha fin</mat-label>
-                <input matInput [matDatepicker]="pickerEnd" formControlName="endDate">
+                <input matInput [matDatepicker]="pickerEnd" formControlName="endDate"
+                    [min]="minFecha" [max]="maxFecha">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                 <mat-datepicker #pickerEnd></mat-datepicker>
             </mat-form-field>
@@ -59,6 +61,9 @@
 
         <p class="error-horario" *ngIf="form.hasError('finAntesDelInicio')">
             <mat-icon>error_outline</mat-icon> El fin del workshop no puede ser anterior a su inicio.
+        </p>
+        <p class="error-horario" *ngIf="form.hasError('fueraDelEvento')">
+            <mat-icon>error_outline</mat-icon> El workshop tiene que estar dentro de las fechas del evento: {{ fechasDelEvento }}.
         </p>
     </form>
 </mat-dialog-content>

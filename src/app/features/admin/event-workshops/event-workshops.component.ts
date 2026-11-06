@@ -120,7 +120,7 @@ export class EventWorkshopsComponent implements OnInit {
     }
 
     agregar(): void {
-        this.abrirFormulario({ fechaDelEvento: this.evento()?.startDate });
+        this.abrirFormulario({});
     }
 
     editar(workshop: Workshop): void {
@@ -128,6 +128,7 @@ export class EventWorkshopsComponent implements OnInit {
     }
 
     private abrirFormulario(data: DatosDelTaller): void {
+        data = { ...data, inicioDelEvento: this.evento()?.startDate, finDelEvento: this.evento()?.endDate };
         const dialogRef = this.dialog.open(WorkshopFormDialogComponent, {
             width: '95vw',
             maxWidth: '900px',

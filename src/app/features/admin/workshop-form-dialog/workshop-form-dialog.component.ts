@@ -13,8 +13,13 @@ import { ImageUploadComponent } from '../../../core/components/image-upload/imag
 export interface DatosDelTaller {
   /** Sin taller es crear uno nuevo. */
   workshop?: Workshop;
-  /** Día en que arranca el evento, para proponerlo como fecha del taller nuevo. */
-  fechaDelEvento?: Date;
+  /**
+   * Primer y último día del evento. El inicio se propone como fecha del taller
+   * nuevo, y los dos acotan los calendarios: el backend rechaza un workshop
+   * fuera de las fechas del evento. Sin fin, el evento es de un solo día.
+   */
+  inicioDelEvento?: Date;
+  finDelEvento?: Date;
 }
 
 /**
@@ -43,6 +48,9 @@ export interface DatosDelTaller {
 export class WorkshopFormDialogComponent {
   form: FormGroup;
   isEditMode: boolean;
+  /** Límites de los calendarios: el primer y el último día del evento. */
+  minFecha: Date | null;
+  maxFecha: Date | null;
 
   constructor(
     private fb: FormBuilder,
@@ -52,7 +60,10 @@ export class WorkshopFormDialogComponent {
     const taller = data?.workshop;
     this.isEditMode = !!taller;
 
-    const dia = data?.fechaDelEvento ? new Date(data.fechaDelEvento) : new Date();
+    this.minFecha = this.fechaValida(data?.inicioDelEvento);
+    this.maxFecha = this.fechaValida(data?.finDelEvento) ?? this.minFecha;
+
+    const dia = this.minFecha ? new Date(this.minFecha) : new Date();
     const inicio = this.fechaValida(taller?.startDateTime) ?? dia;
     const fin = this.fechaValida(taller?.endDateTime) ?? dia;
 
@@ -66,7 +77,37 @@ export class WorkshopFormDialogComponent {
       startTime: [taller ? this.hora(inicio) : '09:00', Validators.required],
       endDate: [fin, Validators.required],
       endTime: [taller ? this.hora(fin) : '10:00', Validators.required]
-    }, { validators: (g: AbstractControl) => this.finDespuesDelInicio(g) });
+    }, {
+      validators: [
+        (g: AbstractControl) => this.finDespuesDelInicio(g),
+        (g: AbstractControl) => this.dentroDelEvento(g)
+      ]
+    });
+  }
+
+  /**
+   * El backend rechaza un workshop fuera de las fechas del evento: uno de antes
+   * habilitaba la calificación y el material en la app antes de que el evento
+   * empezara. Se compara por día, como las fechas del evento.
+   */
+  private dentroDelEvento(g: AbstractControl): ValidationErrors | null {
+    const v = g.value;
+    if (!this.minFecha || !v.startDate || !v.endDate) return null;
+    const dia = (d: Date) => {
+      const x = new Date(d);
+      return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    };
+    const fuera = dia(v.startDate) < dia(this.minFecha) || dia(v.endDate) > dia(this.maxFecha!);
+    return fuera ? { fueraDelEvento: true } : null;
+  }
+
+  /** «del 18/11/2026 al 20/11/2026», o «el 18/11/2026» si es de un día. */
+  get fechasDelEvento(): string {
+    if (!this.minFecha) return '';
+    const f = (d: Date) => d.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const desde = f(this.minFecha);
+    const hasta = f(this.maxFecha!);
+    return desde === hasta ? `el ${desde}` : `del ${desde} al ${hasta}`;
   }
 
   /**
