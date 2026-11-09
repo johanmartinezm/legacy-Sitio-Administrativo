@@ -48,7 +48,7 @@
                 <mat-card-content>
                     <div class="line-item">
                         <span>Entrada General</span>
-                        <span>{{selectedEvent.price | currency}}</span>
+                        <span>{{selectedEvent.price | currency:'COP':'symbol-narrow':'1.0-0'}}</span>
                     </div>
                     <div class="line-item" *ngFor="let shop of selectedWorkshops">
                         <span>Workshop: {{shop.name}}</span>
@@ -56,7 +56,7 @@
                     </div>
                     <div class="total-row">
                         <strong>Total a Pagar</strong>
-                        <strong>{{totalAmount | currency}}</strong>
+                        <strong>{{totalAmount | currency:'COP':'symbol-narrow':'1.0-0'}}</strong>
                     </div>
                 </mat-card-content>
             </mat-card>

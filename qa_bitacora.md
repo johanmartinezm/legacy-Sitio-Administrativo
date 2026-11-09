@@ -2,6 +2,14 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-09]: El precio de los eventos, en pesos colombianos
+- **Alcance:** `event-form-dialog.component.html` («Precio (COP)», con la pista en pesos) y
+  `registration-wizard.component.html` (precio y total con `currency:'COP'`; antes la moneda por defecto
+  de Angular, USD). Rama `feature/talleres-aparte`, **solo en local**.
+- **Criterios de QA:**
+  1. Eventos → editar uno de pago: el campo dice «Precio (COP)» y la pista habla de pesos.
+  2. Inscripciones → asistente → elegir un evento de pago: precio y total en pesos, sin «US$».
+
 ### [2026-11-09]: La descarga del material lleva el nombre original
 - **Alcance:** `event.service.ts` (`urlDeDocumento` con el nombre original al final) y
   `material-workshop-dialog.component.ts`. Spec actualizado. Necesita la ruta nueva del backend de la
