@@ -81,7 +81,8 @@ describe('MaterialWorkshopDialogComponent', () => {
         },
       }));
       expect(component.archivo?.fileOriginalName).toBe('Guía.pdf');
-      expect(component.urlDelArchivo()).toBe('http://api-de-prueba/api/documents/uuid_Guia.pdf');
+      // El nombre original va al final, para el visor y para la descarga.
+      expect(component.urlDelArchivo()).toBe('http://api-de-prueba/api/documents/uuid_Guia.pdf/Gu%C3%ADa.pdf');
       expect(fixture.nativeElement.textContent).toContain('Guía.pdf');
     });
 

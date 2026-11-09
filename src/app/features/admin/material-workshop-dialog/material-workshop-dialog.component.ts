@@ -101,7 +101,9 @@ export class MaterialWorkshopDialogComponent {
     }
 
     urlDelArchivo(): string {
-        return this.archivo ? this.eventService.urlDeDocumento(this.archivo.fileName) : '';
+        return this.archivo
+            ? this.eventService.urlDeDocumento(this.archivo.fileName, this.archivo.fileOriginalName)
+            : '';
     }
 
     tamano(bytes: number): string {

@@ -152,9 +152,16 @@ export class EventService {
         );
     }
 
-    /** Dirección de descarga del archivo del material. */
-    urlDeDocumento(fileName: string): string {
-        return `${this.config.apiUrl}/api/documents/${encodeURIComponent(fileName)}`;
+    /**
+     * Dirección de descarga del archivo del material. Con el nombre original al
+     * final: el visor del navegador titula con ese tramo (con el del servidor
+     * mostraba «c7812220-…») y el backend lo usa como nombre de la descarga,
+     * con tildes. Desde el 2026-11-09.
+     */
+    urlDeDocumento(fileName: string, original = ''): string {
+        const base = `${this.config.apiUrl}/api/documents/${encodeURIComponent(fileName)}`;
+        const visible = original.trim();
+        return visible ? `${base}/${encodeURIComponent(visible)}` : base;
     }
 
     /**

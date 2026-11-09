@@ -2,6 +2,15 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-09]: La descarga del material lleva el nombre original
+- **Alcance:** `event.service.ts` (`urlDeDocumento` con el nombre original al final) y
+  `material-workshop-dialog.component.ts`. Spec actualizado. Necesita la ruta nueva del backend de la
+  misma rama. Hallazgo 5 del recorrido del 09-11. Rama `feature/talleres-aparte`, **solo en local**.
+- **Criterios de QA:**
+  1. Workshops → icono «Material» de un workshop con archivo → abrir el archivo: la pestaña del
+     navegador titula con el nombre original («Guía del workshop.pdf»), no con el del servidor.
+  2. Al descargarlo, el archivo conserva las tildes.
+
 ### [2026-11-06]: Las fechas del workshop quedan dentro de las del evento
 - **Alcance:** `workshop-form-dialog/` (los calendarios solo dejan elegir días del evento; si el
   workshop queda fuera, aviso con las fechas del evento y no deja guardar), `event-workshops/` (pasa el
