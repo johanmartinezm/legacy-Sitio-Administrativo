@@ -12,7 +12,7 @@
 
         <!-- La carga masiva vive aqui y no en una pantalla suelta: el evento lo
              fija esta URL, y al terminar la gente ya esta en la tabla de abajo. -->
-        <div class="acciones" *ngIf="!isLoading() && !errorMessage()">
+        <div class="acciones" *ngIf="!soloEventos && !isLoading() && !errorMessage()">
             <button mat-stroked-button color="primary" (click)="abrirImportacion()"
                 matTooltip="Crear las cuentas que falten y dejarlas inscritas en este evento">
                 <mat-icon>upload_file</mat-icon> Importar asistentes
@@ -69,7 +69,9 @@
                 <strong>{{ sinCredencial() }}</strong> persona(s) no tienen codigo de acceso todavia y
                 <strong>no podran pasar el check-in</strong>.
             </div>
-            <button mat-raised-button color="primary" [disabled]="generando()"
+            <!-- Generar envía correos: es de administrador. La cuenta de rol
+                 «eventos» ve el aviso, pero no el botón. -->
+            <button mat-raised-button color="primary" [disabled]="generando()" *ngIf="!soloEventos"
                 (click)="generarCredenciales()"
                 matTooltip="Crea el codigo que falta y lo envia por correo con el QR">
                 <mat-icon>qr_code_2</mat-icon> Generar credenciales
@@ -178,7 +180,11 @@
                             <ng-container *ngIf="!sinAcceso(r)">
                                 <mat-icon class="con-credencial" *ngIf="r.tieneCredencial"
                                     matTooltip="Tiene codigo de acceso">badge</mat-icon>
-                                <button mat-stroked-button class="generar-una" *ngIf="!r.tieneCredencial"
+                                <span class="sin-credencial" *ngIf="!r.tieneCredencial && soloEventos"
+                                    matTooltip="Un administrador tiene que generarle el código">
+                                    Sin código
+                                </span>
+                                <button mat-stroked-button class="generar-una" *ngIf="!r.tieneCredencial && !soloEventos"
                                     [disabled]="!puedeGenerar(r)" (click)="generarCredenciales(r)"
                                     matTooltip="Generar su codigo y enviarselo por correo">
                                     <mat-icon>qr_code_2</mat-icon> Generar

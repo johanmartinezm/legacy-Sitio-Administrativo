@@ -14,6 +14,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { EventService } from '../../../core/services/event.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Event } from '../../../core/models/event.model';
 import { EventFormDialogComponent } from '../event-form-dialog/event-form-dialog.component';
 import { FeedbackDialogComponent } from '../feedback-dialog/feedback-dialog.component';
@@ -46,8 +47,14 @@ export class ManageEventsComponent implements OnInit {
     private eventService: EventService,
     private dialog: MatDialog,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private auth: AuthService
   ) { }
+
+  /** Cuenta que solo ve eventos e inscritos y valida asistencia. */
+  get soloEventos(): boolean {
+    return this.auth.esSoloEventos();
+  }
 
   ngOnInit(): void {
     this.loadEvents();

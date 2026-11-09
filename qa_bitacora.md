@@ -2,6 +2,25 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-09]: Rol de administrador «eventos»: solo eventos, inscritos y asistencia
+- **Alcance:** `sesion.ts` (`rolDelToken`), `auth.service.ts` (señal `rol`, `esSoloEventos`),
+  `auth.guard.ts` (`rolGuard`), `app.routes.ts` (`data: { eventos: true }` en inicio, eventos, inscritos
+  y escáner), menú lateral, `manage-events` (solo «Ver inscritos»), `event-registrants` (sin importar,
+  sin aprobar pago, sin generar credenciales), formulario y lista de administradores (opción «Eventos»).
+  Spec `rol.guard.spec.ts`. Rama `feature/talleres-aparte`, **solo en local**. Necesita el backend del
+  mismo día: sin él, el token sigue diciendo «admin».
+- **Criterios de QA:**
+  1. Administradores → Nuevo → rol «Eventos (inscritos y asistencia)»: aparece la pista y, en la lista,
+     la insignia verde «Eventos».
+  2. Entrar con esa cuenta: el menú solo tiene Inicio, Eventos (Administrar eventos y Validar
+     Asistencia), Acerca de y Salir.
+  3. Eventos: título «Eventos», sin «Crear Evento», y cada fila con un solo botón, «Ver Inscritos».
+  4. Inscritos de un evento de pago: sin «Importar asistentes», sin la columna «Aprobar pago»; quien no
+     tiene código dice «Sin código» en vez del botón «Generar».
+  5. Escribir a mano `/admin/users` (o cualquier otra ruta): lleva a `/admin/events`.
+  6. Validar Asistencia (QR) abre la cámara y registra la entrada.
+  7. Con una cuenta de administrador normal, todo sigue como antes.
+
 ### [2026-11-09]: El precio de los eventos, en pesos colombianos
 - **Alcance:** `event-form-dialog.component.html` («Precio (COP)», con la pista en pesos) y
   `registration-wizard.component.html` (precio y total con `currency:'COP'`; antes la moneda por defecto

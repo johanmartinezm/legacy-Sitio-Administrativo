@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
+import { CanActivateChildFn, CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 /**
@@ -16,4 +16,18 @@ export const authGuard: CanActivateFn = () => {
     // no se le dice que su sesión venció.
     auth.logout(auth.getToken() !== null);
     return false;
+};
+
+/**
+ * Una cuenta de rol `eventos` solo entra a las rutas marcadas con
+ * `data: { eventos: true }`: inicio, la lista de eventos, sus inscritos y el
+ * escáner de asistencia. En cualquier otra se la lleva a la lista de eventos.
+ * Es comodidad, no seguridad: el backend le responde 403 a todo lo demás.
+ */
+export const rolGuard: CanActivateChildFn = (route) => {
+    const auth = inject(AuthService);
+    if (!auth.esSoloEventos() || route.data?.['eventos'] === true) {
+        return true;
+    }
+    return inject(Router).createUrlTree(['/admin/events']);
 };

@@ -24,7 +24,7 @@
                         <span matListItemTitle>Administrar eventos</span>
                     </a>
                     <a mat-list-item routerLink="/admin/enroll-users" routerLinkActive="active-link"
-                        (click)="isAboutVisible = false">
+                        *ngIf="!soloEventos" (click)="isAboutVisible = false">
                         <mat-icon matListItemIcon>person_add</mat-icon>
                         <span matListItemTitle>Matricular usuarios</span>
                     </a>
@@ -36,6 +36,9 @@
                 </mat-nav-list>
             </mat-expansion-panel>
 
+            <!-- La cuenta de rol «eventos» solo ve el grupo de Eventos; el
+                 backend le responde 403 en todo lo de aquí abajo. -->
+            <ng-container *ngIf="!soloEventos">
             <mat-expansion-panel class="sidenav-expansion-panel" [class.mat-elevation-z0]="true">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -158,6 +161,8 @@
                     </a>
                 </mat-nav-list>
             </mat-expansion-panel>
+
+            </ng-container>
 
             <a mat-list-item (click)="toggleAbout()">
                 <mat-icon matListItemIcon>info</mat-icon>

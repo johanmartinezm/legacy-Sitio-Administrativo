@@ -45,7 +45,11 @@ import { AdminUser } from '../../../../core/models/admin-user.model';
           <mat-select formControlName="role">
             <mat-option value="admin">Administrador</mat-option>
             <mat-option value="superadmin">Super Administrador</mat-option>
+            <mat-option value="eventos">Eventos (inscritos y asistencia)</mat-option>
           </mat-select>
+          <mat-hint *ngIf="adminForm.get('role')?.value === 'eventos'">
+            Solo ve los eventos y sus inscritos, y valida asistencia por QR.
+          </mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" *ngIf="!data">

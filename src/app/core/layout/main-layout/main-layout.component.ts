@@ -32,6 +32,11 @@ export class MainLayoutComponent {
 
   constructor(private authService: AuthService) { }
 
+  /** Cuenta que solo ve eventos e inscritos y valida asistencia. */
+  get soloEventos(): boolean {
+    return this.authService.esSoloEventos();
+  }
+
   toggleAbout() {
     this.isAboutVisible = !this.isAboutVisible;
   }

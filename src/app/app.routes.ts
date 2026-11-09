@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './features/auth/login/login.component';
 import { HomeComponent } from './features/home/home.component';
 import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, rolGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,15 +13,18 @@ export const routes: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
+    // `data: { eventos: true }` marca lo que ve también la cuenta de rol
+    // «eventos» (solo eventos, inscritos y asistencia); el resto es de admin.
+    canActivateChild: [rolGuard],
     children: [
-      { path: 'home', component: HomeComponent },
-      { path: 'admin/events', loadComponent: () => import('./features/admin/manage-events/manage-events.component').then(m => m.ManageEventsComponent) },
-      { path: 'admin/events/:id/registrations', loadComponent: () => import('./features/admin/event-registrants/event-registrants.component').then(m => m.EventRegistrantsComponent) },
+      { path: 'home', data: { eventos: true }, component: HomeComponent },
+      { path: 'admin/events', data: { eventos: true }, loadComponent: () => import('./features/admin/manage-events/manage-events.component').then(m => m.ManageEventsComponent) },
+      { path: 'admin/events/:id/registrations', data: { eventos: true }, loadComponent: () => import('./features/admin/event-registrants/event-registrants.component').then(m => m.EventRegistrantsComponent) },
       { path: 'admin/events/:id/workshops', loadComponent: () => import('./features/admin/event-workshops/event-workshops.component').then(m => m.EventWorkshopsComponent) },
       { path: 'admin/users', loadComponent: () => import('./features/admin/users/users-list/users-list.component').then(m => m.UsersListComponent) },
       { path: 'admin/administrators', loadComponent: () => import('./features/admin/administrators/admin-list/admin-list.component').then(m => m.AdminListComponent) },
       { path: 'admin/enroll-users', loadComponent: () => import('./features/admin/registrations/registration-wizard/registration-wizard.component').then(m => m.RegistrationWizardComponent) },
-      { path: 'admin/check-in', loadComponent: () => import('./features/admin/attendance-scanner/attendance-scanner.component').then(m => m.AttendanceScannerComponent) },
+      { path: 'admin/check-in', data: { eventos: true }, loadComponent: () => import('./features/admin/attendance-scanner/attendance-scanner.component').then(m => m.AttendanceScannerComponent) },
       { path: 'admin/banners', loadComponent: () => import('./features/admin/banners/banner-list/banner-list.component').then(m => m.BannerListComponent) },
       { path: 'admin/content', loadComponent: () => import('./features/admin/custom-content/content-list/content-list.component').then(m => m.ContentListComponent) },
       { path: 'admin/paginas', loadComponent: () => import('./features/admin/paginas/pagina-list/pagina-list.component').then(m => m.PaginaListComponent) },

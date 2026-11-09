@@ -48,6 +48,14 @@ export class AdminListComponent implements OnInit {
         });
     }
 
+    nombreDelRol(rol?: string): string {
+        switch (rol) {
+            case 'superadmin': return 'Super Administrador';
+            case 'eventos': return 'Eventos';
+            default: return 'Administrador';
+        }
+    }
+
     deleteAdmin(admin: AdminUser) {
         if (admin.id && confirm(`¿Estás seguro de eliminar al administrador ${admin.firstName}?`)) {
             this.adminService.deleteAdmin(admin.id).subscribe(() => this.loadAdmins());

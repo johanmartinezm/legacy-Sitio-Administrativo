@@ -24,7 +24,7 @@
             <mat-header-cell *matHeaderCellDef> Rol </mat-header-cell>
             <mat-cell *matCellDef="let admin">
                 <span class="role-badge" [ngClass]="admin.role">
-                    {{admin.role}}
+                    {{ nombreDelRol(admin.role) }}
                 </span>
             </mat-cell>
         </ng-container>

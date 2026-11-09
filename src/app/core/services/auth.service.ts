@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { ConfigService } from './config.service';
-import { tokenVigente } from '../utils/sesion';
+import { RolPanel, rolDelToken, tokenVigente } from '../utils/sesion';
 
 @Injectable({
     providedIn: 'root'
@@ -11,6 +11,8 @@ import { tokenVigente } from '../utils/sesion';
 export class AuthService {
     private tokenKey = 'adminAuthToken';
     isLoggedIn = signal<boolean>(tokenVigente(localStorage.getItem(this.tokenKey)));
+    /** Rol de la sesión: decide qué menú, rutas y botones se muestran. */
+    rol = signal<RolPanel>(rolDelToken(localStorage.getItem(this.tokenKey)));
 
     constructor(
         private http: HttpClient,
@@ -28,6 +30,7 @@ export class AuthService {
                 if (response.token) {
                     localStorage.setItem(this.tokenKey, response.token);
                     this.isLoggedIn.set(true);
+                    this.rol.set(rolDelToken(response.token));
                 }
             })
         );
@@ -37,12 +40,18 @@ export class AuthService {
     logout(vencida = false) {
         localStorage.removeItem(this.tokenKey);
         this.isLoggedIn.set(false);
+        this.rol.set('admin');
         this.router.navigate(['/login'], vencida ? { queryParams: { sesion: 'vencida' } } : {});
     }
 
     /** Hay token y no ha pasado su `exp` (el backend lo firma por 24 horas). */
     sesionVigente(): boolean {
         return tokenVigente(localStorage.getItem(this.tokenKey));
+    }
+
+    /** Cuenta que solo ve eventos e inscritos y valida asistencia. */
+    esSoloEventos(): boolean {
+        return this.rol() === 'eventos';
     }
 
     getToken(): string | null {

@@ -1,10 +1,10 @@
 <div class="page-container">
     <div class="page-header">
         <div class="header-text">
-            <h1>Administrar Eventos</h1>
-            <p>Gestión de eventos del sistema.</p>
+            <h1>{{ soloEventos ? 'Eventos' : 'Administrar Eventos' }}</h1>
+            <p>{{ soloEventos ? 'Consulta los eventos y sus inscritos.' : 'Gestión de eventos del sistema.' }}</p>
         </div>
-        <button mat-flat-button color="primary" (click)="createEvent()">
+        <button mat-flat-button color="primary" *ngIf="!soloEventos" (click)="createEvent()">
             <mat-icon>add</mat-icon> Crear Evento
         </button>
     </div>
@@ -65,11 +65,13 @@
                             <ng-container matColumnDef="actions">
                                 <th mat-header-cell *matHeaderCellDef> Acciones </th>
                                 <td mat-cell *matCellDef="let element">
-                                    <button mat-icon-button color="accent" (click)="viewFeedback(element)"
+                                    <!-- La cuenta de rol «eventos» solo ve los inscritos: lo
+                                         demás son rutas de administrador (403 en el backend). -->
+                                    <button mat-icon-button color="accent" *ngIf="!soloEventos" (click)="viewFeedback(element)"
                                         matTooltip="Ver Feedback">
                                         <mat-icon style="color: #ffb300;">star</mat-icon>
                                     </button>
-                                    <button mat-icon-button color="accent" (click)="viewSurvey(element)"
+                                    <button mat-icon-button color="accent" *ngIf="!soloEventos" (click)="viewSurvey(element)"
                                         matTooltip="Ver Encuesta del Evento">
                                         <mat-icon style="color: #43a047;">poll</mat-icon>
                                     </button>
@@ -79,19 +81,19 @@
                                     </button>
                                     <!-- Los talleres se gestionan en su propia pantalla desde
                                          el 2026-10-28; el formulario del evento ya no los lleva. -->
-                                    <button mat-icon-button (click)="viewWorkshops(element)"
+                                    <button mat-icon-button *ngIf="!soloEventos" (click)="viewWorkshops(element)"
                                         matTooltip="Workshops">
                                         <mat-icon style="color: #8e24aa;">view_agenda</mat-icon>
                                     </button>
-                                    <button mat-icon-button color="primary" (click)="editEvent(element)"
+                                    <button mat-icon-button color="primary" *ngIf="!soloEventos" (click)="editEvent(element)"
                                         matTooltip="Editar">
                                         <mat-icon>edit</mat-icon>
                                     </button>
-                                    <button mat-icon-button (click)="toggleStatus(element)"
+                                    <button mat-icon-button *ngIf="!soloEventos" (click)="toggleStatus(element)"
                                         [matTooltip]="element.status === 'inactive' ? 'Volver a mostrar en la app' : 'Ocultar de la app'">
                                         <mat-icon>{{ element.status === 'inactive' ? 'visibility_off' : 'visibility' }}</mat-icon>
                                     </button>
-                                    <button mat-icon-button color="warn" (click)="deleteEvent(element.id)"
+                                    <button mat-icon-button color="warn" *ngIf="!soloEventos" (click)="deleteEvent(element.id)"
                                         matTooltip="Eliminar">
                                         <mat-icon>delete</mat-icon>
                                     </button>

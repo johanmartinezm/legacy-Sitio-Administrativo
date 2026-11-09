@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EventService } from '../../../core/services/event.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { EventRegistrant } from '../../../core/models/registrant.model';
 import {
     DatosDeImportacion,
@@ -51,6 +52,15 @@ import {
 })
 export class EventRegistrantsComponent implements OnInit {
     displayedColumns = ['name', 'contact', 'payment', 'status', 'decision', 'credencial', 'workshops', 'attendance', 'date'];
+    // Ver sesión: inject() y no el constructor, para no tocar los specs que lo
+    // construyen a mano.
+    private auth = inject(AuthService);
+
+    /** Cuenta que solo ve inscritos y valida asistencia: ni aprueba pagos, ni
+     *  importa, ni genera credenciales (las tres son rutas de administrador). */
+    get soloEventos(): boolean {
+        return this.auth.esSoloEventos();
+    }
 
     /** Inscripción sobre la que se está aprobando o rechazando, para no repetir el clic. */
     decidiendo = signal<string | null>(null);
@@ -129,6 +139,9 @@ export class EventRegistrantsComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
+        if (this.soloEventos) {
+            this.displayedColumns = this.displayedColumns.filter(c => c !== 'decision');
+        }
         this.eventId = this.route.snapshot.paramMap.get('id') || '';
         if (!this.eventId) {
             this.errorMessage.set('No se indico el evento.');
