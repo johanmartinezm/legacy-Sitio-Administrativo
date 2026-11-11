@@ -2,6 +2,18 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-11]: Interruptor «Mostrar el carrusel en el Inicio de la app» en Banners
+- **Alcance:** `banner-list` (interruptor arriba de la tabla, se guarda al momento y vuelve atrás si
+  falla), `seccion-inicio.model.ts` (`visible`, `SLUG_CARRUSEL_INICIO`). Spec
+  `banner-list.component.spec.ts`. Necesita el backend del mismo día; con uno anterior el interruptor
+  no aparece.
+- **Criterios de QA:**
+  1. App Móvil → Banners: arriba aparece «Mostrar el carrusel en el Inicio de la app», encendido.
+  2. Apagarlo: sale «El carrusel ya no se muestra en el Inicio de la app». Al recargar, sigue apagado.
+  3. Abrir la app (cerrándola antes del todo): el Inicio no muestra el carrusel. Comunidad sigue con
+     el suyo.
+  4. Encenderlo y volver a abrir la app: el carrusel vuelve.
+
 ### [2026-11-11]: La carga masiva acepta la fecha de nacimiento guardada como fecha de Excel
 - **Alcance:** `core/utils/lector-importacion.ts` (la fecha de nacimiento se lee del `Date` de la
   celda y no del texto con formato) y su spec. Con `raw: false`, una celda de fecha llegaba como el

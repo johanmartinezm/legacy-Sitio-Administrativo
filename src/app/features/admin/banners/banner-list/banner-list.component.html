@@ -6,6 +6,20 @@
         </button>
     </div>
 
+    <div class="carrusel-inicio" *ngIf="carruselInicioVisible() !== null">
+        <mat-slide-toggle
+            color="primary"
+            [checked]="carruselInicioVisible()!"
+            [disabled]="guardandoCarrusel()"
+            (change)="cambiarCarruselInicio($event)">
+            Mostrar el carrusel en el Inicio de la app
+        </mat-slide-toggle>
+        <p class="ayuda">
+            Apagado, el Inicio no muestra ningún banner aunque haya banners «Inicio» activos.
+            No afecta a los de Comunidad. Cada persona lo verá la próxima vez que abra la app.
+        </p>
+    </div>
+
     <table mat-table [dataSource]="banners()" class="mat-elevation-z8">
 
         <!-- Image Column -->

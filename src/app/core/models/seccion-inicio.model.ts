@@ -14,8 +14,17 @@ export interface SeccionInicio {
     imagen_url: string;
     titulo: string;
     texto: string;
+    /**
+     * Si la app muestra la sección. Hoy solo lo lee la fila «carrusel-inicio»
+     * (el carrusel de banners del Inicio), que se cambia desde la página de
+     * Banners. Un backend anterior no lo manda.
+     */
+    visible?: boolean;
     actualizada_en?: string;
 }
+
+/** La fila del carrusel de banners del Inicio (20261111_carrusel_inicio_visible.sql). */
+export const SLUG_CARRUSEL_INICIO = 'carrusel-inicio';
 
 export type Pantalla = 'inicio' | 'lso' | 'legacy-plus';
 
@@ -56,7 +65,7 @@ export function pantallaDe(valor: string | undefined | null): Pantalla | null {
 }
 
 /** Lo que admite el PUT: el campo que no se manda se queda como está. */
-export type CambiosSeccionInicio = Partial<Pick<SeccionInicio, 'imagen_url' | 'titulo' | 'texto'>>;
+export type CambiosSeccionInicio = Partial<Pick<SeccionInicio, 'imagen_url' | 'titulo' | 'texto' | 'visible'>>;
 
 /** Límites del backend (seccion_inicio_service.go): la tarjeta es de ancho fijo. */
 export const MAX_TITULO_SECCION = 60;
