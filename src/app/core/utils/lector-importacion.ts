@@ -267,8 +267,13 @@ export async function leerArchivoDeAsistentes(archivo: File): Promise<ArchivoLei
             // El tipo de documento se compara contra el catálogo de Legacy, así
             // que ahí sí se recorta la puntuación. El resto son textos libres y
             // se guardan tal cual llegan.
+            // La fecha se lee de la celda y no de `crudas`: con `raw: false`
+            // una celda de fecha llega como el texto que muestra Excel según su
+            // formato («3/25/86»), que el backend no reconoce. La celda guarda
+            // el `Date` de verdad. Sin celda de fecha, vale el texto.
+            const celda = hoja[XLSX.utils.encode_cell({ r: i, c: columna })];
             fila[destino] = (destino === 'fecha_nacimiento'
-                ? fechaComoTexto(valor)
+                ? fechaComoTexto(celda?.v instanceof Date ? celda.v : valor)
                 : destino === 'tipo_documento'
                     ? limpiarParaCatalogo(valor)
                     : limpiar(valor)) as never;

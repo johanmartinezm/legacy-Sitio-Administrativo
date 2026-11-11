@@ -140,6 +140,22 @@ describe('lector del archivo de asistentes', () => {
         expect(leido.filas[1].acepta_terminos).toBeFalse();
     });
 
+    it('lee una fecha guardada como fecha de Excel, no como texto', async () => {
+        // Así llega del cliente: celda de fecha con formato «m/d/yy». Leída
+        // como texto con formato daba «3/25/86» y el backend la rechazaba.
+        const hoja = XLSX.utils.aoa_to_sheet([CABECERAS, fila(PERSONA)]);
+        const columna = CABECERAS.indexOf('Fecha De Nacimiento');
+        hoja[XLSX.utils.encode_cell({ r: 1, c: columna })] = { t: 'n', v: 31496, z: 'm/d/yy' };
+        const libro = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(libro, hoja, 'Worksheet');
+        const binario: ArrayBuffer = XLSX.write(libro, { bookType: 'biff8', type: 'array' });
+        const archivo = { name: 'asistentes.xls', arrayBuffer: async () => binario } as unknown as File;
+
+        const leido = await leerArchivoDeAsistentes(archivo);
+
+        expect(leido.filas[0].fecha_nacimiento).toBe('25/03/1986');
+    });
+
     it('conserva los acentos', async () => {
         const leido = await leerArchivoDeAsistentes(archivoCon([CABECERAS, fila(PERSONA)]));
 

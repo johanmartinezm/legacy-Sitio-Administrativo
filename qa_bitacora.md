@@ -2,6 +2,20 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-11]: La carga masiva acepta la fecha de nacimiento guardada como fecha de Excel
+- **Alcance:** `core/utils/lector-importacion.ts` (la fecha de nacimiento se lee del `Date` de la
+  celda y no del texto con formato) y su spec. Con `raw: false`, una celda de fecha llegaba como el
+  texto que muestra Excel según su formato («3/25/86»), el backend solo acepta `AAAA-MM-DD` o
+  `DD/MM/AAAA` y rechazaba la fila con «no es una fecha reconocible». Cambiar la fecha en Excel no
+  servía: la celda seguía teniendo el mismo formato. Si la celda trae texto, se usa el texto como
+  antes.
+- **Criterios de QA:**
+  1. Inscritos de un evento → Importar asistentes → subir un `.xls` con la fecha de nacimiento como
+     fecha de Excel (en Excel se ve «3/25/86»): la fila pasa sin error de fecha.
+  2. En el usuario creado o actualizado, la fecha de nacimiento es la del archivo (25/03/1986), sin
+     un día de diferencia.
+  3. Un archivo con la fecha escrita como texto («15/01/1990») sigue importándose igual que antes.
+
 ### [2026-11-09]: Rol de administrador «eventos»: solo eventos, inscritos y asistencia
 - **Alcance:** `sesion.ts` (`rolDelToken`), `auth.service.ts` (señal `rol`, `esSoloEventos`),
   `auth.guard.ts` (`rolGuard`), `app.routes.ts` (`data: { eventos: true }` en inicio, eventos, inscritos
