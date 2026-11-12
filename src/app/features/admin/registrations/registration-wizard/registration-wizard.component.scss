@@ -45,23 +45,25 @@
     margin-top: 8px;
 }
 
-.payment-methods {
-    .methods-row {
+.muted {
+    color: #666;
+    margin-left: 4px;
+}
+
+.aviso {
+    margin: 12px 0;
+    padding: 12px;
+    border-radius: 4px;
+    background-color: #fff8e1;
+    color: #6d4c00;
+}
+
+.estado-pago {
+    margin: 16px 0;
+
+    .opciones-pago {
         display: flex;
-        gap: 16px;
-    }
-
-    .method {
-        border: 1px solid #ddd;
-        padding: 12px 24px;
-        border-radius: 4px;
-        cursor: pointer;
-
-        &.active {
-            border-color: #3f51b5;
-            background-color: #e8eaf6;
-            color: #3f51b5;
-            font-weight: 500;
-        }
+        flex-direction: column;
+        gap: 8px;
     }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
@@ -34,11 +34,20 @@ import { Workshop } from '../../../../../core/models/event.model';
     .no-workshops { color: #888; font-style: italic; }
   `]
 })
-export class WorkshopListComponent {
+export class WorkshopListComponent implements OnChanges {
     @Input() workshops: Workshop[] = [];
     @Output() selectionChange = new EventEmitter<Workshop[]>();
 
     selectedWorkshops: Workshop[] = [];
+
+    // Al cambiar de evento el componente no se destruye, solo recibe otra
+    // lista. Sin esto conservaba lo marcado en el evento anterior y lo volvía a
+    // emitir al marcar el primero del nuevo, con IDs que no son de este evento.
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['workshops'] && !changes['workshops'].firstChange) {
+            this.selectedWorkshops = [];
+        }
+    }
 
     isSelected(shop: Workshop): boolean {
         return this.selectedWorkshops.some(s => s.id === shop.id);
@@ -46,7 +55,7 @@ export class WorkshopListComponent {
 
     toggleWorkshop(shop: Workshop, isChecked: boolean) {
         if (isChecked) {
-            this.selectedWorkshops.push(shop);
+            this.selectedWorkshops = [...this.selectedWorkshops, shop];
         } else {
             this.selectedWorkshops = this.selectedWorkshops.filter(s => s.id !== shop.id);
         }

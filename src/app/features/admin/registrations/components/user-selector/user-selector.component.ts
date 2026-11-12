@@ -57,15 +57,17 @@ export class UserSelectorComponent implements OnInit {
     }
 
     displayFn(user: User): string {
-        return user && user.firstName ? `${user.firstName} ${user.lastName}` : '';
+        return user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || (user.email ?? '') : '';
     }
 
     private _filter(name: string): User[] {
         const filterValue = name.toLowerCase();
+        // Nombre, apellido o correo pueden venir vacíos (p. ej. de la carga
+        // masiva): sin el `?? ''` el buscador se caía al escribir.
         return this.users.filter(user =>
-            user.firstName.toLowerCase().includes(filterValue) ||
-            user.lastName.toLowerCase().includes(filterValue) ||
-            user.email.toLowerCase().includes(filterValue)
+            `${user.firstName ?? ''} ${user.lastName ?? ''} ${user.email ?? ''}`
+                .toLowerCase()
+                .includes(filterValue)
         );
     }
 

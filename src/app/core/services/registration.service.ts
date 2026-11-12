@@ -10,7 +10,9 @@ export interface Registration {
     user: User;
     event: Event;
     workshops: Workshop[];
-    paymentStatus: 'pending' | 'paid';
+    paymentStatus: string;
+    /** 'confirmed', 'pending_payment' o 'rejected'. */
+    registrationStatus: string;
     registrationDate: Date;
     qrData: string;
 }
@@ -30,11 +32,21 @@ export class RegistrationService {
         return `${this.config.apiUrl}/api/events`;
     }
 
-    createRegistration(user: User, event: Event, workshops: Workshop[]): Observable<Registration> {
+    /**
+     * Un administrador inscribe a otra persona. El backend solo honra `userID` y
+     * `paymentStatus` si quien llama es administrador. `free` y `paid` dejan la
+     * inscripción confirmada y con QR; `pending` la deja pendiente de pago, para
+     * aprobarla después desde «Inscritos».
+     *
+     * Si la persona ya estaba inscrita, el backend devuelve la inscripción que
+     * había, con su estado, sin cambiarlo.
+     */
+    createRegistration(user: User, event: Event, workshops: Workshop[],
+                       paymentStatus: 'free' | 'paid' | 'pending'): Observable<Registration> {
         const url = `${this.apiUrl}/${event.id}/register`;
         const body = {
             userID: user.id,
-            paymentStatus: 'paid', // Admin-initiated registrations are marked as paid
+            paymentStatus,
             workshops: workshops.map(w => w.id)
         };
 
@@ -44,9 +56,10 @@ export class RegistrationService {
                 user: user,
                 event: event,
                 workshops: workshops,
-                paymentStatus: res.payment_status as 'pending' | 'paid',
+                paymentStatus: res.payment_status,
+                registrationStatus: res.registration_status,
                 registrationDate: new Date(res.registration_date),
-                qrData: res.qr_data
+                qrData: res.qr_data || ''
             })),
             tap(newRegistration => {
                 this.registrationsSignal.update(regs => [...regs, newRegistration]);

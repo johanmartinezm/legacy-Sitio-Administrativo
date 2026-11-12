@@ -2,6 +2,33 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-12]: «Matricular usuarios» inscribe de verdad, sin pasar por la pasarela
+- **Alcance:** `features/admin/registrations/` (asistente, selector de eventos, lista de workshops,
+  buscador de usuarios) y `core/services/registration.service.ts`. Se borra
+  `registration-layout.component.ts`, que no usaba ninguna ruta. Sin cambios en el backend.
+  Antes, «Pagar y Registrar» solo abría una intención de pago en CredibanCo **a nombre del
+  administrador** (el backend toma el usuario del token) y nunca creaba la inscripción; con un
+  evento gratuito el backend respondía 400 y salía una alerta. Ahora llama a
+  `POST /api/events/{id}/register` con `userID`, que solo se acepta de un administrador.
+- **Criterios de QA:**
+  1. Matricular usuarios → buscar a una persona por nombre, apellido o correo; también una sin
+     apellido. El buscador no se cae.
+  2. El selector de eventos no muestra eventos ya terminados, los ordena por fecha y marca cada uno
+     como «Gratuito» o con su precio, y como «inactivo» si lo está.
+  3. Evento gratuito → elegir dos workshops → Siguiente: el resumen dice «Gratuito» y total $0.
+     Confirmar inscripción: «Inscripción confirmada» con el QR. En «Inscritos» del evento aparece
+     confirmada, con los dos workshops.
+  4. Evento de pago: no deja avanzar hasta elegir «Ya pagó» o «Todavía no». Con «Ya pagó» queda
+     confirmada y con QR; con «Todavía no», «Inscripción pendiente de pago», y en «Inscritos»
+     aparece para aprobar.
+  5. Marcar workshops de un evento, cambiar a otro evento y marcar uno: se inscribe solo con el del
+     evento nuevo, sin error.
+  6. Inscribir a alguien que ya estaba inscrito: muestra el estado que ya tenía, sin duplicarlo.
+  7. Un error del backend (por ejemplo, el cupo lleno) sale en un aviso abajo con el motivo, no en
+     una alerta del navegador.
+  8. «Nueva inscripción» deja vacíos el buscador, el evento y las casillas, y vuelve al paso 1.
+  9. En ningún momento se abre CredibanCo.
+
 ### [2026-11-11]: Interruptor «Mostrar el carrusel en el Inicio de la app» en Banners
 - **Alcance:** `banner-list` (interruptor arriba de la tabla, se guarda al momento y vuelve atrás si
   falla), `seccion-inicio.model.ts` (`visible`, `SLUG_CARRUSEL_INICIO`). Spec

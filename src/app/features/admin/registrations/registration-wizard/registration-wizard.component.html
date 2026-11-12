@@ -1,13 +1,15 @@
+@for (k of [ciclo]; track k) {
 <mat-horizontal-stepper #stepper linear>
 
-    <!-- Step 1: Select User -->
-    <mat-step [completed]="!!selectedUser" label="Seleccionar Usuario">
+    <!-- Paso 1: usuario -->
+    <mat-step [completed]="!!selectedUser" [editable]="!registration" label="Seleccionar usuario">
         <div class="step-content">
-            <h2>¿A quién vamos a registrar?</h2>
+            <h2>¿A quién vamos a inscribir?</h2>
             <app-user-selector (userSelected)="onUserSelected($event)"></app-user-selector>
 
             <div *ngIf="selectedUser" class="selection-summary">
                 Usuario seleccionado: <strong>{{selectedUser.firstName}} {{selectedUser.lastName}}</strong>
+                <span class="muted">({{selectedUser.email}})</span>
             </div>
 
             <div class="actions">
@@ -16,29 +18,52 @@
         </div>
     </mat-step>
 
-    <!-- Step 2: Select Event & Workshops -->
-    <mat-step [completed]="!!selectedEvent" label="Evento y Workshops">
+    <!-- Paso 2: evento, workshops y pago -->
+    <mat-step [completed]="puedeAvanzarDelEvento" [editable]="!registration" label="Evento y workshops">
         <div class="step-content">
-            <h2>Selecciona el Evento</h2>
+            <h2>Selecciona el evento</h2>
             <app-event-selector (eventSelected)="onEventSelected($event)"></app-event-selector>
 
-            <div *ngIf="selectedEvent">
+            <ng-container *ngIf="selectedEvent">
+                <div *ngIf="selectedEvent.status === 'inactive'" class="aviso">
+                    Este evento está inactivo: no se ve en la app, pero la inscripción se crea igual.
+                </div>
+
+                <div *ngIf="esDePago" class="estado-pago">
+                    <p>
+                        Evento de pago:
+                        <strong>{{selectedEvent.price | currency:'COP':'symbol-narrow':'1.0-0'}}</strong>.
+                        Aquí no se cobra nada. ¿La persona ya pagó por fuera?
+                    </p>
+                    <mat-radio-group [(ngModel)]="estadoDePago" class="opciones-pago">
+                        <mat-radio-button value="paid">
+                            Ya pagó (transferencia, link de pago…): queda confirmada y con QR
+                        </mat-radio-button>
+                        <mat-radio-button value="pending">
+                            Todavía no: queda pendiente de pago, para aprobarla después desde «Inscritos»
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+
                 <app-workshop-list [workshops]="selectedEvent.workshops || []"
                     (selectionChange)="onWorkshopsChanged($event)">
                 </app-workshop-list>
-            </div>
+            </ng-container>
 
             <div class="actions">
                 <button mat-button matStepperPrevious>Atrás</button>
-                <button mat-button matStepperNext [disabled]="!selectedEvent">Siguiente</button>
+                <button mat-button matStepperNext [disabled]="!puedeAvanzarDelEvento">Siguiente</button>
             </div>
         </div>
     </mat-step>
 
-    <!-- Step 3: Payment -->
-    <mat-step label="Pago">
+    <!-- Paso 3: resumen -->
+    <!-- Completado solo cuando la inscripción existe: en un stepper lineal es lo
+         que permite pasar al resultado, y deja de poder editarse para no
+         inscribir dos veces desde la misma pantalla. -->
+    <mat-step [completed]="!!registration" [editable]="!registration" label="Confirmar">
         <div class="step-content">
-            <h2>Resumen de Pago</h2>
+            <h2>Resumen de la inscripción</h2>
 
             <mat-card class="payment-summary" *ngIf="selectedEvent && selectedUser">
                 <mat-card-header>
@@ -47,52 +72,69 @@
                 </mat-card-header>
                 <mat-card-content>
                     <div class="line-item">
-                        <span>Entrada General</span>
-                        <span>{{selectedEvent.price | currency:'COP':'symbol-narrow':'1.0-0'}}</span>
+                        <span>Entrada general</span>
+                        <span *ngIf="esDePago">{{selectedEvent.price | currency:'COP':'symbol-narrow':'1.0-0'}}</span>
+                        <span *ngIf="!esDePago">Gratuito</span>
                     </div>
                     <div class="line-item" *ngFor="let shop of selectedWorkshops">
                         <span>Workshop: {{shop.name}}</span>
-                        <span>Inluido</span>
+                        <span>Incluido</span>
                     </div>
                     <div class="total-row">
-                        <strong>Total a Pagar</strong>
+                        <strong>Total</strong>
                         <strong>{{totalAmount | currency:'COP':'symbol-narrow':'1.0-0'}}</strong>
+                    </div>
+                    <div class="line-item" *ngIf="esDePago">
+                        <span>Estado de pago</span>
+                        <span>{{ estadoDePago === 'paid' ? 'Pagado por fuera' : 'Pendiente de pago' }}</span>
                     </div>
                 </mat-card-content>
             </mat-card>
 
-            <div class="payment-methods">
-                <p>Método de Pago (Simulado)</p>
-                <div class="methods-row">
-                    <div class="method active">Tarjeta de Crédito</div>
-                    <div class="method">Transferencia</div>
-                    <div class="method">Efectivo</div>
-                </div>
-            </div>
-
             <div class="actions">
-                <button mat-button matStepperPrevious>Atrás</button>
-                <button mat-raised-button color="primary" (click)="processPayment()" [disabled]="isProcessing">
-                    {{ isProcessing ? 'Procesando...' : 'Pagar y Registrar' }}
+                <button mat-button matStepperPrevious [disabled]="isProcessing">Atrás</button>
+                <button mat-raised-button color="primary" (click)="inscribir()" [disabled]="isProcessing">
+                    {{ isProcessing ? 'Inscribiendo...' : 'Confirmar inscripción' }}
                 </button>
             </div>
         </div>
     </mat-step>
 
-    <!-- Step 4: Confirmation & QR -->
-    <mat-step label="Confirmación">
-        <div class="step-content centered">
-            <h2>¡Registro Exitoso!</h2>
-            <p>El usuario ha sido registrado correctamente.</p>
+    <!-- Paso 4: resultado -->
+    <mat-step label="Resultado">
+        <div class="step-content centered" *ngIf="registration">
+            <ng-container *ngIf="confirmada">
+                <h2>Inscripción confirmada</h2>
+                <p *ngIf="registration.qrData">La persona ya ve este código en la app.</p>
+                <p *ngIf="!registration.qrData && selectedEvent?.isVirtual">
+                    Es un evento virtual: la persona verá el enlace de la sesión en la app.
+                </p>
+                <p *ngIf="!registration.qrData && !selectedEvent?.isVirtual">
+                    La inscripción no tiene código de acceso todavía; se puede generar desde «Inscritos».
+                </p>
+            </ng-container>
 
-            <div *ngIf="registration">
+            <ng-container *ngIf="!confirmada">
+                <h2>Inscripción pendiente de pago</h2>
+                <p>
+                    Cuando se confirme el pago, apruébala desde «Inscritos» del evento: en ese momento
+                    la persona recibe su acceso.
+                </p>
+                <p *ngIf="estadoDePago === 'paid'" class="aviso">
+                    Elegiste «Ya pagó», pero la persona ya tenía una inscripción pendiente en este evento
+                    y se conserva tal como estaba. Apruébala desde «Inscritos».
+                </p>
+            </ng-container>
+
+            <div *ngIf="registration.qrData && confirmada">
                 <app-qr-code [qrData]="registration.qrData"></app-qr-code>
             </div>
 
             <div class="actions">
-                <button mat-stroked-button (click)="reset()">Nuevo Registro</button>
+                <button mat-stroked-button (click)="reset()">Nueva inscripción</button>
             </div>
         </div>
     </mat-step>
 
 </mat-horizontal-stepper>
+}
