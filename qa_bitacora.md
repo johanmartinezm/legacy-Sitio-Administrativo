@@ -2,6 +2,17 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-13]: El dominio publica el apple-app-site-association de la app de iOS
+- **Alcance:** `public/.well-known/apple-app-site-association` (`webcredentials` para
+  `87LBVBLK8T.co.legacynetwork.legacyapp`) y `nginx.conf` (`location =` con `application/json` y
+  `=404` en vez de caer en el `index.html`). Hay que subir `nginx.conf` además del `dist`.
+- **Criterios de QA:**
+  1. `curl -i https://app.legacynetworkco.com/.well-known/apple-app-site-association`: 200,
+     `Content-Type: application/json`, sin redirección, y el JSON con el App ID.
+  2. `https://app-site-association.cdn-apple.com/a/v1/app.legacynetworkco.com` devuelve el mismo
+     JSON (la caché de Apple puede tardar hasta 24 h).
+  3. El panel sigue cargando y una subruta recargada con F5 no da 404.
+
 ### [2026-11-12]: «Matricular usuarios» inscribe de verdad, sin pasar por la pasarela
 - **Alcance:** `features/admin/registrations/` (asistente, selector de eventos, lista de workshops,
   buscador de usuarios) y `core/services/registration.service.ts`. Se borra
