@@ -28,6 +28,10 @@ Entrada de trabajo para validación de Panel Administrativo.
      una alerta del navegador.
   8. «Nueva inscripción» deja vacíos el buscador, el evento y las casillas, y vuelve al paso 1.
   9. En ningún momento se abre CredibanCo.
+- **Despliegue (2026-11-13):** servidor nuevo, build de `da0cdd6` desde un worktree limpio. Se sirve
+  `main-FXH2TGA4.js` (antes `main-362IH6NG.js`), `config.json` a producción, `/health` OK y la
+  subruta `/admin/enroll-users` carga. Respaldo previo: `dist.bak.20261113_1944`. Los criterios de
+  arriba aún no se han recorrido en pantalla.
 
 ### [2026-11-11]: Interruptor «Mostrar el carrusel en el Inicio de la app» en Banners
 - **Alcance:** `banner-list` (interruptor arriba de la tabla, se guarda al momento y vuelve atrás si
