@@ -2,6 +2,27 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-25]: Listas de Legacy Board
+- **Alcance:** nueva página «Listas de Legacy Board» en el menú (ruta `admin/legacy-board/listas`):
+  `features/admin/legacy-board/catalogo-list` y `opcion-form-dialog`,
+  `core/services/board_opcion_admin.service.ts` y `core/models/board-opcion.model.ts`. Un selector con
+  las 18 listas de los formularios del consejero y del empresario, la tabla de opciones con su
+  interruptor para activarlas o desactivarlas, y el diálogo para crear o editar. No hay botón de
+  borrar. Las listas que alimentan el cruce de perfiles llevan un aviso.
+- **Criterios de QA:**
+  1. Entrar a «Listas de Legacy Board»: sale la lista «Tipo de documento» y el selector muestra las 18
+     con «N de M activas».
+  2. Elegir «Sector»: la URL pasa a `?catalogo=sector`, aparece el aviso naranja del cruce y la
+     etiqueta «Consejero y empresario». Recargar la página conserva la lista elegida.
+  3. «Nueva opción» propone un orden que queda antes de «Otro» (990). Guardar «Energía y minería»: la
+     fila aparece con la clave `energia_y_mineria` y el selector pasa a «10 de 10 activas».
+  4. Apagar su interruptor: la fila queda atenuada, sale «Opción desactivada: ya no sale en la app» y
+     el selector baja a «9 de 10».
+  5. Crear «SALUD» en «Sector»: el diálogo sigue abierto y avisa «ya hay una opción con ese nombre en
+     este catálogo».
+  6. Editar una opción de una lista del cruce: el diálogo avisa de no cambiarle el significado y
+     muestra su clave, que no se puede editar.
+
 ### [2026-11-13]: El dominio publica el apple-app-site-association de la app de iOS
 - **Alcance:** `public/.well-known/apple-app-site-association` (`webcredentials` para
   `87LBVBLK8T.co.legacynetwork.legacyapp`) y `nginx.conf` (`location =` con `application/json` y

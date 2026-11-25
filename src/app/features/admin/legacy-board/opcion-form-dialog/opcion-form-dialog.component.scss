@@ -1,0 +1,36 @@
+.lista {
+    margin: 0 0 16px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.campo {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.aviso {
+    margin: 0 0 16px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #fff7ed;
+    color: #9a3412;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.fila {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    mat-form-field {
+        flex: 1;
+    }
+}
+
+.clave {
+    margin: 12px 0 0;
+    color: #94a3b8;
+    font-size: 12px;
+}

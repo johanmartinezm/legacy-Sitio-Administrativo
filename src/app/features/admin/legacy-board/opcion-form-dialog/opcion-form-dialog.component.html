@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ editando ? 'Editar opción' : 'Nueva opción' }}</h2>
+
+<mat-dialog-content [formGroup]="form">
+    <p class="lista">Lista: <strong>{{ catalogo.nombre }}</strong></p>
+
+    <mat-form-field appearance="outline" class="campo">
+        <mat-label>Nombre en la app</mat-label>
+        <input matInput formControlName="etiqueta" [maxlength]="maxEtiqueta" cdkFocusInitial>
+        <mat-hint align="end">{{ form.value.etiqueta?.length || 0 }}/{{ maxEtiqueta }}</mat-hint>
+        <mat-error>El nombre es obligatorio</mat-error>
+    </mat-form-field>
+
+    <p class="aviso" *ngIf="editando && catalogo.matching">
+        Renómbrela solo para corregir cómo se escribe. Si la opción pasa a significar otra cosa, es
+        mejor desactivarla y crear una nueva: los formularios ya enviados la siguen usando.
+    </p>
+
+    <div class="fila">
+        <mat-form-field appearance="outline">
+            <mat-label>Orden</mat-label>
+            <input matInput type="number" formControlName="orden" min="0">
+            <mat-hint>Menor va primero</mat-hint>
+            <mat-error>Un número de 0 a 100000</mat-error>
+        </mat-form-field>
+        <mat-slide-toggle formControlName="activo">Sale en la app</mat-slide-toggle>
+    </div>
+
+    <p class="clave" *ngIf="editando?.codigo">Clave interna: <code>{{ editando?.codigo }}</code></p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close [disabled]="guardando">Cancelar</button>
+    <button mat-flat-button color="primary" (click)="guardar()" [disabled]="guardando">Guardar</button>
+</mat-dialog-actions>
