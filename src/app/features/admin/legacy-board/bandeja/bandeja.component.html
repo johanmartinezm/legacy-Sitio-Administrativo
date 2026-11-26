@@ -1,0 +1,115 @@
+<div class="bandeja-container">
+    <div class="header">
+        <h1>Bandeja de Legacy Board</h1>
+    </div>
+    <p class="ayuda">
+        Los formularios que llegan desde la app. Cada uno entra como pendiente; ábralo para leerlo
+        completo y aprobarlo o rechazarlo. La persona recibe un aviso con la decisión, pero no el
+        motivo del rechazo, que queda como nota del comité.
+    </p>
+
+    <section class="tarjeta destinatarios">
+        <h2>Quién recibe el aviso de cada envío nuevo</h2>
+        <mat-form-field appearance="outline" class="campo-correos">
+            <mat-label>Correos</mat-label>
+            <mat-chip-grid #grid aria-label="Correos que reciben el aviso">
+                <mat-chip-row *ngFor="let c of destinatarios()" (removed)="quitarDestinatario(c)">
+                    {{ c }}
+                    <button matChipRemove [attr.aria-label]="'Quitar ' + c"><mat-icon>cancel</mat-icon></button>
+                </mat-chip-row>
+                <input placeholder="Escriba un correo y pulse Enter" [matChipInputFor]="grid"
+                    [matChipInputSeparatorKeyCodes]="separadores" (matChipInputTokenEnd)="agregarDestinatario($event)">
+            </mat-chip-grid>
+            <mat-hint>Sin ninguno, el aviso va al buzón de contacto. Uno o varios, para los dos formularios.</mat-hint>
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="guardarDestinatarios()"
+            [disabled]="!destinatariosCambiados || guardandoDestinatarios()">Guardar</button>
+    </section>
+
+    <section class="filtros">
+        <mat-form-field appearance="outline" *ngIf="formularios.length > 1">
+            <mat-label>Formulario</mat-label>
+            <mat-select [(ngModel)]="formulario" (selectionChange)="filtrar()">
+                <mat-option *ngFor="let f of formularios" [value]="f.clave">{{ f.nombre }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-button-toggle-group [(ngModel)]="estado" (change)="filtrar()" aria-label="Estado">
+            <mat-button-toggle value="pendiente">Pendientes</mat-button-toggle>
+            <mat-button-toggle value="aprobada">Aprobadas</mat-button-toggle>
+            <mat-button-toggle value="rechazada">Rechazadas</mat-button-toggle>
+            <mat-button-toggle value="">Todas</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Sector</mat-label>
+            <mat-select [ngModel]="sector" (ngModelChange)="elegirArea('sector', $event)">
+                <mat-option value="">Todos</mat-option>
+                <mat-option *ngFor="let o of sectores()" [value]="o.id">{{ o.etiqueta }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Expertise</mat-label>
+            <mat-select [ngModel]="expertise" (ngModelChange)="elegirArea('expertise', $event)">
+                <mat-option value="">Todas</mat-option>
+                <mat-option *ngFor="let o of areas()" [value]="o.id">{{ o.etiqueta }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="fecha">
+            <mat-label>Desde</mat-label>
+            <input matInput type="date" [(ngModel)]="desde" (change)="filtrar()">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="fecha">
+            <mat-label>Hasta</mat-label>
+            <input matInput type="date" [(ngModel)]="hasta" (change)="filtrar()">
+        </mat-form-field>
+
+        <button mat-button (click)="limpiar()">Limpiar filtros</button>
+    </section>
+
+    <table mat-table [dataSource]="envios()" class="mat-elevation-z8">
+        <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef> Recibido </th>
+            <td mat-cell *matCellDef="let e"> {{ e.creado_en | date:'dd/MM/yyyy HH:mm' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef> Nombre </th>
+            <td mat-cell *matCellDef="let e">
+                <div class="persona">
+                    <strong>{{ e.nombre || '(sin nombre)' }}</strong>
+                    <span>{{ e.correo }}</span>
+                </div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef> Estado </th>
+            <td mat-cell *matCellDef="let e">
+                <span class="estado" [ngClass]="e.estado">{{ textoDe(e.estado) }}</span>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="aviso">
+            <th mat-header-cell *matHeaderCellDef> Aviso </th>
+            <td mat-cell *matCellDef="let e">
+                <mat-icon *ngIf="!e.aviso_enviado" class="sin-aviso"
+                    matTooltip="El correo a los destinatarios no salió: nadie se enteró de este envío por correo">
+                    mark_email_unread
+                </mat-icon>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="fila" (click)="abrir(row)"
+            tabindex="0" (keydown.enter)="abrir(row)"></tr>
+    </table>
+
+    <p class="vacio" *ngIf="!cargando() && envios().length === 0">No hay formularios con estos filtros.</p>
+
+    <mat-paginator [length]="total()" [pageIndex]="pagina" [pageSize]="tamanoDePagina"
+        [pageSizeOptions]="tamanosDePagina" (page)="cambiarPagina($event)" aria-label="Páginas de la bandeja">
+    </mat-paginator>
+</div>

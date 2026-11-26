@@ -36,6 +36,9 @@ export const routes: Routes = [
       { path: 'admin/alianzas', data: { tipo: 'alianza' }, loadComponent: () => import('./features/admin/beneficios/beneficio-list/beneficio-list.component').then(m => m.BeneficioListComponent) },
       // Listas de los formularios A y B de Legacy Board (?catalogo= elige cuál).
       { path: 'admin/legacy-board/listas', loadComponent: () => import('./features/admin/legacy-board/catalogo-list/catalogo-list.component').then(m => m.CatalogoListComponent) },
+      // Bandeja de Legacy Board: los formularios que llegan desde la app y su detalle.
+      { path: 'admin/legacy-board/bandeja', loadComponent: () => import('./features/admin/legacy-board/bandeja/bandeja.component').then(m => m.BandejaBoardComponent) },
+      { path: 'admin/legacy-board/bandeja/:id', loadComponent: () => import('./features/admin/legacy-board/bandeja/envio-detalle.component').then(m => m.EnvioDetalleComponent) },
       // Legacy+: textos fijos (mismo componente que admin/inicio) y puntos con check.
       { path: 'admin/legacy-plus/textos', data: { pantalla: 'legacy-plus' }, loadComponent: () => import('./features/admin/inicio/seccion-inicio-list/seccion-inicio-list.component').then(m => m.SeccionInicioListComponent) },
       { path: 'admin/legacy-plus/puntos', loadComponent: () => import('./features/admin/legacy-plus/item-list/item-list.component').then(m => m.ItemListComponent) },

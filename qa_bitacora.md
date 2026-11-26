@@ -2,6 +2,28 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-25]: Bandeja de Legacy Board
+- **Alcance:** página nueva «Bandeja de Legacy Board» en el menú (`admin/legacy-board/bandeja`) y su
+  detalle (`admin/legacy-board/bandeja/:id`): `features/admin/legacy-board/bandeja` (bandeja, detalle y
+  diálogo de decisión), `core/services/board_bandeja_admin.service.ts` y
+  `core/models/board-envio.model.ts`. Arriba de la bandeja, los correos que reciben el aviso de cada
+  envío nuevo. Filtros por estado, sector, expertise y fechas, con paginación. El detalle muestra el
+  formulario completo, con un candado en los campos confidenciales, y deja aprobar o rechazar (el
+  rechazo exige motivo, que la persona no recibe).
+- **Criterios de QA:**
+  1. Entrar a «Bandeja de Legacy Board»: sale la pestaña «Pendientes» con fecha, nombre, correo y
+     estado de cada postulación.
+  2. Escribir un correo con mayúsculas en «Correos», pulsar Enter y «Guardar»: queda en minúsculas y
+     sale «Destinatarios guardados». Uno inválido muestra el error del servidor.
+  3. Elegir un sector o una expertise filtra la lista (elegir uno limpia el otro); «Limpiar filtros»
+     vuelve a todo.
+  4. Abrir una fila: sale la foto, las cinco secciones con sus respuestas y un candado en nombre,
+     documento, fecha de nacimiento, correo, teléfono y «Empresas / contextos».
+  5. «Rechazar» abre el diálogo con el botón desactivado hasta escribir el motivo. Al confirmar: estado
+     «Rechazada», el último cambio con quién, cuándo y el motivo, y «Rechazar» desactivado.
+  6. «Aprobar» no exige texto.
+  7. Una fila con el icono naranja de correo indica que el aviso a los destinatarios no salió.
+
 ### [2026-11-25]: Listas de Legacy Board
 - **Alcance:** nueva página «Listas de Legacy Board» en el menú (ruta `admin/legacy-board/listas`):
   `features/admin/legacy-board/catalogo-list` y `opcion-form-dialog`,

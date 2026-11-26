@@ -1,0 +1,61 @@
+<div class="detalle-container">
+    <a mat-button routerLink="/admin/legacy-board/bandeja" class="volver">
+        <mat-icon>arrow_back</mat-icon> Volver a la bandeja
+    </a>
+
+    <p class="vacio" *ngIf="!cargando() && !envio()">Este formulario no existe o no se pudo cargar.</p>
+
+    <ng-container *ngIf="envio() as e">
+        <header class="cabecera">
+            <img *ngIf="foto; else sinFoto" [src]="foto" [alt]="'Foto de ' + e.nombre" class="foto">
+            <ng-template #sinFoto>
+                <div class="foto vacia"><mat-icon>person</mat-icon></div>
+            </ng-template>
+            <div class="datos">
+                <span class="tipo">{{ e.titulo }}</span>
+                <h1>{{ e.nombre || '(sin nombre)' }}</h1>
+                <span class="sub">{{ e.correo }} · recibido el {{ e.creado_en | date:'dd/MM/yyyy HH:mm' }}</span>
+                <span class="estado" [ngClass]="e.estado">{{ textoDe(e.estado) }}</span>
+            </div>
+            <div class="acciones">
+                <button mat-flat-button color="primary" [disabled]="guardando() || e.estado === 'aprobada'"
+                    (click)="decidir('aprobada')"><mat-icon>check</mat-icon> Aprobar</button>
+                <button mat-stroked-button color="warn" [disabled]="guardando() || e.estado === 'rechazada'"
+                    (click)="decidir('rechazada')"><mat-icon>close</mat-icon> Rechazar</button>
+            </div>
+        </header>
+
+        <div class="aviso" *ngIf="!e.aviso_enviado">
+            <mat-icon>mark_email_unread</mat-icon>
+            El correo a los destinatarios no salió cuando llegó este formulario.
+        </div>
+
+        <div class="ultimo-cambio" *ngIf="e.estado_cambiado_en">
+            <strong>Último cambio:</strong>
+            {{ textoDe(e.estado) }} el {{ e.estado_cambiado_en | date:'dd/MM/yyyy HH:mm' }}
+            <span *ngIf="e.estado_cambiado_por"> por {{ e.estado_cambiado_por }}</span>.
+            <p *ngIf="e.estado_motivo" class="motivo">{{ e.estado_motivo }}</p>
+        </div>
+
+        <section class="seccion" *ngFor="let s of e.secciones">
+            <h2>{{ s.titulo }}</h2>
+            <dl>
+                <ng-container *ngFor="let r of s.respuestas">
+                    <dt>
+                        {{ r.etiqueta }}
+                        <mat-icon *ngIf="r.confidencial" class="candado" title="Confidencial: solo se ve en el panel">lock</mat-icon>
+                    </dt>
+                    <dd [class.sin-valor]="!r.valor">
+                        <ng-container *ngIf="r.valores?.length; else simple">
+                            <span class="chip" *ngFor="let v of r.valores">{{ v }}</span>
+                        </ng-container>
+                        <ng-template #simple>
+                            <a *ngIf="r.tipo === 'url' && r.valor; else texto" [href]="r.valor" target="_blank" rel="noopener">{{ r.valor }}</a>
+                            <ng-template #texto>{{ r.valor || 'Sin responder' }}</ng-template>
+                        </ng-template>
+                    </dd>
+                </ng-container>
+            </dl>
+        </section>
+    </ng-container>
+</div>
