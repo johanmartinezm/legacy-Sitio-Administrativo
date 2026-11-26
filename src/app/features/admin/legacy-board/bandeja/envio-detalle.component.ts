@@ -1,11 +1,11 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { DetalleEnvioBoard, TEXTO_ESTADO_BOARD } from '../../../../core/models/board-envio.model';
+import { CandidatoBoard, DetalleEnvioBoard, TEXTO_ESTADO_BOARD } from '../../../../core/models/board-envio.model';
 import { BoardBandejaAdminService } from '../../../../core/services/board_bandeja_admin.service';
 import { ConfigService } from '../../../../core/services/config.service';
 import { DecisionDialogComponent } from './decision-dialog.component';
@@ -32,6 +32,9 @@ export class EnvioDetalleComponent implements OnInit {
     envio = signal<DetalleEnvioBoard | null>(null);
     cargando = signal(true);
     guardando = signal(false);
+    /** null: no aplica (no es una solicitud aprobada) o aún no llegó. */
+    candidatos = signal<CandidatoBoard[] | null>(null);
+    cargandoCandidatos = signal(false);
     private id = '';
 
     constructor(
@@ -39,16 +42,28 @@ export class EnvioDetalleComponent implements OnInit {
         private config: ConfigService,
         private dialog: MatDialog,
         private snackBar: MatSnackBar,
-        route: ActivatedRoute
-    ) {
-        this.id = route.snapshot.paramMap.get('id') ?? '';
-    }
+        private router: Router,
+        private route: ActivatedRoute
+    ) { }
 
     ngOnInit(): void {
+        // Desde la lista de candidatos se abre el detalle de otro envío en la
+        // misma ruta: hay que recargar con cada id, no solo al crear la página.
+        this.route.paramMap.subscribe(p => {
+            this.id = p.get('id') ?? '';
+            this.cargar();
+        });
+    }
+
+    private cargar(): void {
+        this.cargando.set(true);
+        this.envio.set(null);
+        this.candidatos.set(null);
         this.bandeja.detalle(this.id).subscribe({
             next: d => {
                 this.envio.set(d);
                 this.cargando.set(false);
+                this.cargarCandidatos();
             },
             error: () => {
                 this.cargando.set(false);
@@ -57,10 +72,41 @@ export class EnvioDetalleComponent implements OnInit {
         });
     }
 
-    /** La foto llega como /api/images/<nombre>, relativa a la API. */
+    /** El matching es de solicitudes de empresarios aprobadas (decisión 2 del plan). */
+    get conCandidatos(): boolean {
+        const e = this.envio();
+        return !!e && e.formulario === 'B' && e.estado === 'aprobada';
+    }
+
+    cargarCandidatos(): void {
+        if (!this.conCandidatos) {
+            this.candidatos.set(null);
+            return;
+        }
+        this.cargandoCandidatos.set(true);
+        this.bandeja.candidatos(this.id).subscribe({
+            next: c => {
+                this.candidatos.set(c);
+                this.cargandoCandidatos.set(false);
+            },
+            error: () => {
+                this.cargandoCandidatos.set(false);
+                this.snackBar.open('No se pudieron calcular los candidatos', 'Cerrar', { duration: 4000 });
+            }
+        });
+    }
+
+    abrirCandidato(c: CandidatoBoard): void {
+        this.router.navigate(['/admin/legacy-board/bandeja', c.envio_id]);
+    }
+
+    /** Las fotos llegan como /api/images/<nombre>, relativas a la API. */
+    urlFoto(ruta: string): string {
+        return ruta ? `${this.config.apiUrl}${ruta}` : '';
+    }
+
     get foto(): string {
-        const f = this.envio()?.foto_url ?? '';
-        return f ? `${this.config.apiUrl}${f}` : '';
+        return this.urlFoto(this.envio()?.foto_url ?? '');
     }
 
     decidir(decision: 'aprobada' | 'rechazada'): void {
@@ -74,6 +120,7 @@ export class EnvioDetalleComponent implements OnInit {
                     next: d => {
                         this.envio.set(d);
                         this.guardando.set(false);
+                        this.cargarCandidatos();
                         this.snackBar.open(decision === 'aprobada' ? 'Aprobada: se le avisó a la persona' : 'Rechazada: se le avisó a la persona',
                             'Cerrar', { duration: 4000 });
                     },

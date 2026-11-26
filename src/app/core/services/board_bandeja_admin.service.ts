@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 import { ConfigService } from './config.service';
 import { Pagina } from '../models/pagina';
 import {
+    CandidatoBoard,
     DetalleEnvioBoard,
     EstadoEnvioBoard,
     FiltroBandejaBoard,
@@ -55,6 +56,11 @@ export class BoardBandejaAdminService {
     /** Rechazar exige motivo; la persona no lo recibe, es nota del comité. */
     cambiarEstado(id: string, estado: Exclude<EstadoEnvioBoard, 'pendiente'>, motivo: string): Observable<DetalleEnvioBoard> {
         return this.http.put<DetalleEnvioBoard>(`${this.apiUrl}/envios/${id}/estado`, { estado, motivo });
+    }
+
+    /** Los consejeros que mejor encajan; solo para solicitudes aprobadas. */
+    candidatos(id: string): Observable<CandidatoBoard[]> {
+        return this.http.get<CandidatoBoard[]>(`${this.apiUrl}/envios/${id}/candidatos`);
     }
 
     destinatarios(): Observable<string[]> {

@@ -60,3 +60,19 @@ export const FORMULARIOS_BOARD = [
 
 /** Límite del backend (board_bandeja_service.go). */
 export const MAX_MOTIVO_BOARD = 1000;
+
+/**
+ * Un consejero aprobado cruzado con una solicitud aprobada (matching, §8).
+ * Determinista: mismos datos, mismo resultado.
+ */
+export interface CandidatoBoard {
+    envio_id: string;
+    nombre: string;
+    foto_url: string;
+    cargo_actual: string;
+    /** 0 a 100. */
+    porcentaje: number;
+    razones: string[];
+    /** No puntúa: se muestra para compararlo con el presupuesto. */
+    honorarios: string;
+}

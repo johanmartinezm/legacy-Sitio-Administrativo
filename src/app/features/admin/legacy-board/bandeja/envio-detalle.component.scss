@@ -163,4 +163,93 @@
     .vacio {
         color: #64748b;
     }
+
+    .candidatos {
+        .explica {
+            margin: 0 0 12px;
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .candidato {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding: 12px;
+            border-top: 1px solid #e2e8f0;
+            cursor: pointer;
+
+            &:hover,
+            &:focus {
+                background: #f8fafc;
+            }
+        }
+
+        .mini {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #e2e8f0;
+
+            &.vacia {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #94a3b8;
+            }
+        }
+
+        .quien {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            span {
+                font-size: 12px;
+                color: #64748b;
+            }
+
+            ul {
+                margin: 6px 0 0;
+                padding-left: 18px;
+                font-size: 13px;
+                color: #334155;
+            }
+        }
+
+        .cifras {
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+
+            .porcentaje {
+                font-size: 22px;
+                font-weight: 700;
+            }
+
+            .barra {
+                width: 100%;
+                height: 6px;
+                border-radius: 3px;
+                background: #e2e8f0;
+
+                div {
+                    height: 100%;
+                    border-radius: 3px;
+                    background: #306c9e;
+                }
+            }
+
+            .honorarios {
+                font-size: 12px;
+                color: #64748b;
+            }
+        }
+    }
 }

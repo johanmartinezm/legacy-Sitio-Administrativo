@@ -37,6 +37,36 @@
             <p *ngIf="e.estado_motivo" class="motivo">{{ e.estado_motivo }}</p>
         </div>
 
+        <section class="seccion candidatos" *ngIf="conCandidatos">
+            <h2>Candidatos</h2>
+            <p class="explica">
+                Consejeros aprobados ordenados por cuánto encajan con esta solicitud: expertise, sector y
+                órgano 20 % cada uno; independencia, DINASTÍA e idiomas 10 %; modalidad y región 5 %. Lo
+                que la solicitud no exige no cuenta. Los honorarios no puntúan.
+            </p>
+            <p class="vacio" *ngIf="cargandoCandidatos()">Calculando…</p>
+            <p class="vacio" *ngIf="!cargandoCandidatos() && candidatos()?.length === 0">
+                Todavía no hay consejeros aprobados que encajen con esta solicitud.
+            </p>
+            <div class="candidato" *ngFor="let c of candidatos() ?? []" (click)="abrirCandidato(c)"
+                (keydown.enter)="abrirCandidato(c)" tabindex="0" role="link">
+                <img *ngIf="c.foto_url; else sinFotoC" [src]="urlFoto(c.foto_url)" [alt]="'Foto de ' + c.nombre" class="mini">
+                <ng-template #sinFotoC><div class="mini vacia"><mat-icon>person</mat-icon></div></ng-template>
+                <div class="quien">
+                    <strong>{{ c.nombre || '(sin nombre)' }}</strong>
+                    <span>{{ c.cargo_actual }}</span>
+                    <ul>
+                        <li *ngFor="let r of c.razones">{{ r }}</li>
+                    </ul>
+                </div>
+                <div class="cifras">
+                    <span class="porcentaje">{{ c.porcentaje }} %</span>
+                    <div class="barra"><div [style.width.%]="c.porcentaje"></div></div>
+                    <span class="honorarios" *ngIf="c.honorarios">Honorarios: {{ c.honorarios }}</span>
+                </div>
+            </div>
+        </section>
+
         <section class="seccion" *ngFor="let s of e.secciones">
             <h2>{{ s.titulo }}</h2>
             <dl>

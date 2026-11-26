@@ -2,6 +2,20 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-25]: Candidatos en las solicitudes aprobadas de Legacy Board
+- **Alcance:** `features/admin/legacy-board/bandeja/envio-detalle.component.{ts,html,scss}`,
+  `candidatos()` en `core/services/board_bandeja_admin.service.ts` y `CandidatoBoard` en
+  `core/models/board-envio.model.ts`. En el detalle de una solicitud de empresario **aprobada** sale la
+  sección «Candidatos»: los consejeros aprobados ordenados por porcentaje, con foto, cargo, barra,
+  razones y honorarios. Tocar uno abre su postulación en la misma página.
+- **Criterios de QA:**
+  1. Abrir una solicitud aprobada: arriba sale «Candidatos» con la explicación de los pesos y la lista
+     de mayor a menor porcentaje.
+  2. Cada candidato muestra sus razones y sus honorarios.
+  3. Tocar un candidato abre su postulación (sin sección de candidatos).
+  4. Una solicitud pendiente o rechazada no muestra la sección; al aprobarla, aparece sin recargar.
+  5. Sin consejeros que encajen: «Todavía no hay consejeros aprobados que encajen con esta solicitud».
+
 ### [2026-11-25]: La bandeja de Legacy Board muestra también las solicitudes
 - **Alcance:** `core/models/board-envio.model.ts` (el Formulario B en `FORMULARIOS_BOARD`) y el ancho del
   selector en `features/admin/legacy-board/bandeja`. La bandeja tiene ahora un selector «Formulario»:
