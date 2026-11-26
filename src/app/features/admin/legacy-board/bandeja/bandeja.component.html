@@ -27,7 +27,7 @@
     </section>
 
     <section class="filtros">
-        <mat-form-field appearance="outline" *ngIf="formularios.length > 1">
+        <mat-form-field appearance="outline" class="formulario" *ngIf="formularios.length > 1">
             <mat-label>Formulario</mat-label>
             <mat-select [(ngModel)]="formulario" (selectionChange)="filtrar()">
                 <mat-option *ngFor="let f of formularios" [value]="f.clave">{{ f.nombre }}</mat-option>

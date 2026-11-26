@@ -52,9 +52,10 @@ export const TEXTO_ESTADO_BOARD: Record<EstadoEnvioBoard, string> = {
     rechazada: 'Rechazada'
 };
 
-/** Los formularios que la bandeja ofrece. El B llega con la fase 4. */
+/** Los formularios que la bandeja ofrece. */
 export const FORMULARIOS_BOARD = [
-    { clave: 'A', nombre: 'Postulaciones de consejeros' }
+    { clave: 'A', nombre: 'Postulaciones de consejeros' },
+    { clave: 'B', nombre: 'Solicitudes de empresarios' }
 ];
 
 /** Límite del backend (board_bandeja_service.go). */

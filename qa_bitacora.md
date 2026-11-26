@@ -2,6 +2,16 @@
 
 Entrada de trabajo para validación de Panel Administrativo.
 
+### [2026-11-25]: La bandeja de Legacy Board muestra también las solicitudes
+- **Alcance:** `core/models/board-envio.model.ts` (el Formulario B en `FORMULARIOS_BOARD`) y el ancho del
+  selector en `features/admin/legacy-board/bandeja`. La bandeja tiene ahora un selector «Formulario»:
+  «Postulaciones de consejeros» y «Solicitudes de empresarios».
+- **Criterios de QA:**
+  1. En «Bandeja de Legacy Board» aparece el selector «Formulario» con las dos opciones, sin cortar.
+  2. Al elegir «Solicitudes de empresarios» y «Todas», salen las solicitudes con su estado.
+  3. Los filtros de sector y expertise funcionan también con las solicitudes.
+  4. El detalle de una solicitud muestra «Solicitud de consejero» y el nombre de la empresa con candado.
+
 ### [2026-11-25]: Bandeja de Legacy Board
 - **Alcance:** página nueva «Bandeja de Legacy Board» en el menú (`admin/legacy-board/bandeja`) y su
   detalle (`admin/legacy-board/bandeja/:id`): `features/admin/legacy-board/bandeja` (bandeja, detalle y
